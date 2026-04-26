@@ -6,7 +6,7 @@ import { useCart } from "@/context/CartContext";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RestockAlertForm } from "@/components/RestockAlertForm";
 import { trackProductEvent } from "@/lib/analytics";
-import { useImagePrefetch, isImageCached } from "@/hooks/useImagePrefetch";
+import { useImagePrefetch, isImageCached, prefetchImage } from "@/hooks/useImagePrefetch";
 import { SimilarPerfReport } from "@/components/SimilarPerfReport";
 import {
   Carousel,
@@ -14,6 +14,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 
 export const Route = createFileRoute("/collection/$productId")({
