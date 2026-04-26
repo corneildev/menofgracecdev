@@ -1,30 +1,116 @@
 import onyx from "@/assets/suit-onyx.jpg";
 import onyxWebp from "@/assets/suit-onyx.webp";
 import onyxAvif from "@/assets/suit-onyx.avif";
+import onyxJpg480 from "@/assets/suit-onyx-480.jpg";
+import onyxJpg768 from "@/assets/suit-onyx-768.jpg";
+import onyxJpg1024 from "@/assets/suit-onyx-1024.jpg";
+import onyxWebp480 from "@/assets/suit-onyx-480.webp";
+import onyxWebp768 from "@/assets/suit-onyx-768.webp";
+import onyxWebp1024 from "@/assets/suit-onyx-1024.webp";
+import onyxAvif480 from "@/assets/suit-onyx-480.avif";
+import onyxAvif768 from "@/assets/suit-onyx-768.avif";
+import onyxAvif1024 from "@/assets/suit-onyx-1024.avif";
+
 import midnight from "@/assets/suit-midnight.jpg";
 import midnightWebp from "@/assets/suit-midnight.webp";
 import midnightAvif from "@/assets/suit-midnight.avif";
+import midnightJpg480 from "@/assets/suit-midnight-480.jpg";
+import midnightJpg768 from "@/assets/suit-midnight-768.jpg";
+import midnightJpg1024 from "@/assets/suit-midnight-1024.jpg";
+import midnightWebp480 from "@/assets/suit-midnight-480.webp";
+import midnightWebp768 from "@/assets/suit-midnight-768.webp";
+import midnightWebp1024 from "@/assets/suit-midnight-1024.webp";
+import midnightAvif480 from "@/assets/suit-midnight-480.avif";
+import midnightAvif768 from "@/assets/suit-midnight-768.avif";
+import midnightAvif1024 from "@/assets/suit-midnight-1024.avif";
+
 import ivory from "@/assets/suit-ivory.jpg";
 import ivoryWebp from "@/assets/suit-ivory.webp";
 import ivoryAvif from "@/assets/suit-ivory.avif";
+import ivoryJpg480 from "@/assets/suit-ivory-480.jpg";
+import ivoryJpg768 from "@/assets/suit-ivory-768.jpg";
+import ivoryJpg1024 from "@/assets/suit-ivory-1024.jpg";
+import ivoryWebp480 from "@/assets/suit-ivory-480.webp";
+import ivoryWebp768 from "@/assets/suit-ivory-768.webp";
+import ivoryWebp1024 from "@/assets/suit-ivory-1024.webp";
+import ivoryAvif480 from "@/assets/suit-ivory-480.avif";
+import ivoryAvif768 from "@/assets/suit-ivory-768.avif";
+import ivoryAvif1024 from "@/assets/suit-ivory-1024.avif";
+
 import craft from "@/assets/craft.jpg";
 import craftWebp from "@/assets/craft.webp";
 import craftAvif from "@/assets/craft.avif";
+import craftJpg480 from "@/assets/craft-480.jpg";
+import craftJpg768 from "@/assets/craft-768.jpg";
+import craftJpg1024 from "@/assets/craft-1024.jpg";
+import craftWebp480 from "@/assets/craft-480.webp";
+import craftWebp768 from "@/assets/craft-768.webp";
+import craftWebp1024 from "@/assets/craft-1024.webp";
+import craftAvif480 from "@/assets/craft-480.avif";
+import craftAvif768 from "@/assets/craft-768.avif";
+import craftAvif1024 from "@/assets/craft-1024.avif";
 
-/**
- * Map of JPG fallback URLs → modern format URLs (WebP + AVIF).
- * Use `getImageSources(jpgUrl)` to pick variants for a given image.
- */
-const imageVariants: Record<string, { webp: string; avif: string }> = {
-  [onyx]: { webp: onyxWebp, avif: onyxAvif },
-  [midnight]: { webp: midnightWebp, avif: midnightAvif },
-  [ivory]: { webp: ivoryWebp, avif: ivoryAvif },
-  [craft]: { webp: craftWebp, avif: craftAvif },
+type ResponsiveSet = {
+  avif: { url: string; w: number }[];
+  webp: { url: string; w: number }[];
+  jpg: { url: string; w: number }[];
+  fallback: { avif: string; webp: string; jpg: string };
 };
 
-export function getImageSources(src: string): { avif?: string; webp?: string; jpg: string } {
+/**
+ * Map of original JPG URL → multi-resolution variants in AVIF/WebP/JPG.
+ * Use `getImageSources(jpgUrl)` to retrieve srcsets + fallback URLs.
+ */
+const imageVariants: Record<string, ResponsiveSet> = {
+  [onyx]: {
+    avif: [{ url: onyxAvif480, w: 480 }, { url: onyxAvif768, w: 768 }, { url: onyxAvif1024, w: 1024 }],
+    webp: [{ url: onyxWebp480, w: 480 }, { url: onyxWebp768, w: 768 }, { url: onyxWebp1024, w: 1024 }],
+    jpg: [{ url: onyxJpg480, w: 480 }, { url: onyxJpg768, w: 768 }, { url: onyxJpg1024, w: 1024 }],
+    fallback: { avif: onyxAvif, webp: onyxWebp, jpg: onyx },
+  },
+  [midnight]: {
+    avif: [{ url: midnightAvif480, w: 480 }, { url: midnightAvif768, w: 768 }, { url: midnightAvif1024, w: 1024 }],
+    webp: [{ url: midnightWebp480, w: 480 }, { url: midnightWebp768, w: 768 }, { url: midnightWebp1024, w: 1024 }],
+    jpg: [{ url: midnightJpg480, w: 480 }, { url: midnightJpg768, w: 768 }, { url: midnightJpg1024, w: 1024 }],
+    fallback: { avif: midnightAvif, webp: midnightWebp, jpg: midnight },
+  },
+  [ivory]: {
+    avif: [{ url: ivoryAvif480, w: 480 }, { url: ivoryAvif768, w: 768 }, { url: ivoryAvif1024, w: 1024 }],
+    webp: [{ url: ivoryWebp480, w: 480 }, { url: ivoryWebp768, w: 768 }, { url: ivoryWebp1024, w: 1024 }],
+    jpg: [{ url: ivoryJpg480, w: 480 }, { url: ivoryJpg768, w: 768 }, { url: ivoryJpg1024, w: 1024 }],
+    fallback: { avif: ivoryAvif, webp: ivoryWebp, jpg: ivory },
+  },
+  [craft]: {
+    avif: [{ url: craftAvif480, w: 480 }, { url: craftAvif768, w: 768 }, { url: craftAvif1024, w: 1024 }],
+    webp: [{ url: craftWebp480, w: 480 }, { url: craftWebp768, w: 768 }, { url: craftWebp1024, w: 1024 }],
+    jpg: [{ url: craftJpg480, w: 480 }, { url: craftJpg768, w: 768 }, { url: craftJpg1024, w: 1024 }],
+    fallback: { avif: craftAvif, webp: craftWebp, jpg: craft },
+  },
+};
+
+const buildSrcSet = (entries: { url: string; w: number }[]) =>
+  entries.map((e) => `${e.url} ${e.w}w`).join(", ");
+
+export type ImageSources = {
+  avifSrcSet?: string;
+  webpSrcSet?: string;
+  jpgSrcSet?: string;
+  avif?: string;
+  webp?: string;
+  jpg: string;
+};
+
+export function getImageSources(src: string): ImageSources {
   const v = imageVariants[src];
-  return { avif: v?.avif, webp: v?.webp, jpg: src };
+  if (!v) return { jpg: src };
+  return {
+    avifSrcSet: buildSrcSet(v.avif),
+    webpSrcSet: buildSrcSet(v.webp),
+    jpgSrcSet: buildSrcSet(v.jpg),
+    avif: v.fallback.avif,
+    webp: v.fallback.webp,
+    jpg: v.fallback.jpg,
+  };
 }
 
 export type Product = {

@@ -602,12 +602,24 @@ function ProductView({ product }: { product: Product }) {
               </button>
             </div>
           )}
-          {/* Preload the first thumbnail (modern format when available) for faster LCP. */}
+          {/* Preload the first thumbnail (modern format + responsive srcset) for faster LCP. */}
           {similarInStock[0]?.image && (() => {
             const s = getImageSources(similarInStock[0].image);
+            const srcSet = s.avifSrcSet ?? s.webpSrcSet ?? s.jpgSrcSet;
             const href = s.avif ?? s.webp ?? s.jpg;
             const type = s.avif ? "image/avif" : s.webp ? "image/webp" : "image/jpeg";
-            return <link rel="preload" as="image" href={href} type={type} fetchPriority="high" />;
+            const sizes =
+              "(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 66vw";
+            return (
+              <link
+                rel="preload"
+                as="image"
+                href={href}
+                type={type}
+                fetchPriority="high"
+                {...(srcSet ? { imageSrcSet: srcSet, imageSizes: sizes } : {})}
+              />
+            );
           })()}
           {similarInStock.length > 0 && (
           <Carousel opts={{ align: "start" }} className="w-full">
@@ -745,10 +757,21 @@ function SimilarThumb({
         />
       )}
       <picture>
-        {sources.avif && <source type="image/avif" srcSet={sources.avif} sizes={sizes} />}
-        {sources.webp && <source type="image/webp" srcSet={sources.webp} sizes={sizes} />}
+        {sources.avifSrcSet && (
+          <source type="image/avif" srcSet={sources.avifSrcSet} sizes={sizes} />
+        )}
+        {sources.avif && !sources.avifSrcSet && (
+          <source type="image/avif" srcSet={sources.avif} sizes={sizes} />
+        )}
+        {sources.webpSrcSet && (
+          <source type="image/webp" srcSet={sources.webpSrcSet} sizes={sizes} />
+        )}
+        {sources.webp && !sources.webpSrcSet && (
+          <source type="image/webp" srcSet={sources.webp} sizes={sizes} />
+        )}
         <img
           src={sources.jpg}
+          srcSet={sources.jpgSrcSet}
           alt={alt}
           loading={eager || cached ? "eager" : "lazy"}
           decoding={cached ? "sync" : "async"}
