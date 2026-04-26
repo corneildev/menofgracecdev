@@ -478,7 +478,7 @@ function ProductView({ product }: { product: Product }) {
       </div>
 
       {/* Similar in-stock products — shown when this piece is fully sold out */}
-      {allSoldOut && similarInStock.length > 0 && (
+      {allSoldOut && similarPool.length > 0 && (
         <div ref={carouselRef} className="px-6 md:px-12 max-w-[1600px] mx-auto mt-32">
           <div className="border-t border-hairline pt-12 mb-10 flex flex-wrap items-end justify-between gap-6">
             <div>
