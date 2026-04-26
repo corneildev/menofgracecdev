@@ -979,10 +979,12 @@ function SimilarThumb({
 
   return (
     <div className="relative aspect-[4/5] bg-secondary overflow-hidden mb-4">
-      {!loaded && (
+      {skeletonMounted && (
         <div
           aria-hidden="true"
-          className="absolute inset-0 overflow-hidden"
+          className={`absolute inset-0 overflow-hidden transition-opacity duration-700 ease-out ${
+            loaded ? "opacity-0" : "opacity-100"
+          }`}
         >
           {/* Subtle base tint — deeper than bg-secondary so the shimmer reads */}
           <div className="absolute inset-0 bg-gradient-to-br from-bone/[0.03] via-bone/[0.06] to-bone/[0.03]" />
