@@ -140,6 +140,34 @@ function ProductView({ product }: { product: Product }) {
     enabled: allSoldOut && similarPool.length > 0,
   });
 
+  // Track when the carousel approaches the viewport so we can emit
+  // <link rel="preload"> for the *next* upcoming thumbnails (not just #0).
+  // The browser uses srcSet+sizes to fetch the right resolution immediately.
+  const [carouselNear, setCarouselNear] = useState(false);
+  useEffect(() => {
+    if (!allSoldOut || similarPool.length === 0) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setCarouselNear(true);
+      return;
+    }
+    const node = carouselRef.current;
+    if (!node) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            setCarouselNear(true);
+            obs.disconnect();
+            break;
+          }
+        }
+      },
+      { rootMargin: "600px 0px", threshold: 0 },
+    );
+    obs.observe(node);
+    return () => obs.disconnect();
+  }, [allSoldOut, similarPool.length]);
+
   const impressionLogged = useRef(false);
   useEffect(() => {
     impressionLogged.current = false;
