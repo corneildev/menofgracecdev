@@ -72,6 +72,7 @@ function ProductView({ product }: { product: Product }) {
       fcfa: product.fcfa,
       usd: product.usd,
       size,
+      availableSizes: product.sizes,
       fit,
       lapel,
       lining,
