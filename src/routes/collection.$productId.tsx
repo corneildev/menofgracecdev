@@ -68,6 +68,7 @@ function ProductView({ product }: { product: Product }) {
   const [lining, setLining] = useState(product.linings[0]);
   const [monogram, setMonogram] = useState("");
   const [sizeError, setSizeError] = useState<string | null>(null);
+  const [carouselCurrency, setCarouselCurrency] = useState<"fcfa" | "usd" | "eur">("fcfa");
 
   const allSoldOut =
     product.sizes.length > 0 &&
