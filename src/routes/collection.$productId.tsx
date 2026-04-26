@@ -4,6 +4,7 @@ import { getProduct, products, formatPrice, type Product } from "@/data/products
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { RestockAlertForm } from "@/components/RestockAlertForm";
 import {
   Carousel,
   CarouselContent,
@@ -217,13 +218,20 @@ function ProductView({ product }: { product: Product }) {
               </div>
             </TooltipProvider>
             {allSoldOut && (
-              <p className="text-xs text-bone/60 mt-3 tracking-wider font-light">
-                Toutes les tailles sont actuellement épuisées —{" "}
-                <Link to="/bespoke" className="underline underline-offset-4 hover:text-bone">
-                  réservez un essayage
-                </Link>{" "}
-                pour une pièce sur mesure.
-              </p>
+              <>
+                <p className="text-xs text-bone/60 mt-3 tracking-wider font-light">
+                  Toutes les tailles sont actuellement épuisées —{" "}
+                  <Link to="/bespoke" className="underline underline-offset-4 hover:text-bone">
+                    réservez un essayage
+                  </Link>{" "}
+                  pour une pièce sur mesure.
+                </p>
+                <RestockAlertForm
+                  productSlug={product.id}
+                  productName={product.name}
+                  size={size}
+                />
+              </>
             )}
             {sizeError && (
               <p role="alert" className="text-xs text-red-400/90 mt-3 tracking-wider">{sizeError}</p>

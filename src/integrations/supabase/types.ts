@@ -412,6 +412,50 @@ export type Database = {
         }
         Relationships: []
       }
+      restock_alerts: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          notified: boolean
+          product_id: string | null
+          product_name: string | null
+          product_slug: string | null
+          size: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          notified?: boolean
+          product_id?: string | null
+          product_name?: string | null
+          product_slug?: string | null
+          size?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          notified?: boolean
+          product_id?: string | null
+          product_name?: string | null
+          product_slug?: string | null
+          size?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restock_alerts_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
