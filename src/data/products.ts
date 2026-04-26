@@ -1,7 +1,31 @@
 import onyx from "@/assets/suit-onyx.jpg";
+import onyxWebp from "@/assets/suit-onyx.webp";
+import onyxAvif from "@/assets/suit-onyx.avif";
 import midnight from "@/assets/suit-midnight.jpg";
+import midnightWebp from "@/assets/suit-midnight.webp";
+import midnightAvif from "@/assets/suit-midnight.avif";
 import ivory from "@/assets/suit-ivory.jpg";
+import ivoryWebp from "@/assets/suit-ivory.webp";
+import ivoryAvif from "@/assets/suit-ivory.avif";
 import craft from "@/assets/craft.jpg";
+import craftWebp from "@/assets/craft.webp";
+import craftAvif from "@/assets/craft.avif";
+
+/**
+ * Map of JPG fallback URLs → modern format URLs (WebP + AVIF).
+ * Use `getImageSources(jpgUrl)` to pick variants for a given image.
+ */
+const imageVariants: Record<string, { webp: string; avif: string }> = {
+  [onyx]: { webp: onyxWebp, avif: onyxAvif },
+  [midnight]: { webp: midnightWebp, avif: midnightAvif },
+  [ivory]: { webp: ivoryWebp, avif: ivoryAvif },
+  [craft]: { webp: craftWebp, avif: craftAvif },
+};
+
+export function getImageSources(src: string): { avif?: string; webp?: string; jpg: string } {
+  const v = imageVariants[src];
+  return { avif: v?.avif, webp: v?.webp, jpg: src };
+}
 
 export type Product = {
   id: string;
