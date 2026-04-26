@@ -13,7 +13,7 @@ export const Route = createFileRoute("/cart")({
 });
 
 function CartPage() {
-  const { items, ready, remove, setQuantity, clear, totalFcfa, totalUsd, count } = useCart();
+  const { items, ready, remove, setQuantity, setSize, clear, totalFcfa, totalUsd, count } = useCart();
 
   const waMessage = encodeURIComponent(
     `Bonjour MEN OF GRACE — je souhaite finaliser ma commande:\n\n` +
