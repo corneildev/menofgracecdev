@@ -57,14 +57,18 @@ function ProductView({ product }: { product: Product }) {
   const [lapel, setLapel] = useState(product.lapels[0]);
   const [lining, setLining] = useState(product.linings[0]);
   const [monogram, setMonogram] = useState("");
-  const [sizeError, setSizeError] = useState(false);
+  const [sizeError, setSizeError] = useState<string | null>(null);
 
   const handleAddToCart = () => {
     if (!size) {
-      setSizeError(true);
+      setSizeError("Veuillez sélectionner une taille.");
       return;
     }
-    setSizeError(false);
+    if (product.soldOutSizes?.includes(size)) {
+      setSizeError(`La taille ${size} est épuisée. Veuillez en choisir une autre.`);
+      return;
+    }
+    setSizeError(null);
     addToCart({
       productId: product.id,
       name: product.name,
@@ -147,7 +151,7 @@ function ProductView({ product }: { product: Product }) {
                     key={s}
                     active={size === s}
                     disabled={soldOut}
-                    onClick={() => { if (soldOut) return; setSize(s); setSizeError(false); }}
+                    onClick={() => { if (soldOut) return; setSize(s); setSizeError(null); }}
                   >
                     <span className={soldOut ? "line-through" : ""}>{s}</span>
                     {soldOut && <span className="ml-2 text-[9px] tracking-[0.18em] opacity-70">Sold out</span>}
@@ -156,7 +160,7 @@ function ProductView({ product }: { product: Product }) {
               })}
             </div>
             {sizeError && (
-              <p className="text-xs text-bone/80 mt-3 tracking-wider">Veuillez sélectionner une taille.</p>
+              <p role="alert" className="text-xs text-red-400/90 mt-3 tracking-wider">{sizeError}</p>
             )}
           </Section>
 
