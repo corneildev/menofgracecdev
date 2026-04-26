@@ -774,51 +774,34 @@ function ProductView({ product }: { product: Product }) {
             All preloads use srcSet+sizes so the browser fetches the right
             resolution for the device.
 
-            De-duplication: `warmedPreloadsRef` records every product id we've
-            ever emitted a <link rel="preload"> for in this carousel session,
-            so filter changes / re-renders never produce duplicate preload
-            tags for the same image.
+            De-duplication: `warmedPreloadsRef` records the resolved preload
+            key (chosen format href + imagesrcset) for every <link> we've
+            emitted in this carousel session. Keying by the actual image URL
+            instead of product id means different variants of the same product
+            — or a product whose image swaps mid-session — each get their own
+            preload, while truly identical requests are still de-duped.
           */}
           {(() => {
             const sizes =
               "(min-width: 1600px) 384px, (min-width: 1280px) calc(25vw - 40px), (min-width: 1024px) calc(33.33vw - 48px), (min-width: 768px) calc(50vw - 64px), (min-width: 640px) calc(50vw - 40px), calc(66.67vw - 48px)";
+            const avifOk = getFormatSupport("avif") === "supported";
+            const webpOk = getFormatSupport("webp") === "supported";
+
             // Build the candidate list (index 0 = LCP, 1-2 = near-viewport low priority).
-            const candidates: { idx: number; priority: "high" | "low" }[] = [];
-            if (similarInStock[0]?.image) candidates.push({ idx: 0, priority: "high" });
+            const rawCandidates: { idx: number; priority: "high" | "low" }[] = [];
+            if (similarInStock[0]?.image) rawCandidates.push({ idx: 0, priority: "high" });
             if (carouselNear) {
-              if (similarInStock[1]?.image) candidates.push({ idx: 1, priority: "low" });
-              if (similarInStock[2]?.image) candidates.push({ idx: 2, priority: "low" });
+              if (similarInStock[1]?.image) rawCandidates.push({ idx: 1, priority: "low" });
+              if (similarInStock[2]?.image) rawCandidates.push({ idx: 2, priority: "low" });
             }
-            // Filter out anything we've already warmed in this session,
-            // counting both successful emissions and would-be duplicates so
-            // we can verify the dedup gate is actually working in production.
-            preloadStatsRef.current.evaluations += 1;
-            const preloads = candidates.filter(({ idx }) => {
+
+            // Resolve each candidate to its concrete preload payload (href +
+            // srcSet) so dedup keys reflect the exact network request the
+            // browser will issue, not just the product id.
+            const resolved = rawCandidates.flatMap(({ idx, priority }) => {
               const item = similarInStock[idx];
-              if (!item) return false;
-              if (warmedPreloadsRef.current.has(item.id)) {
-                preloadStatsRef.current.duplicates += 1;
-                return false;
-              }
-              warmedPreloadsRef.current.add(item.id);
-              preloadStatsRef.current.emitted += 1;
-              return true;
-            });
-            return preloads.map(({ idx, priority }) => {
-              const item = similarInStock[idx];
+              if (!item) return [];
               const s = getImageSources(item.image);
-
-              // Pick the best format the browser can actually decode.
-              // - On Chromium/Edge & Safari 17+: AVIF preferred.
-              // - On older Safari (no AVIF): WebP.
-              // - On Firefox / unknown / probe in flight: JPG (universal).
-              // This keeps `<link rel="preload">` aligned with what the
-              // matching <picture> will pick, so the preload always primes
-              // the same network request the <img> later issues — never
-              // wasted bytes on an undecodable format.
-              const avifOk = getFormatSupport("avif") === "supported";
-              const webpOk = getFormatSupport("webp") === "supported";
-
               let href: string;
               let type: string;
               let srcSet: string | undefined;
@@ -831,30 +814,36 @@ function ProductView({ product }: { product: Product }) {
                 type = "image/webp";
                 srcSet = s.webpSrcSet;
               } else {
-                // Universal fallback — every browser can decode JPG and
-                // honours imagesrcset on <link> in modern engines; older
-                // engines simply use `href` (still a valid preload).
                 href = s.jpg;
                 type = "image/jpeg";
                 srcSet = s.jpgSrcSet;
               }
-
-              return (
-                <link
-                  key={`${item.id}-preload`}
-                  rel="preload"
-                  as="image"
-                  href={href}
-                  type={type}
-                  // fetchpriority is a hint — browsers without support
-                  // (Safari <17.2, older Firefox) ignore it gracefully.
-                  fetchPriority={priority}
-                  // imagesrcset/imagesizes are honoured by Chromium and
-                  // modern Safari; older engines fall back to `href` above.
-                  {...(srcSet ? { imageSrcSet: srcSet, imageSizes: sizes } : {})}
-                />
-              );
+              const dedupKey = `${href}::${srcSet ?? ""}`;
+              return [{ idx, priority, item, href, type, srcSet, dedupKey }];
             });
+
+            preloadStatsRef.current.evaluations += 1;
+            const preloads = resolved.filter(({ dedupKey }) => {
+              if (warmedPreloadsRef.current.has(dedupKey)) {
+                preloadStatsRef.current.duplicates += 1;
+                return false;
+              }
+              warmedPreloadsRef.current.add(dedupKey);
+              preloadStatsRef.current.emitted += 1;
+              return true;
+            });
+
+            return preloads.map(({ item, href, type, srcSet, priority }) => (
+              <link
+                key={`${item.id}-preload-${href}`}
+                rel="preload"
+                as="image"
+                href={href}
+                type={type}
+                fetchPriority={priority}
+                {...(srcSet ? { imageSrcSet: srcSet, imageSizes: sizes } : {})}
+              />
+            ));
           })()}
           {similarInStock.length > 0 && (
           <Carousel opts={{ align: "start" }} setApi={setCarouselApi} className="w-full">
