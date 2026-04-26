@@ -270,14 +270,28 @@ function Section({ label, children }: { label: string; children: React.ReactNode
   );
 }
 
-function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function Chip({
+  active,
+  onClick,
+  children,
+  disabled = false,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+  disabled?: boolean;
+}) {
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
+      aria-disabled={disabled}
       className={`px-4 py-2 text-xs tracking-[0.2em] uppercase border transition-colors ${
-        active
-          ? "border-bone bg-bone text-ink"
-          : "border-hairline text-bone/70 hover:border-bone hover:text-bone"
+        disabled
+          ? "border-hairline text-bone/30 cursor-not-allowed"
+          : active
+            ? "border-bone bg-bone text-ink"
+            : "border-hairline text-bone/70 hover:border-bone hover:text-bone"
       }`}
     >
       {children}
