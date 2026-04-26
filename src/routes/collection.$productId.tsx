@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { RestockAlertForm } from "@/components/RestockAlertForm";
 import { trackProductEvent } from "@/lib/analytics";
 import { useImagePrefetch, isImageCached } from "@/hooks/useImagePrefetch";
+import { SimilarPerfReport } from "@/components/SimilarPerfReport";
 import {
   Carousel,
   CarouselContent,
