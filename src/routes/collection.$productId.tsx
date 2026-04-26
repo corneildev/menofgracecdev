@@ -749,8 +749,9 @@ function SimilarThumb({
   }, [src]);
 
   const sources = getImageSources(src);
+  // Match the carousel slide width at each breakpoint (see preload <link> above).
   const sizes =
-    "(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 66vw";
+    "(min-width: 1600px) 384px, (min-width: 1280px) calc(25vw - 40px), (min-width: 1024px) calc(33.33vw - 48px), (min-width: 768px) calc(50vw - 64px), (min-width: 640px) calc(50vw - 40px), calc(66.67vw - 48px)";
 
   return (
     <div className="relative aspect-[4/5] bg-secondary overflow-hidden mb-4">
