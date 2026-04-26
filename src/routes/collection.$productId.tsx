@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { getProduct, formatPrice, type Product } from "@/data/products";
 import { useWishlist } from "@/context/WishlistContext";
+import { useCart } from "@/context/CartContext";
 
 export const Route = createFileRoute("/collection/$productId")({
   loader: ({ params }) => {
@@ -48,6 +49,7 @@ function ProductDetail() {
 function ProductView({ product }: { product: Product }) {
   const price = formatPrice(product);
   const { has, toggle, ready } = useWishlist();
+  const { add: addToCart } = useCart();
   const saved = ready && has(product.id);
   const [activeImage, setActiveImage] = useState(product.gallery[0] ?? product.image);
   const [size, setSize] = useState<string | null>(null);
@@ -55,6 +57,27 @@ function ProductView({ product }: { product: Product }) {
   const [lapel, setLapel] = useState(product.lapels[0]);
   const [lining, setLining] = useState(product.linings[0]);
   const [monogram, setMonogram] = useState("");
+  const [sizeError, setSizeError] = useState(false);
+
+  const handleAddToCart = () => {
+    if (!size) {
+      setSizeError(true);
+      return;
+    }
+    setSizeError(false);
+    addToCart({
+      productId: product.id,
+      name: product.name,
+      image: product.image,
+      fcfa: product.fcfa,
+      usd: product.usd,
+      size,
+      fit,
+      lapel,
+      lining,
+      monogram: monogram || undefined,
+    });
+  };
 
   const waMessage = encodeURIComponent(
     `Hello MEN OF GRACE — I'd like to enquire about the ${product.name}.\n` +
@@ -117,9 +140,12 @@ function ProductView({ product }: { product: Product }) {
           <Section label="Size">
             <div className="flex flex-wrap gap-2">
               {product.sizes.map((s) => (
-                <Chip key={s} active={size === s} onClick={() => setSize(s)}>{s}</Chip>
+                <Chip key={s} active={size === s} onClick={() => { setSize(s); setSizeError(false); }}>{s}</Chip>
               ))}
             </div>
+            {sizeError && (
+              <p className="text-xs text-bone/80 mt-3 tracking-wider">Veuillez sélectionner une taille.</p>
+            )}
           </Section>
 
           {/* Fit */}
@@ -164,7 +190,14 @@ function ProductView({ product }: { product: Product }) {
 
           {/* CTA */}
           <div className="mt-10 flex flex-col gap-3">
-            <a href={waHref} target="_blank" rel="noopener noreferrer" className="luxury-btn luxury-btn-solid w-full">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="luxury-btn luxury-btn-solid w-full"
+            >
+              Ajouter au Panier
+            </button>
+            <a href={waHref} target="_blank" rel="noopener noreferrer" className="luxury-btn w-full">
               Reserve via WhatsApp
             </a>
             <Link to="/bespoke" className="luxury-btn w-full">Book a Fitting</Link>

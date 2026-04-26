@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as WeddingRouteImport } from './routes/wedding'
 import { Route as CollectionRouteImport } from './routes/collection'
+import { Route as CartRouteImport } from './routes/cart'
 import { Route as BespokeRouteImport } from './routes/bespoke'
 import { Route as AtelierRouteImport } from './routes/atelier'
 import { Route as IndexRouteImport } from './routes/index'
@@ -30,6 +31,11 @@ const WeddingRoute = WeddingRouteImport.update({
 const CollectionRoute = CollectionRouteImport.update({
   id: '/collection',
   path: '/collection',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BespokeRoute = BespokeRouteImport.update({
@@ -57,6 +63,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/atelier': typeof AtelierRoute
   '/bespoke': typeof BespokeRoute
+  '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/atelier': typeof AtelierRoute
   '/bespoke': typeof BespokeRoute
+  '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
@@ -76,6 +84,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/atelier': typeof AtelierRoute
   '/bespoke': typeof BespokeRoute
+  '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/'
     | '/atelier'
     | '/bespoke'
+    | '/cart'
     | '/collection'
     | '/wedding'
     | '/wishlist'
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/'
     | '/atelier'
     | '/bespoke'
+    | '/cart'
     | '/collection'
     | '/wedding'
     | '/wishlist'
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/atelier'
     | '/bespoke'
+    | '/cart'
     | '/collection'
     | '/wedding'
     | '/wishlist'
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AtelierRoute: typeof AtelierRoute
   BespokeRoute: typeof BespokeRoute
+  CartRoute: typeof CartRoute
   CollectionRoute: typeof CollectionRouteWithChildren
   WeddingRoute: typeof WeddingRoute
   WishlistRoute: typeof WishlistRoute
@@ -141,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/collection'
       fullPath: '/collection'
       preLoaderRoute: typeof CollectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bespoke': {
@@ -190,6 +210,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AtelierRoute: AtelierRoute,
   BespokeRoute: BespokeRoute,
+  CartRoute: CartRoute,
   CollectionRoute: CollectionRouteWithChildren,
   WeddingRoute: WeddingRoute,
   WishlistRoute: WishlistRoute,

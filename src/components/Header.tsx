@@ -1,11 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useWishlist } from "@/context/WishlistContext";
+import { useCart } from "@/context/CartContext";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { count } = useWishlist();
+  const { count: cartCount, open: openCart } = useCart();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -58,6 +60,18 @@ export function Header() {
             </svg>
             <span>Saved{count > 0 ? ` (${count})` : ""}</span>
           </Link>
+          <button
+            type="button"
+            onClick={openCart}
+            className="hover:text-bone transition-colors flex items-center gap-2"
+            aria-label="Open cart"
+          >
+            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.4">
+              <path d="M5 7h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 7Z" />
+              <path d="M9 7V5a3 3 0 0 1 6 0v2" />
+            </svg>
+            <span>Panier{cartCount > 0 ? ` (${cartCount})` : ""}</span>
+          </button>
         </div>
 
         <button
