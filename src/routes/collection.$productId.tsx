@@ -788,9 +788,26 @@ function ProductView({ product }: { product: Product }) {
             const webpOk = getFormatSupport("webp") === "supported";
 
             // Build the candidate list (index 0 = LCP, 1-2 = near-viewport low priority).
+            // Network-aware gate for the *near-viewport* preloads (idx 1-2).
+            // On 2g/slow-2g connections — or when the user has Save-Data on —
+            // we skip the speculative pair and let them load on demand,
+            // preserving bandwidth and keeping the LCP preload (idx 0) as the
+            // single warm request. The Network Information API is Chromium-
+            // only; absence is treated as "good network" (no penalty for
+            // Safari/Firefox users).
+            const conn = (typeof navigator !== "undefined"
+              ? (navigator as Navigator & {
+                  connection?: { effectiveType?: string; saveData?: boolean };
+                }).connection
+              : undefined);
+            const slowNetwork =
+              conn?.saveData === true ||
+              conn?.effectiveType === "2g" ||
+              conn?.effectiveType === "slow-2g";
+
             const rawCandidates: { idx: number; priority: "high" | "low" }[] = [];
             if (similarInStock[0]?.image) rawCandidates.push({ idx: 0, priority: "high" });
-            if (carouselNear) {
+            if (carouselNear && !slowNetwork) {
               if (similarInStock[1]?.image) rawCandidates.push({ idx: 1, priority: "low" });
               if (similarInStock[2]?.image) rawCandidates.push({ idx: 2, priority: "low" });
             }
