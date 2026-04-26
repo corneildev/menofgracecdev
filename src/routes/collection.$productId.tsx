@@ -6,7 +6,7 @@ import { useCart } from "@/context/CartContext";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RestockAlertForm } from "@/components/RestockAlertForm";
 import { trackProductEvent } from "@/lib/analytics";
-import { useImagePrefetch, isImageCached } from "@/hooks/useImagePrefetch";
+import { useImagePrefetch, isImageCached, prefetchImage } from "@/hooks/useImagePrefetch";
 import { SimilarPerfReport } from "@/components/SimilarPerfReport";
 import {
   Carousel,
@@ -14,6 +14,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 
 export const Route = createFileRoute("/collection/$productId")({
@@ -168,6 +169,32 @@ function ProductView({ product }: { product: Product }) {
     obs.observe(node);
     return () => obs.disconnect();
   }, [allSoldOut, similarPool.length]);
+
+  // Direction-aware prefetch: as the user scrolls the carousel, warm the
+  // upcoming thumbnails in the direction of travel (next 2 forward, or 2
+  // backward when scrolling left). Skips work for cached images.
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+  useEffect(() => {
+    if (!carouselApi) return;
+    let lastIndex = carouselApi.selectedScrollSnap();
+    const handleSelect = () => {
+      const current = carouselApi.selectedScrollSnap();
+      const dir: 1 | -1 = current >= lastIndex ? 1 : -1;
+      lastIndex = current;
+      for (let step = 1; step <= 2; step++) {
+        const idx = current + dir * step;
+        const item = similarInStock[idx];
+        if (!item?.image) continue;
+        if (isImageCached(item.image)) continue;
+        void prefetchImage(item.image);
+      }
+    };
+    carouselApi.on("select", handleSelect);
+    handleSelect();
+    return () => {
+      carouselApi.off("select", handleSelect);
+    };
+  }, [carouselApi, similarInStock]);
 
   const impressionLogged = useRef(false);
   useEffect(() => {
@@ -668,7 +695,7 @@ function ProductView({ product }: { product: Product }) {
             });
           })()}
           {similarInStock.length > 0 && (
-          <Carousel opts={{ align: "start" }} className="w-full">
+          <Carousel opts={{ align: "start" }} setApi={setCarouselApi} className="w-full">
             <CarouselContent className="-ml-4">
               {similarInStock.map((p, idx) => {
                 const pPrice = formatPrice(p);
