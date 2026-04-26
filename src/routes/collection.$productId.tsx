@@ -140,6 +140,34 @@ function ProductView({ product }: { product: Product }) {
     enabled: allSoldOut && similarPool.length > 0,
   });
 
+  // Track when the carousel approaches the viewport so we can emit
+  // <link rel="preload"> for the *next* upcoming thumbnails (not just #0).
+  // The browser uses srcSet+sizes to fetch the right resolution immediately.
+  const [carouselNear, setCarouselNear] = useState(false);
+  useEffect(() => {
+    if (!allSoldOut || similarPool.length === 0) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setCarouselNear(true);
+      return;
+    }
+    const node = carouselRef.current;
+    if (!node) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            setCarouselNear(true);
+            obs.disconnect();
+            break;
+          }
+        }
+      },
+      { rootMargin: "600px 0px", threshold: 0 },
+    );
+    obs.observe(node);
+    return () => obs.disconnect();
+  }, [allSoldOut, similarPool.length]);
+
   const impressionLogged = useRef(false);
   useEffect(() => {
     impressionLogged.current = false;
@@ -602,28 +630,40 @@ function ProductView({ product }: { product: Product }) {
               </button>
             </div>
           )}
-          {/* Preload the first thumbnail (modern format + responsive srcset) for faster LCP. */}
-          {similarInStock[0]?.image && (() => {
-            const s = getImageSources(similarInStock[0].image);
-            const srcSet = s.avifSrcSet ?? s.webpSrcSet ?? s.jpgSrcSet;
-            const href = s.avif ?? s.webp ?? s.jpg;
-            const type = s.avif ? "image/avif" : s.webp ? "image/webp" : "image/jpeg";
-            // Sizes computed from the actual carousel layout:
-            // container = 100vw - (px-6=48px / md:px-12=96px), capped at max-w-[1600px];
-            // CarouselItem basis is 2/3 → 1/2 (sm) → 1/2 (md) → 1/3 (lg) → 1/4 (xl),
-            // minus the 16px pl-4 gutter inside each slide.
+          {/*
+            Preload the first thumbnail eagerly (LCP) and the next 1-2 upcoming
+            thumbnails as soon as the carousel section nears the viewport.
+            All preloads use srcSet+sizes so the browser fetches the right
+            resolution for the device.
+          */}
+          {(() => {
             const sizes =
               "(min-width: 1600px) 384px, (min-width: 1280px) calc(25vw - 40px), (min-width: 1024px) calc(33.33vw - 48px), (min-width: 768px) calc(50vw - 64px), (min-width: 640px) calc(50vw - 40px), calc(66.67vw - 48px)";
-            return (
-              <link
-                rel="preload"
-                as="image"
-                href={href}
-                type={type}
-                fetchPriority="high"
-                {...(srcSet ? { imageSrcSet: srcSet, imageSizes: sizes } : {})}
-              />
-            );
+            // Index 0 → high priority (LCP). Indices 1-2 → low, gated on near-viewport.
+            const preloads: { idx: number; priority: "high" | "low" }[] = [];
+            if (similarInStock[0]?.image) preloads.push({ idx: 0, priority: "high" });
+            if (carouselNear) {
+              if (similarInStock[1]?.image) preloads.push({ idx: 1, priority: "low" });
+              if (similarInStock[2]?.image) preloads.push({ idx: 2, priority: "low" });
+            }
+            return preloads.map(({ idx, priority }) => {
+              const item = similarInStock[idx];
+              const s = getImageSources(item.image);
+              const srcSet = s.avifSrcSet ?? s.webpSrcSet ?? s.jpgSrcSet;
+              const href = s.avif ?? s.webp ?? s.jpg;
+              const type = s.avif ? "image/avif" : s.webp ? "image/webp" : "image/jpeg";
+              return (
+                <link
+                  key={`${item.id}-preload`}
+                  rel="preload"
+                  as="image"
+                  href={href}
+                  type={type}
+                  fetchPriority={priority}
+                  {...(srcSet ? { imageSrcSet: srcSet, imageSizes: sizes } : {})}
+                />
+              );
+            });
           })()}
           {similarInStock.length > 0 && (
           <Carousel opts={{ align: "start" }} className="w-full">
