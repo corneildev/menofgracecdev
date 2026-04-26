@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { products, formatPrice } from "@/data/products";
+import { WishlistButton } from "@/components/WishlistButton";
 
 export const Route = createFileRoute("/collection")({
   head: () => ({
@@ -30,13 +31,16 @@ function Collection() {
             const price = formatPrice(p);
             return (
               <article key={p.id} className="group">
-                <Link
-                  to="/collection/$productId"
-                  params={{ productId: p.id }}
-                  className="block img-zoom aspect-[4/5] bg-secondary mb-6"
-                >
-                  <img src={p.image} alt={p.name} loading="lazy" className="h-full w-full object-cover" />
-                </Link>
+                <div className="relative img-zoom aspect-[4/5] bg-secondary mb-6">
+                  <WishlistButton productId={p.id} />
+                  <Link
+                    to="/collection/$productId"
+                    params={{ productId: p.id }}
+                    className="block h-full w-full"
+                  >
+                    <img src={p.image} alt={p.name} loading="lazy" className="h-full w-full object-cover" />
+                  </Link>
+                </div>
                 <div className="eyebrow text-bone/50 mb-2">{p.category}</div>
                 <h2 className="font-serif text-2xl mb-3">
                   <Link to="/collection/$productId" params={{ productId: p.id }} className="hover:text-bone/70 transition-colors">
