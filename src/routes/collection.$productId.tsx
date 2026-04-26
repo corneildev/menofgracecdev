@@ -2,6 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { getProduct, formatPrice, type Product } from "@/data/products";
 import { useWishlist } from "@/context/WishlistContext";
+import { useCart } from "@/context/CartContext";
 
 export const Route = createFileRoute("/collection/$productId")({
   loader: ({ params }) => {
@@ -48,6 +49,7 @@ function ProductDetail() {
 function ProductView({ product }: { product: Product }) {
   const price = formatPrice(product);
   const { has, toggle, ready } = useWishlist();
+  const { add: addToCart } = useCart();
   const saved = ready && has(product.id);
   const [activeImage, setActiveImage] = useState(product.gallery[0] ?? product.image);
   const [size, setSize] = useState<string | null>(null);
@@ -55,6 +57,27 @@ function ProductView({ product }: { product: Product }) {
   const [lapel, setLapel] = useState(product.lapels[0]);
   const [lining, setLining] = useState(product.linings[0]);
   const [monogram, setMonogram] = useState("");
+  const [sizeError, setSizeError] = useState(false);
+
+  const handleAddToCart = () => {
+    if (!size) {
+      setSizeError(true);
+      return;
+    }
+    setSizeError(false);
+    addToCart({
+      productId: product.id,
+      name: product.name,
+      image: product.image,
+      fcfa: product.fcfa,
+      usd: product.usd,
+      size,
+      fit,
+      lapel,
+      lining,
+      monogram: monogram || undefined,
+    });
+  };
 
   const waMessage = encodeURIComponent(
     `Hello MEN OF GRACE — I'd like to enquire about the ${product.name}.\n` +
