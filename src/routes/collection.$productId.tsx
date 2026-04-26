@@ -170,6 +170,32 @@ function ProductView({ product }: { product: Product }) {
     return () => obs.disconnect();
   }, [allSoldOut, similarPool.length]);
 
+  // Direction-aware prefetch: as the user scrolls the carousel, warm the
+  // upcoming thumbnails in the direction of travel (next 2 forward, or 2
+  // backward when scrolling left). Skips work for cached images.
+  const [carouselApi, setCarouselApi] = useState<CarouselApi | null>(null);
+  useEffect(() => {
+    if (!carouselApi) return;
+    let lastIndex = carouselApi.selectedScrollSnap();
+    const handleSelect = () => {
+      const current = carouselApi.selectedScrollSnap();
+      const dir: 1 | -1 = current >= lastIndex ? 1 : -1;
+      lastIndex = current;
+      for (let step = 1; step <= 2; step++) {
+        const idx = current + dir * step;
+        const item = similarInStock[idx];
+        if (!item?.image) continue;
+        if (isImageCached(item.image)) continue;
+        void prefetchImage(item.image);
+      }
+    };
+    carouselApi.on("select", handleSelect);
+    handleSelect();
+    return () => {
+      carouselApi.off("select", handleSelect);
+    };
+  }, [carouselApi, similarInStock]);
+
   const impressionLogged = useRef(false);
   useEffect(() => {
     impressionLogged.current = false;
