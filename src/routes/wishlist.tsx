@@ -21,6 +21,17 @@ export const Route = createFileRoute("/wishlist")({
 function Wishlist() {
   const { ids, ready, clear, count } = useWishlist();
   const saved = products.filter((p) => ids.includes(p.id));
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    if (!saved.length || downloading) return;
+    setDownloading(true);
+    try {
+      await generateWishlistPdf(saved);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <div className="pt-40 pb-32 px-6 md:px-12 bg-ink min-h-screen">
