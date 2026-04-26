@@ -84,6 +84,40 @@ function ProductView({ product }: { product: Product }) {
       .slice(0, 8);
   }, [product.id, product.category]);
 
+  const carouselRef = useRef<HTMLDivElement | null>(null);
+  const impressionLogged = useRef(false);
+  useEffect(() => {
+    impressionLogged.current = false;
+  }, [product.id]);
+  useEffect(() => {
+    if (!allSoldOut || similarInStock.length === 0) return;
+    const node = carouselRef.current;
+    if (!node || impressionLogged.current) return;
+    if (typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting && !impressionLogged.current) {
+            impressionLogged.current = true;
+            trackProductEvent({
+              type: "similar_carousel_impression",
+              productSlug: product.id,
+              productName: product.name,
+              metadata: {
+                count: similarInStock.length,
+                product_ids: similarInStock.map((p) => p.id),
+              },
+            });
+            obs.disconnect();
+          }
+        }
+      },
+      { threshold: 0.25 },
+    );
+    obs.observe(node);
+    return () => obs.disconnect();
+  }, [allSoldOut, similarInStock, product.id, product.name]);
+
   // Auto-switch if the currently selected size becomes sold out.
   useEffect(() => {
     if (!size) return;
