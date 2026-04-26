@@ -93,6 +93,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
     );
   }, []);
 
+  const setSize = useCallback((id: string, size: string) => {
+    setItems((prev) => {
+      const target = prev.find((p) => p.id === id);
+      if (!target) return prev;
+      const newId = lineKey({ ...target, size });
+      // If a line with the new key already exists, merge quantities
+      const existingMerge = prev.find((p) => p.id === newId && p.id !== id);
+      if (existingMerge) {
+        return prev
+          .filter((p) => p.id !== id)
+          .map((p) =>
+            p.id === newId ? { ...p, quantity: p.quantity + target.quantity } : p,
+          );
+      }
+      return prev.map((p) => (p.id === id ? { ...p, size, id: newId } : p));
+    });
+  }, []);
+
   const clear = useCallback(() => setItems([]), []);
 
   const value = useMemo<CartContextValue>(() => {
@@ -104,6 +122,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       add,
       remove,
       setQuantity,
+      setSize,
       clear,
       count,
       totalFcfa,
@@ -113,7 +132,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       open: () => setIsOpen(true),
       close: () => setIsOpen(false),
     };
-  }, [items, add, remove, setQuantity, clear, ready, isOpen]);
+  }, [items, add, remove, setQuantity, setSize, clear, ready, isOpen]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
