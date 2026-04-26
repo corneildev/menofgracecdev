@@ -19,7 +19,8 @@ export function Header() {
     { to: "/bespoke", label: "Bespoke" },
     { to: "/wedding", label: "Wedding" },
     { to: "/atelier", label: "Atelier" },
-  ];
+    { to: "/wishlist", label: "Wishlist" },
+  ] as const;
 
   return (
     <header
