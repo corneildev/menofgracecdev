@@ -434,6 +434,7 @@ function ProductView({ product }: { product: Product }) {
   const waHref = `https://wa.me/?text=${waMessage}`;
 
   return (
+    <>
     <div className="bg-ink pt-32 pb-32">
       {/* Breadcrumb */}
       <div className="px-6 md:px-12 max-w-[1600px] mx-auto mb-10">
