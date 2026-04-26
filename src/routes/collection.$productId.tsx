@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getProduct, products, formatPrice, type Product } from "@/data/products";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
@@ -83,6 +83,40 @@ function ProductView({ product }: { product: Product }) {
       })
       .slice(0, 8);
   }, [product.id, product.category]);
+
+  const carouselRef = useRef<HTMLDivElement | null>(null);
+  const impressionLogged = useRef(false);
+  useEffect(() => {
+    impressionLogged.current = false;
+  }, [product.id]);
+  useEffect(() => {
+    if (!allSoldOut || similarInStock.length === 0) return;
+    const node = carouselRef.current;
+    if (!node || impressionLogged.current) return;
+    if (typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting && !impressionLogged.current) {
+            impressionLogged.current = true;
+            trackProductEvent({
+              type: "similar_carousel_impression",
+              productSlug: product.id,
+              productName: product.name,
+              metadata: {
+                count: similarInStock.length,
+                product_ids: similarInStock.map((p) => p.id),
+              },
+            });
+            obs.disconnect();
+          }
+        }
+      },
+      { threshold: 0.25 },
+    );
+    obs.observe(node);
+    return () => obs.disconnect();
+  }, [allSoldOut, similarInStock, product.id, product.name]);
 
   // Auto-switch if the currently selected size becomes sold out.
   useEffect(() => {
@@ -402,7 +436,7 @@ function ProductView({ product }: { product: Product }) {
 
       {/* Similar in-stock products — shown when this piece is fully sold out */}
       {allSoldOut && similarInStock.length > 0 && (
-        <div className="px-6 md:px-12 max-w-[1600px] mx-auto mt-32">
+        <div ref={carouselRef} className="px-6 md:px-12 max-w-[1600px] mx-auto mt-32">
           <div className="border-t border-hairline pt-12 mb-10 flex flex-wrap items-end justify-between gap-6">
             <div>
               <div className="eyebrow text-bone/60 mb-4">— Disponibles maintenant —</div>
@@ -444,6 +478,14 @@ function ProductView({ product }: { product: Product }) {
                       <Link
                         to="/collection/$productId"
                         params={{ productId: p.id }}
+                        onClick={() =>
+                          trackProductEvent({
+                            type: "similar_carousel_card_click",
+                            productSlug: p.id,
+                            productName: p.name,
+                            metadata: { source: "similar_carousel", from: product.id, position: idx },
+                          })
+                        }
                         className="block"
                       >
                         <div className="aspect-[4/5] bg-secondary overflow-hidden mb-4">
