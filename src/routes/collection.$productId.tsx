@@ -363,6 +363,7 @@ function ProductView({ product }: { product: Product }) {
                   productSlug={product.id}
                   productName={product.name}
                   size={size}
+                  expectedRestockDate={new Date(Date.now() + 6 * 7 * 24 * 60 * 60 * 1000)}
                 />
               </>
             )}

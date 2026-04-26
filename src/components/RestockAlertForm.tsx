@@ -21,9 +21,22 @@ type Props = {
   productSlug: string;
   productName: string;
   size?: string | null;
+  /** Optional ISO date or human-readable string for an expected restock window. */
+  expectedRestockDate?: string | Date | null;
 };
 
-export function RestockAlertForm({ productSlug, productName, size }: Props) {
+function formatExpected(value: string | Date | null | undefined): string | null {
+  if (!value) return null;
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) {
+    // Fall back to raw string if it's not a parseable date.
+    return typeof value === "string" ? value : null;
+  }
+  return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
+}
+
+export function RestockAlertForm({ productSlug, productName, size, expectedRestockDate }: Props) {
+  const expectedLabel = formatExpected(expectedRestockDate);
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -64,6 +77,11 @@ export function RestockAlertForm({ productSlug, productName, size }: Props) {
         <p className="text-xs text-bone/80 tracking-wider font-light">
           Merci — nous vous préviendrons dès le retour en stock.
         </p>
+        {expectedLabel && (
+          <p className="mt-2 eyebrow text-bone/60 text-[10px]">
+            Retour estimé · {expectedLabel}
+          </p>
+        )}
       </div>
     );
   }
@@ -74,6 +92,11 @@ export function RestockAlertForm({ productSlug, productName, size }: Props) {
       <p className="text-xs text-bone/60 font-light leading-relaxed">
         Laissez votre email ou WhatsApp pour être prévenu en priorité.
       </p>
+      {expectedLabel && (
+        <p className="text-[11px] text-bone/70 font-light italic border-l border-hairline pl-3">
+          Retour en stock estimé · <span className="text-bone">{expectedLabel}</span>
+        </p>
+      )}
       <input
         type="email"
         value={email}
