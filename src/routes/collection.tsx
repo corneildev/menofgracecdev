@@ -70,7 +70,7 @@ function Collection() {
   });
 
   const setParam = (key: "category" | "size" | "currency", value: string) => {
-    navigate({ search: (prev) => ({ ...prev, [key]: value }) });
+    navigate({ search: (prev: Record<string, string>) => ({ ...prev, [key]: value }) });
   };
 
   return (
