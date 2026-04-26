@@ -257,6 +257,39 @@ export type Database = {
         }
         Relationships: []
       }
+      product_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          product_name: string | null
+          product_slug: string | null
+          size: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          product_name?: string | null
+          product_slug?: string | null
+          size?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          product_name?: string | null
+          product_slug?: string | null
+          size?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       product_images: {
         Row: {
           created_at: string

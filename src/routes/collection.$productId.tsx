@@ -5,6 +5,7 @@ import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RestockAlertForm } from "@/components/RestockAlertForm";
+import { trackProductEvent } from "@/lib/analytics";
 import {
   Carousel,
   CarouselContent,
@@ -197,7 +198,27 @@ function ProductView({ product }: { product: Product }) {
                     <Tooltip key={s}>
                       <TooltipTrigger asChild>
                         {/* span wrapper so the disabled button still triggers hover/focus */}
-                        <span className="inline-flex" tabIndex={0} aria-label={`Taille ${s} indisponible`}>
+                        <span
+                          className="inline-flex"
+                          tabIndex={0}
+                          aria-label={`Taille ${s} indisponible`}
+                          onMouseEnter={() =>
+                            trackProductEvent({
+                              type: "sold_out_tooltip_shown",
+                              productSlug: product.id,
+                              productName: product.name,
+                              size: s,
+                            })
+                          }
+                          onFocus={() =>
+                            trackProductEvent({
+                              type: "sold_out_tooltip_shown",
+                              productSlug: product.id,
+                              productName: product.name,
+                              size: s,
+                            })
+                          }
+                        >
                           {chip}
                         </span>
                       </TooltipTrigger>
@@ -207,6 +228,15 @@ function ProductView({ product }: { product: Product }) {
                         </p>
                         <Link
                           to="/bespoke"
+                          onClick={() =>
+                            trackProductEvent({
+                              type: "sold_out_booking_click",
+                              productSlug: product.id,
+                              productName: product.name,
+                              size: s,
+                              metadata: { source: "size_tooltip" },
+                            })
+                          }
                           className="eyebrow text-[10px] underline underline-offset-4 hover:opacity-80"
                         >
                           Réserver un essayage →
@@ -221,7 +251,18 @@ function ProductView({ product }: { product: Product }) {
               <>
                 <p className="text-xs text-bone/60 mt-3 tracking-wider font-light">
                   Toutes les tailles sont actuellement épuisées —{" "}
-                  <Link to="/bespoke" className="underline underline-offset-4 hover:text-bone">
+                  <Link
+                    to="/bespoke"
+                    onClick={() =>
+                      trackProductEvent({
+                        type: "all_sold_out_booking_click",
+                        productSlug: product.id,
+                        productName: product.name,
+                        metadata: { source: "all_sold_out_notice" },
+                      })
+                    }
+                    className="underline underline-offset-4 hover:text-bone"
+                  >
                     réservez un essayage
                   </Link>{" "}
                   pour une pièce sur mesure.
