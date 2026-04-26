@@ -231,6 +231,14 @@ function ProductView({ product }: { product: Product }) {
           duplicates_prevented: s.duplicates,
         },
       });
+      // Persist the running totals so the debug overlay (and devtools) can
+      // show stats across re-renders and even after navigation.
+      if (sessionIdRef.current) {
+        recordFlush(sessionIdRef.current, {
+          evaluations: s.evaluations,
+          reason,
+        });
+      }
     };
     const interval = window.setInterval(() => flush("interval"), 2000);
     const onHide = () => flush("pagehide");
