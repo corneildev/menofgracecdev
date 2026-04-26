@@ -29,6 +29,7 @@ import {
   recordReset,
 } from "@/lib/preloadStatsStore";
 import { PreloadDebugOverlay } from "@/components/PreloadDebugOverlay";
+import { PreloadFetchReportPanel } from "@/components/PreloadFetchReportPanel";
 import {
   Carousel,
   CarouselContent,
