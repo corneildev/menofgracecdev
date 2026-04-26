@@ -5,6 +5,7 @@ import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RestockAlertForm } from "@/components/RestockAlertForm";
+import { trackProductEvent } from "@/lib/analytics";
 import {
   Carousel,
   CarouselContent,
