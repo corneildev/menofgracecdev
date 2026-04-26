@@ -293,6 +293,7 @@ function ProductView({ product }: { product: Product }) {
               <p role="alert" className="text-xs text-red-400/90 mt-3 tracking-wider">{sizeError}</p>
             )}
           </Section>
+          </div>
 
           {/* Fit */}
           <Section label="Fit">
