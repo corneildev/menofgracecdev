@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 export type ProductEventType =
   | "sold_out_tooltip_shown"
   | "sold_out_booking_click"
-  | "all_sold_out_booking_click";
+  | "all_sold_out_booking_click"
+  | "similar_select_size_click";
 
 type Args = {
   type: ProductEventType;
