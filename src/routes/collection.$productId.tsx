@@ -593,6 +593,7 @@ function ProductView({ product }: { product: Product }) {
           {similarInStock[0]?.image && (
             <link rel="preload" as="image" href={similarInStock[0].image} fetchPriority="high" />
           )}
+          {similarInStock.length > 0 && (
           <Carousel opts={{ align: "start" }} className="w-full">
             <CarouselContent className="-ml-4">
               {similarInStock.map((p, idx) => {
