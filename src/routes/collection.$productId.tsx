@@ -128,6 +128,10 @@ function ProductView({ product }: { product: Product }) {
     return filtered.slice(0, 8);
   }, [similarPool, activeCategory, priceTier, product.category, product.fcfa]);
 
+  // Warm decode of similar-product thumbnails so repeat visits paint instantly.
+  const similarImageSrcs = useMemo(() => similarPool.map((p) => p.image), [similarPool]);
+  useImagePrefetch(similarImageSrcs);
+
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const impressionLogged = useRef(false);
   useEffect(() => {
