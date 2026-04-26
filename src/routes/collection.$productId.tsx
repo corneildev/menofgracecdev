@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getProduct, formatPrice, type Product } from "@/data/products";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const Route = createFileRoute("/collection/$productId")({
   loader: ({ params }) => {
@@ -154,22 +155,46 @@ function ProductView({ product }: { product: Product }) {
 
           {/* Size */}
           <Section label="Size">
-            <div className="flex flex-wrap gap-2">
-              {product.sizes.map((s) => {
-                const soldOut = product.soldOutSizes?.includes(s) ?? false;
-                return (
-                  <Chip
-                    key={s}
-                    active={size === s}
-                    disabled={soldOut}
-                    onClick={() => { if (soldOut) return; setSize(s); setSizeError(null); }}
-                  >
-                    <span className={soldOut ? "line-through" : ""}>{s}</span>
-                    {soldOut && <span className="ml-2 text-[9px] tracking-[0.18em] opacity-70">Sold out</span>}
-                  </Chip>
-                );
-              })}
-            </div>
+            <TooltipProvider delayDuration={150}>
+              <div className="flex flex-wrap gap-2">
+                {product.sizes.map((s) => {
+                  const soldOut = product.soldOutSizes?.includes(s) ?? false;
+                  const chip = (
+                    <Chip
+                      key={s}
+                      active={size === s}
+                      disabled={soldOut}
+                      onClick={() => { if (soldOut) return; setSize(s); setSizeError(null); }}
+                    >
+                      <span className={soldOut ? "line-through" : ""}>{s}</span>
+                      {soldOut && <span className="ml-2 text-[9px] tracking-[0.18em] opacity-70">Sold out</span>}
+                    </Chip>
+                  );
+                  if (!soldOut) return chip;
+                  return (
+                    <Tooltip key={s}>
+                      <TooltipTrigger asChild>
+                        {/* span wrapper so the disabled button still triggers hover/focus */}
+                        <span className="inline-flex" tabIndex={0} aria-label={`Taille ${s} indisponible`}>
+                          {chip}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[220px] text-center">
+                        <p className="text-xs leading-relaxed mb-2">
+                          La taille <span className="font-medium">{s}</span> est actuellement indisponible.
+                        </p>
+                        <Link
+                          to="/bespoke"
+                          className="eyebrow text-[10px] underline underline-offset-4 hover:opacity-80"
+                        >
+                          Réserver un essayage →
+                        </Link>
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            </TooltipProvider>
             {sizeError && (
               <p role="alert" className="text-xs text-red-400/90 mt-3 tracking-wider">{sizeError}</p>
             )}
