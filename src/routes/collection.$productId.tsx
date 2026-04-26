@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { getProduct, products, formatPrice, type Product } from "@/data/products";
+import { getProduct, products, formatPrice, getImageSources, type Product } from "@/data/products";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -602,10 +602,13 @@ function ProductView({ product }: { product: Product }) {
               </button>
             </div>
           )}
-          {/* Preload the first thumbnail to speed up LCP on mobile */}
-          {similarInStock[0]?.image && (
-            <link rel="preload" as="image" href={similarInStock[0].image} fetchPriority="high" />
-          )}
+          {/* Preload the first thumbnail (modern format when available) for faster LCP. */}
+          {similarInStock[0]?.image && (() => {
+            const s = getImageSources(similarInStock[0].image);
+            const href = s.avif ?? s.webp ?? s.jpg;
+            const type = s.avif ? "image/avif" : s.webp ? "image/webp" : "image/jpeg";
+            return <link rel="preload" as="image" href={href} type={type} fetchPriority="high" />;
+          })()}
           {similarInStock.length > 0 && (
           <Carousel opts={{ align: "start" }} className="w-full">
             <CarouselContent className="-ml-4">
@@ -729,6 +732,10 @@ function SimilarThumb({
     setLoaded(isImageCached(src));
   }, [src]);
 
+  const sources = getImageSources(src);
+  const sizes =
+    "(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 66vw";
+
   return (
     <div className="relative aspect-[4/5] bg-secondary overflow-hidden mb-4">
       {!loaded && (
@@ -737,19 +744,23 @@ function SimilarThumb({
           className="absolute inset-0 animate-pulse bg-gradient-to-br from-bone/[0.04] via-bone/[0.08] to-bone/[0.04]"
         />
       )}
-      <img
-        src={src}
-        alt={alt}
-        loading={eager || cached ? "eager" : "lazy"}
-        decoding={cached ? "sync" : "async"}
-        fetchPriority={highPriority ? "high" : eager ? "auto" : "low"}
-        sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 66vw"
-        onLoad={() => setLoaded(true)}
-        onError={() => setLoaded(true)}
-        className={`h-full w-full object-cover transition-all duration-700 group-hover:scale-105 ${
-          loaded ? "opacity-100" : "opacity-0"
-        }`}
-      />
+      <picture>
+        {sources.avif && <source type="image/avif" srcSet={sources.avif} sizes={sizes} />}
+        {sources.webp && <source type="image/webp" srcSet={sources.webp} sizes={sizes} />}
+        <img
+          src={sources.jpg}
+          alt={alt}
+          loading={eager || cached ? "eager" : "lazy"}
+          decoding={cached ? "sync" : "async"}
+          fetchPriority={highPriority ? "high" : eager ? "auto" : "low"}
+          sizes={sizes}
+          onLoad={() => setLoaded(true)}
+          onError={() => setLoaded(true)}
+          className={`h-full w-full object-cover transition-all duration-700 group-hover:scale-105 ${
+            loaded ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      </picture>
     </div>
   );
 }
