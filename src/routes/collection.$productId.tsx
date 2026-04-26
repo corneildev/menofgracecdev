@@ -11,6 +11,12 @@ import { SimilarPerfReport } from "@/components/SimilarPerfReport";
 import { detectImageFormats, getFormatSupport } from "@/lib/imageFormatSupport";
 import { resolvePreloadCandidates, filterDuplicates } from "@/lib/preloadDedup";
 import {
+  isPreloadDebugEnabled,
+  logRenderStart,
+  logDecision,
+  logRenderEnd,
+} from "@/lib/preloadDebug";
+import {
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -813,6 +819,32 @@ function ProductView({ product }: { product: Product }) {
               if (similarInStock[2]?.image) rawCandidates.push({ idx: 2, priority: "low" });
             }
 
+            // Debug trace: emit a single grouped log per render explaining
+            // every candidate's fate. No-op when the debug toggle is off.
+            if (isPreloadDebugEnabled()) {
+              const debugCandidates = [0, 1, 2].map((idx) => {
+                const it = similarInStock[idx];
+                const inWindow = idx === 0 || carouselNear;
+                return {
+                  idx,
+                  productId: it?.id ?? "(none)",
+                  productName: it?.name,
+                  hasImage: Boolean(it?.image),
+                  inWindow,
+                  networkGated: idx > 0 && carouselNear && slowNetwork,
+                };
+              });
+              logRenderStart({
+                productId: product.id,
+                warmed: warmedPreloadsRef.current,
+                slowNetwork,
+                effectiveType: conn?.effectiveType,
+                saveData: conn?.saveData,
+                carouselNear,
+                candidates: debugCandidates,
+              });
+            }
+
             // Resolve each candidate to its concrete preload payload (href +
             // srcSet) so dedup keys reflect the exact network request the
             // browser will issue, not just the product id.
@@ -826,7 +858,16 @@ function ProductView({ product }: { product: Product }) {
               resolved,
               warmedPreloadsRef.current,
               preloadStatsRef.current,
+              (d) =>
+                logDecision({
+                  decision: d.decision,
+                  idx: d.idx,
+                  productId: d.item.id,
+                  href: d.href,
+                  priority: d.priority,
+                }),
             );
+            logRenderEnd();
 
             return preloads.map(({ item, href, type, srcSet, priority }) => (
               <link
