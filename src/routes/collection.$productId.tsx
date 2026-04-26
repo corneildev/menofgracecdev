@@ -714,9 +714,38 @@ function ProductView({ product }: { product: Product }) {
             return preloads.map(({ idx, priority }) => {
               const item = similarInStock[idx];
               const s = getImageSources(item.image);
-              const srcSet = s.avifSrcSet ?? s.webpSrcSet ?? s.jpgSrcSet;
-              const href = s.avif ?? s.webp ?? s.jpg;
-              const type = s.avif ? "image/avif" : s.webp ? "image/webp" : "image/jpeg";
+
+              // Pick the best format the browser can actually decode.
+              // - On Chromium/Edge & Safari 17+: AVIF preferred.
+              // - On older Safari (no AVIF): WebP.
+              // - On Firefox / unknown / probe in flight: JPG (universal).
+              // This keeps `<link rel="preload">` aligned with what the
+              // matching <picture> will pick, so the preload always primes
+              // the same network request the <img> later issues — never
+              // wasted bytes on an undecodable format.
+              const avifOk = getFormatSupport("avif") === "supported";
+              const webpOk = getFormatSupport("webp") === "supported";
+
+              let href: string;
+              let type: string;
+              let srcSet: string | undefined;
+              if (avifOk && s.avif) {
+                href = s.avif;
+                type = "image/avif";
+                srcSet = s.avifSrcSet;
+              } else if (webpOk && s.webp) {
+                href = s.webp;
+                type = "image/webp";
+                srcSet = s.webpSrcSet;
+              } else {
+                // Universal fallback — every browser can decode JPG and
+                // honours imagesrcset on <link> in modern engines; older
+                // engines simply use `href` (still a valid preload).
+                href = s.jpg;
+                type = "image/jpeg";
+                srcSet = s.jpgSrcSet;
+              }
+
               return (
                 <link
                   key={`${item.id}-preload`}
@@ -724,7 +753,11 @@ function ProductView({ product }: { product: Product }) {
                   as="image"
                   href={href}
                   type={type}
+                  // fetchpriority is a hint — browsers without support
+                  // (Safari <17.2, older Firefox) ignore it gracefully.
                   fetchPriority={priority}
+                  // imagesrcset/imagesizes are honoured by Chromium and
+                  // modern Safari; older engines fall back to `href` above.
                   {...(srcSet ? { imageSrcSet: srcSet, imageSizes: sizes } : {})}
                 />
               );
