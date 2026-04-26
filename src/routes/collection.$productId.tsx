@@ -608,8 +608,12 @@ function ProductView({ product }: { product: Product }) {
             const srcSet = s.avifSrcSet ?? s.webpSrcSet ?? s.jpgSrcSet;
             const href = s.avif ?? s.webp ?? s.jpg;
             const type = s.avif ? "image/avif" : s.webp ? "image/webp" : "image/jpeg";
+            // Sizes computed from the actual carousel layout:
+            // container = 100vw - (px-6=48px / md:px-12=96px), capped at max-w-[1600px];
+            // CarouselItem basis is 2/3 → 1/2 (sm) → 1/2 (md) → 1/3 (lg) → 1/4 (xl),
+            // minus the 16px pl-4 gutter inside each slide.
             const sizes =
-              "(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 66vw";
+              "(min-width: 1600px) 384px, (min-width: 1280px) calc(25vw - 40px), (min-width: 1024px) calc(33.33vw - 48px), (min-width: 768px) calc(50vw - 64px), (min-width: 640px) calc(50vw - 40px), calc(66.67vw - 48px)";
             return (
               <link
                 rel="preload"
