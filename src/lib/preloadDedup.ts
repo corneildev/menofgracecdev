@@ -82,24 +82,37 @@ export function resolvePreloadCandidates(
   });
 }
 
+export type PreloadDecision =
+  | { decision: "emit"; item: SimilarItem; idx: number; href: string; dedupKey: string; priority: "high" | "low" }
+  | { decision: "duplicate"; item: SimilarItem; idx: number; href: string; dedupKey: string; priority: "high" | "low" };
+
 /**
  * Filter resolved preloads against the warmed-set, mutating both the set and
  * the running stats. This mirrors exactly what the route renders inline so
  * tests can drive it without mounting the carousel.
+ *
+ * Pass `onDecision` to receive a per-candidate trace (used by the debug
+ * overlay / console logger). It runs synchronously inside the filter so the
+ * function stays pure & test-friendly when no callback is supplied.
  */
 export function filterDuplicates(
   resolved: ResolvedPreload[],
   warmed: Set<string>,
   stats: PreloadStats,
+  onDecision?: (d: PreloadDecision) => void,
 ): ResolvedPreload[] {
   stats.evaluations += 1;
-  return resolved.filter(({ dedupKey }) => {
+  return resolved.filter((r) => {
+    const { dedupKey, item, idx, href, priority } = r;
     if (warmed.has(dedupKey)) {
       stats.duplicates += 1;
+      onDecision?.({ decision: "duplicate", item, idx, href, dedupKey, priority });
       return false;
     }
     warmed.add(dedupKey);
     stats.emitted += 1;
+    onDecision?.({ decision: "emit", item, idx, href, dedupKey, priority });
     return true;
   });
 }
+
