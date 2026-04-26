@@ -145,10 +145,19 @@ function ProductView({ product }: { product: Product }) {
   // These are mutated synchronously inside the render-time filter and a
   // throttled effect logs the running totals so we can verify dedup in prod.
   const preloadStatsRef = useRef({ emitted: 0, duplicates: 0, evaluations: 0 });
+
+  // Signature of the current carousel dataset. Changes whenever the set of
+  // similar products (or their order) shifts — e.g. inventory refresh, filter
+  // change, or product variant swap. Resetting on this in addition to
+  // product.id keeps the warmed set aligned with what's actually rendered.
+  const similarSignature = useMemo(
+    () => similarInStock.map((p) => p.id).join("|"),
+    [similarInStock],
+  );
   useEffect(() => {
     warmedPreloadsRef.current = new Set();
     preloadStatsRef.current = { emitted: 0, duplicates: 0, evaluations: 0 };
-  }, [product.id]);
+  }, [product.id, similarSignature]);
 
   // Throttled flush: log preload stats to console (dev) and analytics (prod)
   // at most once every 2s, plus a final flush on page hide. Lets us verify
