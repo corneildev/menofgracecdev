@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as WeddingRouteImport } from './routes/wedding'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as BespokeRouteImport } from './routes/bespoke'
@@ -16,6 +17,11 @@ import { Route as AtelierRouteImport } from './routes/atelier'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionProductIdRouteImport } from './routes/collection.$productId'
 
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WeddingRoute = WeddingRouteImport.update({
   id: '/wedding',
   path: '/wedding',
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/bespoke': typeof BespokeRoute
   '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
+  '/wishlist': typeof WishlistRoute
   '/collection/$productId': typeof CollectionProductIdRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/bespoke': typeof BespokeRoute
   '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
+  '/wishlist': typeof WishlistRoute
   '/collection/$productId': typeof CollectionProductIdRoute
 }
 export interface FileRoutesById {
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/bespoke': typeof BespokeRoute
   '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
+  '/wishlist': typeof WishlistRoute
   '/collection/$productId': typeof CollectionProductIdRoute
 }
 export interface FileRouteTypes {
@@ -80,6 +89,7 @@ export interface FileRouteTypes {
     | '/bespoke'
     | '/collection'
     | '/wedding'
+    | '/wishlist'
     | '/collection/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -88,6 +98,7 @@ export interface FileRouteTypes {
     | '/bespoke'
     | '/collection'
     | '/wedding'
+    | '/wishlist'
     | '/collection/$productId'
   id:
     | '__root__'
@@ -96,6 +107,7 @@ export interface FileRouteTypes {
     | '/bespoke'
     | '/collection'
     | '/wedding'
+    | '/wishlist'
     | '/collection/$productId'
   fileRoutesById: FileRoutesById
 }
@@ -105,10 +117,18 @@ export interface RootRouteChildren {
   BespokeRoute: typeof BespokeRoute
   CollectionRoute: typeof CollectionRouteWithChildren
   WeddingRoute: typeof WeddingRoute
+  WishlistRoute: typeof WishlistRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/wedding': {
       id: '/wedding'
       path: '/wedding'
@@ -172,6 +192,7 @@ const rootRouteChildren: RootRouteChildren = {
   BespokeRoute: BespokeRoute,
   CollectionRoute: CollectionRouteWithChildren,
   WeddingRoute: WeddingRoute,
+  WishlistRoute: WishlistRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

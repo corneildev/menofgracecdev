@@ -2,6 +2,7 @@ import { Outlet, createRootRoute, HeadContent, Scripts, Link } from "@tanstack/r
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
+import { WishlistProvider } from "@/context/WishlistContext";
 
 import appCss from "../styles.css?url";
 
@@ -63,13 +64,13 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   return (
-    <>
+    <WishlistProvider>
       <Header />
       <main className="min-h-screen bg-ink">
         <Outlet />
       </main>
       <Footer />
       <WhatsAppFloat />
-    </>
+    </WishlistProvider>
   );
 }

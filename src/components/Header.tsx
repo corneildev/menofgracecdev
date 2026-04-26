@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useWishlist } from "@/context/WishlistContext";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const { count } = useWishlist();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -17,7 +19,8 @@ export function Header() {
     { to: "/bespoke", label: "Bespoke" },
     { to: "/wedding", label: "Wedding" },
     { to: "/atelier", label: "Atelier" },
-  ];
+    { to: "/wishlist", label: "Wishlist" },
+  ] as const;
 
   return (
     <header
@@ -49,6 +52,12 @@ export function Header() {
         <div className="hidden md:flex items-center gap-8 text-[11px] tracking-[0.28em] uppercase text-bone/85">
           <Link to="/bespoke" className="hover:text-bone transition-colors">Book Fitting</Link>
           <Link to="/collection" className="hover:text-bone transition-colors">Shop</Link>
+          <Link to="/wishlist" className="hover:text-bone transition-colors flex items-center gap-2" aria-label="Wishlist">
+            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.4">
+              <path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 3.1c0 5.6-7.5 10.2-7.5 10.2Z" />
+            </svg>
+            <span>Saved{count > 0 ? ` (${count})` : ""}</span>
+          </Link>
         </div>
 
         <button
