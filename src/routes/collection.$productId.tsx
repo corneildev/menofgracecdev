@@ -9,6 +9,7 @@ import { trackProductEvent } from "@/lib/analytics";
 import { useImagePrefetch, isImageCached, prefetchImage } from "@/hooks/useImagePrefetch";
 import { SimilarPerfReport } from "@/components/SimilarPerfReport";
 import { detectImageFormats, getFormatSupport } from "@/lib/imageFormatSupport";
+import { resolvePreloadCandidates, filterDuplicates } from "@/lib/preloadDedup";
 import {
   Carousel,
   CarouselContent,
