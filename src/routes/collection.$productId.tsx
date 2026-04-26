@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { RestockAlertForm } from "@/components/RestockAlertForm";
 import { trackProductEvent } from "@/lib/analytics";
 import { useImagePrefetch, isImageCached } from "@/hooks/useImagePrefetch";
+import { SimilarPerfReport } from "@/components/SimilarPerfReport";
 import {
   Carousel,
   CarouselContent,
@@ -521,6 +522,7 @@ function ProductView({ product }: { product: Product }) {
       {/* Similar in-stock products — shown when this piece is fully sold out */}
       {allSoldOut && similarPool.length > 0 && (
         <div ref={carouselRef} className="px-6 md:px-12 max-w-[1600px] mx-auto mt-32">
+          <SimilarPerfReport />
           <div className="border-t border-hairline pt-12 mb-8 flex flex-wrap items-end justify-between gap-6">
             <div>
               <div className="eyebrow text-bone/60 mb-4">— Disponibles maintenant —</div>
