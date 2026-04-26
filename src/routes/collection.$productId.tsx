@@ -133,7 +133,7 @@ function ProductView({ product }: { product: Product }) {
     impressionLogged.current = false;
   }, [product.id]);
   useEffect(() => {
-    if (!allSoldOut || similarInStock.length === 0) return;
+    if (!allSoldOut || similarPool.length === 0) return;
     const node = carouselRef.current;
     if (!node || impressionLogged.current) return;
     if (typeof IntersectionObserver === "undefined") return;
