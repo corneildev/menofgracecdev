@@ -815,40 +815,17 @@ function ProductView({ product }: { product: Product }) {
             // Resolve each candidate to its concrete preload payload (href +
             // srcSet) so dedup keys reflect the exact network request the
             // browser will issue, not just the product id.
-            const resolved = rawCandidates.flatMap(({ idx, priority }) => {
-              const item = similarInStock[idx];
-              if (!item) return [];
-              const s = getImageSources(item.image);
-              let href: string;
-              let type: string;
-              let srcSet: string | undefined;
-              if (avifOk && s.avif) {
-                href = s.avif;
-                type = "image/avif";
-                srcSet = s.avifSrcSet;
-              } else if (webpOk && s.webp) {
-                href = s.webp;
-                type = "image/webp";
-                srcSet = s.webpSrcSet;
-              } else {
-                href = s.jpg;
-                type = "image/jpeg";
-                srcSet = s.jpgSrcSet;
-              }
-              const dedupKey = `${href}::${srcSet ?? ""}`;
-              return [{ idx, priority, item, href, type, srcSet, dedupKey }];
-            });
+            const resolved = resolvePreloadCandidates(
+              rawCandidates,
+              similarInStock,
+              { avifOk, webpOk, getImageSources },
+            );
 
-            preloadStatsRef.current.evaluations += 1;
-            const preloads = resolved.filter(({ dedupKey }) => {
-              if (warmedPreloadsRef.current.has(dedupKey)) {
-                preloadStatsRef.current.duplicates += 1;
-                return false;
-              }
-              warmedPreloadsRef.current.add(dedupKey);
-              preloadStatsRef.current.emitted += 1;
-              return true;
-            });
+            const preloads = filterDuplicates(
+              resolved,
+              warmedPreloadsRef.current,
+              preloadStatsRef.current,
+            );
 
             return preloads.map(({ item, href, type, srcSet, priority }) => (
               <link
