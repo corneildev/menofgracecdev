@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getProduct, formatPrice, type Product } from "@/data/products";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
@@ -58,6 +58,17 @@ function ProductView({ product }: { product: Product }) {
   const [lining, setLining] = useState(product.linings[0]);
   const [monogram, setMonogram] = useState("");
   const [sizeError, setSizeError] = useState<string | null>(null);
+
+  // Auto-switch if the currently selected size becomes sold out.
+  useEffect(() => {
+    if (!size) return;
+    if (!product.soldOutSizes?.includes(size)) return;
+    const nextAvailable = product.sizes.find((s) => !product.soldOutSizes?.includes(s)) ?? null;
+    setSize(nextAvailable);
+    if (nextAvailable) {
+      setSizeError(`Taille ${size} épuisée — taille ${nextAvailable} sélectionnée.`);
+    }
+  }, [product.soldOutSizes, product.sizes, size]);
 
   const handleAddToCart = () => {
     if (!size) {
