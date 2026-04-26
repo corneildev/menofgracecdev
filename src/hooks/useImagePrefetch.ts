@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, type RefObject } from "react";
 
 /**
  * Module-level cache of fully-decoded HTMLImageElements.
