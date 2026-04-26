@@ -478,6 +478,14 @@ function ProductView({ product }: { product: Product }) {
                       <Link
                         to="/collection/$productId"
                         params={{ productId: p.id }}
+                        onClick={() =>
+                          trackProductEvent({
+                            type: "similar_carousel_card_click",
+                            productSlug: p.id,
+                            productName: p.name,
+                            metadata: { source: "similar_carousel", from: product.id, position: idx },
+                          })
+                        }
                         className="block"
                       >
                         <div className="aspect-[4/5] bg-secondary overflow-hidden mb-4">
