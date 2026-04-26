@@ -128,11 +128,18 @@ function ProductView({ product }: { product: Product }) {
     return filtered.slice(0, 8);
   }, [similarPool, activeCategory, priceTier, product.category, product.fcfa]);
 
-  // Warm decode of similar-product thumbnails so repeat visits paint instantly.
-  const similarImageSrcs = useMemo(() => similarPool.map((p) => p.image), [similarPool]);
-  useImagePrefetch(similarImageSrcs);
-
   const carouselRef = useRef<HTMLDivElement | null>(null);
+
+  // Just-in-time prefetch: warm the similar-product thumbnails only when the
+  // carousel section approaches the viewport (~600px lookahead). Sold-out
+  // pages are the only ones that render the carousel, so we gate on that too.
+  const similarImageSrcs = useMemo(() => similarPool.map((p) => p.image), [similarPool]);
+  useImagePrefetch(similarImageSrcs, {
+    target: carouselRef,
+    rootMargin: "600px 0px",
+    enabled: allSoldOut && similarPool.length > 0,
+  });
+
   const impressionLogged = useRef(false);
   useEffect(() => {
     impressionLogged.current = false;
