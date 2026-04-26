@@ -449,7 +449,7 @@ function ProductView({ product }: { product: Product }) {
                       <h3 className="font-serif text-bone text-lg mb-1 group-hover:text-bone/80 transition-colors">
                         {p.name}
                       </h3>
-                      <div className="text-bone/60 font-light text-sm">{pPrice.fcfa}</div>
+                      <div className="text-bone/60 font-light text-sm">{pPrice[carouselCurrency]}</div>
                     </Link>
                   </CarouselItem>
                 );
