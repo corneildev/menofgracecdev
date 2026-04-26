@@ -178,6 +178,7 @@ function ProductView({ product }: { product: Product }) {
           </div>
 
           {/* Size */}
+          <div id="size-picker" className="scroll-mt-24">
           <Section label="Size">
             <TooltipProvider delayDuration={150}>
               <div className="flex flex-wrap gap-2">
