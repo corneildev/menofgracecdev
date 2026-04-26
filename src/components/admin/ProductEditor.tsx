@@ -80,7 +80,7 @@ function fromProduct(p: ProductWithImages): FormState {
     fabric_mill: p.fabric_mill ?? "",
     fabric_notes: p.fabric_notes ?? "",
     sizes: p.sizes ?? [],
-    sold_out_sizes: (p as ProductWithImages & { sold_out_sizes?: string[] }).sold_out_sizes ?? [],
+    sold_out_sizes: p.sold_out_sizes ?? [],
     fits: p.fits ?? [],
     lapels: p.lapels ?? [],
     linings: p.linings ?? [],
