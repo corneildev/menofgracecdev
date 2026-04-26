@@ -51,11 +51,24 @@ function Wishlist() {
           </div>
         ) : (
           <>
-            <div className="flex justify-between items-center mb-10 border-b border-hairline pb-5">
+            <div className="flex flex-wrap gap-4 justify-between items-center mb-10 border-b border-hairline pb-5">
               <span className="eyebrow text-bone/60">{count} {count === 1 ? "piece" : "pieces"}</span>
-              <button onClick={clear} className="eyebrow text-bone/60 hover:text-bone transition-colors">
-                Clear all
-              </button>
+              <div className="flex items-center gap-6">
+                <button
+                  onClick={handleDownload}
+                  disabled={downloading}
+                  className="eyebrow text-bone hover:text-bone/70 transition-colors disabled:opacity-50 inline-flex items-center gap-2"
+                  aria-label="Download wishlist as PDF"
+                >
+                  <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M12 4v12m0 0l-4-4m4 4l4-4M5 20h14" />
+                  </svg>
+                  {downloading ? "Preparing…" : "Download Folio (PDF)"}
+                </button>
+                <button onClick={clear} className="eyebrow text-bone/60 hover:text-bone transition-colors">
+                  Clear all
+                </button>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16">
