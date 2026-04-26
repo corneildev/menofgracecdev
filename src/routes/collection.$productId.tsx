@@ -22,6 +22,14 @@ import {
   logProfileResults,
 } from "@/lib/preloadTestProfiles";
 import {
+  startSession,
+  recordEmit,
+  recordDuplicate,
+  recordFlush,
+  recordReset,
+} from "@/lib/preloadStatsStore";
+import { PreloadDebugOverlay } from "@/components/PreloadDebugOverlay";
+import {
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -169,6 +177,12 @@ function ProductView({ product }: { product: Product }) {
   // throttled effect logs the running totals so we can verify dedup in prod.
   const preloadStatsRef = useRef({ emitted: 0, duplicates: 0, evaluations: 0 });
 
+  // Persisted session id for the localStorage stats store. One id per visit
+  // to this product page; reset when the dataset signature changes so the
+  // overlay shows a fresh row after currency-independent filter swaps.
+  const sessionIdRef = useRef<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
   // Signature of the current carousel dataset. Changes whenever the set of
   // similar products (or their order) shifts — e.g. inventory refresh, filter
   // change, or product variant swap. Resetting on this in addition to
@@ -180,6 +194,12 @@ function ProductView({ product }: { product: Product }) {
   useEffect(() => {
     warmedPreloadsRef.current = new Set();
     preloadStatsRef.current = { emitted: 0, duplicates: 0, evaluations: 0 };
+    if (sessionIdRef.current) {
+      recordReset(sessionIdRef.current, "product-or-dataset-change");
+    }
+    const id = startSession(product.id);
+    sessionIdRef.current = id;
+    setSessionId(id);
   }, [product.id, similarSignature]);
 
   // Throttled flush: log preload stats to console (dev) and analytics (prod)
@@ -211,6 +231,14 @@ function ProductView({ product }: { product: Product }) {
           duplicates_prevented: s.duplicates,
         },
       });
+      // Persist the running totals so the debug overlay (and devtools) can
+      // show stats across re-renders and even after navigation.
+      if (sessionIdRef.current) {
+        recordFlush(sessionIdRef.current, {
+          evaluations: s.evaluations,
+          reason,
+        });
+      }
     };
     const interval = window.setInterval(() => flush("interval"), 2000);
     const onHide = () => flush("pagehide");
@@ -406,6 +434,7 @@ function ProductView({ product }: { product: Product }) {
   const waHref = `https://wa.me/?text=${waMessage}`;
 
   return (
+    <>
     <div className="bg-ink pt-32 pb-32">
       {/* Breadcrumb */}
       <div className="px-6 md:px-12 max-w-[1600px] mx-auto mb-10">
@@ -893,14 +922,28 @@ function ProductView({ product }: { product: Product }) {
               resolved,
               warmedPreloadsRef.current,
               preloadStatsRef.current,
-              (d) =>
+              (d) => {
                 logDecision({
                   decision: d.decision,
                   idx: d.idx,
                   productId: d.item.id,
                   href: d.href,
                   priority: d.priority,
-                }),
+                });
+                if (sessionIdRef.current) {
+                  const detail = {
+                    idx: d.idx,
+                    productId: d.item.id,
+                    href: d.href,
+                    priority: d.priority,
+                  };
+                  if (d.decision === "emit") {
+                    recordEmit(sessionIdRef.current, detail);
+                  } else {
+                    recordDuplicate(sessionIdRef.current, detail);
+                  }
+                }
+              },
             );
             logRenderEnd();
 
@@ -979,6 +1022,8 @@ function ProductView({ product }: { product: Product }) {
         </div>
       )}
     </div>
+      <PreloadDebugOverlay currentSessionId={sessionId} />
+    </>
   );
 }
 
