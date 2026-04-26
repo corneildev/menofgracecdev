@@ -151,7 +151,7 @@ function ProductView({ product }: { product: Product }) {
                     key={s}
                     active={size === s}
                     disabled={soldOut}
-                    onClick={() => { if (soldOut) return; setSize(s); setSizeError(false); }}
+                    onClick={() => { if (soldOut) return; setSize(s); setSizeError(null); }}
                   >
                     <span className={soldOut ? "line-through" : ""}>{s}</span>
                     {soldOut && <span className="ml-2 text-[9px] tracking-[0.18em] opacity-70">Sold out</span>}
@@ -160,7 +160,7 @@ function ProductView({ product }: { product: Product }) {
               })}
             </div>
             {sizeError && (
-              <p className="text-xs text-bone/80 mt-3 tracking-wider">Veuillez sélectionner une taille.</p>
+              <p role="alert" className="text-xs text-red-400/90 mt-3 tracking-wider">{sizeError}</p>
             )}
           </Section>
 
