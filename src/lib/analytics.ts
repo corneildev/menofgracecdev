@@ -15,15 +15,17 @@ type Args = {
 
 // Fire-and-forget. Never throws.
 export function trackProductEvent({ type, productSlug, productName, size, metadata }: Args) {
-  void supabase
-    .from("product_events")
-    .insert({
-      event_type: type,
-      product_slug: productSlug ?? null,
-      product_name: productName ?? null,
-      size: size ?? null,
-      metadata: metadata ?? null,
-    })
+  const payload = {
+    event_type: type,
+    product_slug: productSlug ?? null,
+    product_name: productName ?? null,
+    size: size ?? null,
+    metadata: metadata ?? null,
+  };
+  void (supabase.from("product_events") as unknown as {
+    insert: (row: typeof payload) => Promise<{ error: { message: string } | null }>;
+  })
+    .insert(payload)
     .then(({ error }) => {
       if (error && import.meta.env.DEV) {
         console.warn("[analytics] failed to log event", type, error.message);
