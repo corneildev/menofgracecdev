@@ -140,9 +140,20 @@ function ProductView({ product }: { product: Product }) {
           {/* Size */}
           <Section label="Size">
             <div className="flex flex-wrap gap-2">
-              {product.sizes.map((s) => (
-                <Chip key={s} active={size === s} onClick={() => { setSize(s); setSizeError(false); }}>{s}</Chip>
-              ))}
+              {product.sizes.map((s) => {
+                const soldOut = product.soldOutSizes?.includes(s) ?? false;
+                return (
+                  <Chip
+                    key={s}
+                    active={size === s}
+                    disabled={soldOut}
+                    onClick={() => { if (soldOut) return; setSize(s); setSizeError(false); }}
+                  >
+                    <span className={soldOut ? "line-through" : ""}>{s}</span>
+                    {soldOut && <span className="ml-2 text-[9px] tracking-[0.18em] opacity-70">Sold out</span>}
+                  </Chip>
+                );
+              })}
             </div>
             {sizeError && (
               <p className="text-xs text-bone/80 mt-3 tracking-wider">Veuillez sélectionner une taille.</p>
