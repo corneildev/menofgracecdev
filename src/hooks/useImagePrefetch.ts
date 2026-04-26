@@ -57,12 +57,35 @@ export function isImageCached(src: string): boolean {
   return imageCache.has(src);
 }
 
+type PrefetchOptions = {
+  /**
+   * If provided, prefetch is gated on this element approaching the viewport.
+   * Combined with `rootMargin`, this lets us load just-in-time during scroll
+   * rather than burning bandwidth on mount.
+   */
+  target?: RefObject<Element | null>;
+  /** IntersectionObserver rootMargin. Defaults to a generous 600px lookahead. */
+  rootMargin?: string;
+  /** Skip prefetching entirely. Useful for conditional sections. */
+  enabled?: boolean;
+};
+
 /**
- * Prefetch a list of thumbnails when the browser is idle.
+ * Prefetch a list of thumbnails. Three modes:
+ *  1. No `target`: prefetch on idle as soon as the hook mounts.
+ *  2. With `target`: wait for the element to approach the viewport, then prefetch on idle.
+ *  3. `enabled: false`: do nothing.
+ *
  * Skips work entirely on slow connections or data-saver mode.
  */
-export function useImagePrefetch(srcs: readonly string[]): void {
+export function useImagePrefetch(
+  srcs: readonly string[],
+  options: PrefetchOptions = {},
+): void {
+  const { target, rootMargin = "600px 0px", enabled = true } = options;
+
   useEffect(() => {
+    if (!enabled) return;
     if (typeof window === "undefined") return;
     if (srcs.length === 0) return;
 
@@ -81,21 +104,50 @@ export function useImagePrefetch(srcs: readonly string[]): void {
       ((id: number) => window.clearTimeout(id));
 
     let cancelled = false;
-    const handle = idle(
-      () => {
-        if (cancelled) return;
-        // Sequential prefetch — gentler on the network than parallel bursts.
-        void srcs.reduce(
-          (chain, src) => chain.then(() => (cancelled ? undefined : prefetchImage(src))),
-          Promise.resolve(),
-        );
-      },
-      { timeout: 1500 },
-    );
+    let idleHandle: number | null = null;
+    let observer: IntersectionObserver | null = null;
+
+    const startPrefetch = () => {
+      if (cancelled) return;
+      idleHandle = idle(
+        () => {
+          if (cancelled) return;
+          // Sequential prefetch — gentler on the network than parallel bursts.
+          void srcs.reduce(
+            (chain, src) => chain.then(() => (cancelled ? undefined : prefetchImage(src))),
+            Promise.resolve(),
+          );
+        },
+        { timeout: 1500 },
+      ) as unknown as number;
+    };
+
+    const node = target?.current ?? null;
+    if (node && typeof IntersectionObserver !== "undefined") {
+      // Just-in-time: wait until the section is within `rootMargin` of the viewport.
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              observer?.disconnect();
+              observer = null;
+              startPrefetch();
+              break;
+            }
+          }
+        },
+        { rootMargin, threshold: 0 },
+      );
+      observer.observe(node);
+    } else {
+      // No target (or no IO support) — fall back to idle-on-mount.
+      startPrefetch();
+    }
 
     return () => {
       cancelled = true;
-      if (typeof handle === "number") cancelIdle(handle);
+      if (idleHandle !== null) cancelIdle(idleHandle);
+      observer?.disconnect();
     };
-  }, [srcs]);
+  }, [srcs, target, rootMargin, enabled]);
 }
