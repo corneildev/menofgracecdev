@@ -22,6 +22,14 @@ import {
   logProfileResults,
 } from "@/lib/preloadTestProfiles";
 import {
+  startSession,
+  recordEmit,
+  recordDuplicate,
+  recordFlush,
+  recordReset,
+} from "@/lib/preloadStatsStore";
+import { PreloadDebugOverlay } from "@/components/PreloadDebugOverlay";
+import {
   Carousel,
   CarouselContent,
   CarouselItem,
