@@ -67,6 +67,20 @@ function ProductView({ product }: { product: Product }) {
   const [monogram, setMonogram] = useState("");
   const [sizeError, setSizeError] = useState<string | null>(null);
 
+  const allSoldOut =
+    product.sizes.length > 0 &&
+    product.sizes.every((s) => product.soldOutSizes?.includes(s));
+
+  const similarInStock = useMemo(() => {
+    return products
+      .filter((p) => p.id !== product.id && p.category === product.category)
+      .filter((p) => {
+        if (!p.sizes || p.sizes.length === 0) return true;
+        return p.sizes.some((s) => !p.soldOutSizes?.includes(s));
+      })
+      .slice(0, 8);
+  }, [product.id, product.category]);
+
   // Auto-switch if the currently selected size becomes sold out.
   useEffect(() => {
     if (!size) return;
