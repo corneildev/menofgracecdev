@@ -936,12 +936,27 @@ function SimilarThumb({
   // If the image is already in the in-memory cache, skip the skeleton entirely.
   const cached = isImageCached(src);
   const [loaded, setLoaded] = useState(cached);
+  // Keep the skeleton mounted briefly after `loaded` flips so it can
+  // crossfade out instead of disappearing instantly — produces a smooth,
+  // progressive handoff in sync with the <img> opacity transition.
+  const [skeletonMounted, setSkeletonMounted] = useState(!cached);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   // Re-evaluate when the src changes (filter switch reuses the slot).
   useEffect(() => {
-    setLoaded(isImageCached(src));
+    const c = isImageCached(src);
+    setLoaded(c);
+    setSkeletonMounted(!c);
   }, [src]);
+
+  // Once the image reports loaded, fade the skeleton out, then unmount it
+  // after the transition completes (matches the 700ms <img> fade duration).
+  useEffect(() => {
+    if (!loaded) return;
+    if (!skeletonMounted) return;
+    const t = window.setTimeout(() => setSkeletonMounted(false), 700);
+    return () => window.clearTimeout(t);
+  }, [loaded, skeletonMounted]);
 
   const sources = getImageSources(src);
   // Match the carousel slide width at each breakpoint (see preload <link> above).
@@ -964,10 +979,12 @@ function SimilarThumb({
 
   return (
     <div className="relative aspect-[4/5] bg-secondary overflow-hidden mb-4">
-      {!loaded && (
+      {skeletonMounted && (
         <div
           aria-hidden="true"
-          className="absolute inset-0 overflow-hidden"
+          className={`absolute inset-0 overflow-hidden transition-opacity duration-700 ease-out ${
+            loaded ? "opacity-0" : "opacity-100"
+          }`}
         >
           {/* Subtle base tint — deeper than bg-secondary so the shimmer reads */}
           <div className="absolute inset-0 bg-gradient-to-br from-bone/[0.03] via-bone/[0.06] to-bone/[0.03]" />
