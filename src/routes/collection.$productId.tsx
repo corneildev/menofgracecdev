@@ -216,16 +216,15 @@ function ProductView({ product }: { product: Product }) {
                 })}
               </div>
             </TooltipProvider>
-            {product.sizes.length > 0 &&
-              product.sizes.every((s) => product.soldOutSizes?.includes(s)) && (
-                <p className="text-xs text-bone/60 mt-3 tracking-wider font-light">
-                  Toutes les tailles sont actuellement épuisées —{" "}
-                  <Link to="/bespoke" className="underline underline-offset-4 hover:text-bone">
-                    réservez un essayage
-                  </Link>{" "}
-                  pour une pièce sur mesure.
-                </p>
-              )}
+            {allSoldOut && (
+              <p className="text-xs text-bone/60 mt-3 tracking-wider font-light">
+                Toutes les tailles sont actuellement épuisées —{" "}
+                <Link to="/bespoke" className="underline underline-offset-4 hover:text-bone">
+                  réservez un essayage
+                </Link>{" "}
+                pour une pièce sur mesure.
+              </p>
+            )}
             {sizeError && (
               <p role="alert" className="text-xs text-red-400/90 mt-3 tracking-wider">{sizeError}</p>
             )}
