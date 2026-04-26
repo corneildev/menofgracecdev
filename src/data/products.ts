@@ -126,7 +126,12 @@ export function getProduct(id: string): Product | undefined {
 }
 
 export function formatPrice(p: Product) {
-  const fcfa = p.fcfa.toLocaleString("fr-FR");
-  const usd = p.usd.toLocaleString("en-US");
-  return { fcfa: `${fcfa} FCFA`, usd: `$${usd}`, eur: `€${p.eur.toLocaleString("en-US")}` };
+  // Stable across SSR/CSR (no locale-dependent grouping characters)
+  const group = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  const groupComma = (n: number) => n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return {
+    fcfa: `${group(p.fcfa)} FCFA`,
+    usd: `$${groupComma(p.usd)}`,
+    eur: `€${groupComma(p.eur)}`,
+  };
 }
