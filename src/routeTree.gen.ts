@@ -14,6 +14,7 @@ import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as BespokeRouteImport } from './routes/bespoke'
 import { Route as AtelierRouteImport } from './routes/atelier'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CollectionProductIdRouteImport } from './routes/collection.$productId'
 
 const WeddingRoute = WeddingRouteImport.update({
   id: '/wedding',
@@ -40,42 +41,69 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollectionProductIdRoute = CollectionProductIdRouteImport.update({
+  id: '/$productId',
+  path: '/$productId',
+  getParentRoute: () => CollectionRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/atelier': typeof AtelierRoute
   '/bespoke': typeof BespokeRoute
-  '/collection': typeof CollectionRoute
+  '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
+  '/collection/$productId': typeof CollectionProductIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/atelier': typeof AtelierRoute
   '/bespoke': typeof BespokeRoute
-  '/collection': typeof CollectionRoute
+  '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
+  '/collection/$productId': typeof CollectionProductIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/atelier': typeof AtelierRoute
   '/bespoke': typeof BespokeRoute
-  '/collection': typeof CollectionRoute
+  '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
+  '/collection/$productId': typeof CollectionProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/atelier' | '/bespoke' | '/collection' | '/wedding'
+  fullPaths:
+    | '/'
+    | '/atelier'
+    | '/bespoke'
+    | '/collection'
+    | '/wedding'
+    | '/collection/$productId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/atelier' | '/bespoke' | '/collection' | '/wedding'
-  id: '__root__' | '/' | '/atelier' | '/bespoke' | '/collection' | '/wedding'
+  to:
+    | '/'
+    | '/atelier'
+    | '/bespoke'
+    | '/collection'
+    | '/wedding'
+    | '/collection/$productId'
+  id:
+    | '__root__'
+    | '/'
+    | '/atelier'
+    | '/bespoke'
+    | '/collection'
+    | '/wedding'
+    | '/collection/$productId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AtelierRoute: typeof AtelierRoute
   BespokeRoute: typeof BespokeRoute
-  CollectionRoute: typeof CollectionRoute
+  CollectionRoute: typeof CollectionRouteWithChildren
   WeddingRoute: typeof WeddingRoute
 }
 
@@ -116,14 +144,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/collection/$productId': {
+      id: '/collection/$productId'
+      path: '/$productId'
+      fullPath: '/collection/$productId'
+      preLoaderRoute: typeof CollectionProductIdRouteImport
+      parentRoute: typeof CollectionRoute
+    }
   }
 }
+
+interface CollectionRouteChildren {
+  CollectionProductIdRoute: typeof CollectionProductIdRoute
+}
+
+const CollectionRouteChildren: CollectionRouteChildren = {
+  CollectionProductIdRoute: CollectionProductIdRoute,
+}
+
+const CollectionRouteWithChildren = CollectionRoute._addFileChildren(
+  CollectionRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AtelierRoute: AtelierRoute,
   BespokeRoute: BespokeRoute,
-  CollectionRoute: CollectionRoute,
+  CollectionRoute: CollectionRouteWithChildren,
   WeddingRoute: WeddingRoute,
 }
 export const routeTree = rootRouteImport
