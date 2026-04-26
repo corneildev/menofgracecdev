@@ -77,6 +77,11 @@ export function RestockAlertForm({ productSlug, productName, size, expectedResto
         <p className="text-xs text-bone/80 tracking-wider font-light">
           Merci — nous vous préviendrons dès le retour en stock.
         </p>
+        {expectedLabel && (
+          <p className="mt-2 eyebrow text-bone/60 text-[10px]">
+            Retour estimé · {expectedLabel}
+          </p>
+        )}
       </div>
     );
   }
@@ -87,6 +92,11 @@ export function RestockAlertForm({ productSlug, productName, size, expectedResto
       <p className="text-xs text-bone/60 font-light leading-relaxed">
         Laissez votre email ou WhatsApp pour être prévenu en priorité.
       </p>
+      {expectedLabel && (
+        <p className="text-[11px] text-bone/70 font-light italic border-l border-hairline pl-3">
+          Retour en stock estimé · <span className="text-bone">{expectedLabel}</span>
+        </p>
+      )}
       <input
         type="email"
         value={email}
