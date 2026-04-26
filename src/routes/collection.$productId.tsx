@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { getProduct, formatPrice, type Product } from "@/data/products";
+import { useWishlist } from "@/context/WishlistContext";
 
 export const Route = createFileRoute("/collection/$productId")({
   loader: ({ params }) => {
