@@ -936,12 +936,27 @@ function SimilarThumb({
   // If the image is already in the in-memory cache, skip the skeleton entirely.
   const cached = isImageCached(src);
   const [loaded, setLoaded] = useState(cached);
+  // Keep the skeleton mounted briefly after `loaded` flips so it can
+  // crossfade out instead of disappearing instantly — produces a smooth,
+  // progressive handoff in sync with the <img> opacity transition.
+  const [skeletonMounted, setSkeletonMounted] = useState(!cached);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
   // Re-evaluate when the src changes (filter switch reuses the slot).
   useEffect(() => {
-    setLoaded(isImageCached(src));
+    const c = isImageCached(src);
+    setLoaded(c);
+    setSkeletonMounted(!c);
   }, [src]);
+
+  // Once the image reports loaded, fade the skeleton out, then unmount it
+  // after the transition completes (matches the 700ms <img> fade duration).
+  useEffect(() => {
+    if (!loaded) return;
+    if (!skeletonMounted) return;
+    const t = window.setTimeout(() => setSkeletonMounted(false), 700);
+    return () => window.clearTimeout(t);
+  }, [loaded, skeletonMounted]);
 
   const sources = getImageSources(src);
   // Match the carousel slide width at each breakpoint (see preload <link> above).
