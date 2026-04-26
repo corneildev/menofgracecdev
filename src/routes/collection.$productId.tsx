@@ -729,6 +729,10 @@ function SimilarThumb({
     setLoaded(isImageCached(src));
   }, [src]);
 
+  const sources = getImageSources(src);
+  const sizes =
+    "(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 66vw";
+
   return (
     <div className="relative aspect-[4/5] bg-secondary overflow-hidden mb-4">
       {!loaded && (
@@ -737,19 +741,23 @@ function SimilarThumb({
           className="absolute inset-0 animate-pulse bg-gradient-to-br from-bone/[0.04] via-bone/[0.08] to-bone/[0.04]"
         />
       )}
-      <img
-        src={src}
-        alt={alt}
-        loading={eager || cached ? "eager" : "lazy"}
-        decoding={cached ? "sync" : "async"}
-        fetchPriority={highPriority ? "high" : eager ? "auto" : "low"}
-        sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 66vw"
-        onLoad={() => setLoaded(true)}
-        onError={() => setLoaded(true)}
-        className={`h-full w-full object-cover transition-all duration-700 group-hover:scale-105 ${
-          loaded ? "opacity-100" : "opacity-0"
-        }`}
-      />
+      <picture>
+        {sources.avif && <source type="image/avif" srcSet={sources.avif} sizes={sizes} />}
+        {sources.webp && <source type="image/webp" srcSet={sources.webp} sizes={sizes} />}
+        <img
+          src={sources.jpg}
+          alt={alt}
+          loading={eager || cached ? "eager" : "lazy"}
+          decoding={cached ? "sync" : "async"}
+          fetchPriority={highPriority ? "high" : eager ? "auto" : "low"}
+          sizes={sizes}
+          onLoad={() => setLoaded(true)}
+          onError={() => setLoaded(true)}
+          className={`h-full w-full object-cover transition-all duration-700 group-hover:scale-105 ${
+            loaded ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      </picture>
     </div>
   );
 }
