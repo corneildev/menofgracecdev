@@ -74,15 +74,58 @@ function ProductView({ product }: { product: Product }) {
     product.sizes.length > 0 &&
     product.sizes.every((s) => product.soldOutSizes?.includes(s));
 
-  const similarInStock = useMemo(() => {
+  // Pool of all other in-stock products (any category) — base for the carousel.
+  const similarPool = useMemo(() => {
     return products
-      .filter((p) => p.id !== product.id && p.category === product.category)
+      .filter((p) => p.id !== product.id)
       .filter((p) => {
         if (!p.sizes || p.sizes.length === 0) return true;
         return p.sizes.some((s) => !p.soldOutSizes?.includes(s));
-      })
-      .slice(0, 8);
+      });
+  }, [product.id]);
+
+  // Available category filters, ordered with current category first.
+  const categoryOptions = useMemo(() => {
+    const set = new Set<string>(similarPool.map((p) => p.category));
+    const all = Array.from(set);
+    all.sort();
+    const ordered = [
+      ...(set.has(product.category) ? [product.category] : []),
+      ...all.filter((c) => c !== product.category),
+    ];
+    return ordered;
+  }, [similarPool, product.category]);
+
+  type PriceTier = "all" | "under" | "similar" | "over";
+  const [activeCategory, setActiveCategory] = useState<string | "all">(product.category);
+  const [priceTier, setPriceTier] = useState<PriceTier>("all");
+
+  // Reset filters when navigating to a new product.
+  useEffect(() => {
+    setActiveCategory(product.category);
+    setPriceTier("all");
   }, [product.id, product.category]);
+
+  const similarInStock = useMemo(() => {
+    const ref = product.fcfa;
+    const filtered = similarPool
+      .filter((p) => activeCategory === "all" || p.category === activeCategory)
+      .filter((p) => {
+        if (priceTier === "all") return true;
+        if (priceTier === "under") return p.fcfa < ref * 0.9;
+        if (priceTier === "over") return p.fcfa > ref * 1.1;
+        // "similar" — within ±10%
+        return p.fcfa >= ref * 0.9 && p.fcfa <= ref * 1.1;
+      });
+    // Soft ranking: same category first, then closest price.
+    filtered.sort((a, b) => {
+      const aSame = a.category === product.category ? 0 : 1;
+      const bSame = b.category === product.category ? 0 : 1;
+      if (aSame !== bSame) return aSame - bSame;
+      return Math.abs(a.fcfa - ref) - Math.abs(b.fcfa - ref);
+    });
+    return filtered.slice(0, 8);
+  }, [similarPool, activeCategory, priceTier, product.category, product.fcfa]);
 
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const impressionLogged = useRef(false);
