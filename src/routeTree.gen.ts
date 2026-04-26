@@ -14,7 +14,9 @@ import { Route as WeddingRouteImport } from './routes/wedding'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as BespokeRouteImport } from './routes/bespoke'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AtelierRouteImport } from './routes/atelier'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionProductIdRouteImport } from './routes/collection.$productId'
 
@@ -43,9 +45,19 @@ const BespokeRoute = BespokeRouteImport.update({
   path: '/bespoke',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AtelierRoute = AtelierRouteImport.update({
   id: '/atelier',
   path: '/atelier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -61,7 +73,9 @@ const CollectionProductIdRoute = CollectionProductIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/atelier': typeof AtelierRoute
+  '/auth': typeof AuthRoute
   '/bespoke': typeof BespokeRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
@@ -71,7 +85,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/atelier': typeof AtelierRoute
+  '/auth': typeof AuthRoute
   '/bespoke': typeof BespokeRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
@@ -82,7 +98,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/atelier': typeof AtelierRoute
+  '/auth': typeof AuthRoute
   '/bespoke': typeof BespokeRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
@@ -94,7 +112,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
     | '/atelier'
+    | '/auth'
     | '/bespoke'
     | '/cart'
     | '/collection'
@@ -104,7 +124,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/account'
     | '/atelier'
+    | '/auth'
     | '/bespoke'
     | '/cart'
     | '/collection'
@@ -114,7 +136,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/account'
     | '/atelier'
+    | '/auth'
     | '/bespoke'
     | '/cart'
     | '/collection'
@@ -125,7 +149,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
   AtelierRoute: typeof AtelierRoute
+  AuthRoute: typeof AuthRoute
   BespokeRoute: typeof BespokeRoute
   CartRoute: typeof CartRoute
   CollectionRoute: typeof CollectionRouteWithChildren
@@ -170,11 +196,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BespokeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/atelier': {
       id: '/atelier'
       path: '/atelier'
       fullPath: '/atelier'
       preLoaderRoute: typeof AtelierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -208,7 +248,9 @@ const CollectionRouteWithChildren = CollectionRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
   AtelierRoute: AtelierRoute,
+  AuthRoute: AuthRoute,
   BespokeRoute: BespokeRoute,
   CartRoute: CartRoute,
   CollectionRoute: CollectionRouteWithChildren,
@@ -218,3 +260,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
