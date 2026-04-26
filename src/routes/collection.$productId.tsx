@@ -141,6 +141,33 @@ function ProductView({ product }: { product: Product }) {
     warmedPreloadsRef.current = new Set();
   }, [product.id]);
 
+  // Run AVIF/WebP feature detection once, then re-render so the preload
+  // <link> picks a format the browser actually decodes (Safari <16 lacks
+  // AVIF; older Firefox is iffy on AVIF). Until detection resolves we
+  // render the JPG preload — universally safe.
+  const [, setFormatProbeReady] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (getFormatSupport("avif") !== "unknown" && getFormatSupport("webp") !== "unknown") {
+      setFormatProbeReady(true);
+      return;
+    }
+    detectImageFormats();
+    let cancelled = false;
+    const tick = () => {
+      if (cancelled) return;
+      if (getFormatSupport("avif") !== "unknown" && getFormatSupport("webp") !== "unknown") {
+        setFormatProbeReady(true);
+      } else {
+        window.setTimeout(tick, 50);
+      }
+    };
+    tick();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Tune the near-viewport lookahead by device: mobile users scroll faster
   // relative to viewport height and benefit from a longer runway, while
   // desktop's wider viewport already covers more layout — a tighter margin
