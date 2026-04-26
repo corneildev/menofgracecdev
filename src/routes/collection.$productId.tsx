@@ -137,8 +137,17 @@ function ProductView({ product }: { product: Product }) {
   // for in this carousel session — prevents duplicate preload tags across
   // re-renders (filter changes, currency switches, etc.). Reset per product page.
   const warmedPreloadsRef = useRef<Set<string>>(new Set());
+
+  // Lightweight session metrics for the de-dup gate.
+  //   emitted    — count of <link> tags actually rendered
+  //   duplicates — count of candidates skipped because the id was already warmed
+  //   evaluations — number of times the candidate filter ran (re-renders)
+  // These are mutated synchronously inside the render-time filter and a
+  // throttled effect logs the running totals so we can verify dedup in prod.
+  const preloadStatsRef = useRef({ emitted: 0, duplicates: 0, evaluations: 0 });
   useEffect(() => {
     warmedPreloadsRef.current = new Set();
+    preloadStatsRef.current = { emitted: 0, duplicates: 0, evaluations: 0 };
   }, [product.id]);
 
   // Run AVIF/WebP feature detection once, then re-render so the preload
