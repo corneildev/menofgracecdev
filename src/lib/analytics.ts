@@ -4,7 +4,9 @@ export type ProductEventType =
   | "sold_out_tooltip_shown"
   | "sold_out_booking_click"
   | "all_sold_out_booking_click"
-  | "similar_select_size_click";
+  | "similar_select_size_click"
+  | "similar_carousel_impression"
+  | "similar_carousel_card_click";
 
 type Args = {
   type: ProductEventType;
