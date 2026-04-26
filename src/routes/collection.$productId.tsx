@@ -17,6 +17,11 @@ import {
   logRenderEnd,
 } from "@/lib/preloadDebug";
 import {
+  isPreloadTestEnabled,
+  runProfileTests,
+  logProfileResults,
+} from "@/lib/preloadTestProfiles";
+import {
   Carousel,
   CarouselContent,
   CarouselItem,
