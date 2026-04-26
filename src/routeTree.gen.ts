@@ -14,9 +14,14 @@ import { Route as WeddingRouteImport } from './routes/wedding'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as BespokeRouteImport } from './routes/bespoke'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AtelierRouteImport } from './routes/atelier'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionProductIdRouteImport } from './routes/collection.$productId'
+import { Route as AdminProductsNewRouteImport } from './routes/admin.products.new'
+import { Route as AdminProductsIdRouteImport } from './routes/admin.products.$id'
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -43,9 +48,24 @@ const BespokeRoute = BespokeRouteImport.update({
   path: '/bespoke',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AtelierRoute = AtelierRouteImport.update({
   id: '/atelier',
   path: '/atelier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -58,74 +78,117 @@ const CollectionProductIdRoute = CollectionProductIdRouteImport.update({
   path: '/$productId',
   getParentRoute: () => CollectionRoute,
 } as any)
+const AdminProductsNewRoute = AdminProductsNewRouteImport.update({
+  id: '/products/new',
+  path: '/products/new',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductsIdRoute = AdminProductsIdRouteImport.update({
+  id: '/products/$id',
+  path: '/products/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRouteWithChildren
   '/atelier': typeof AtelierRoute
+  '/auth': typeof AuthRoute
   '/bespoke': typeof BespokeRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/collection/$productId': typeof CollectionProductIdRoute
+  '/admin/products/$id': typeof AdminProductsIdRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRouteWithChildren
   '/atelier': typeof AtelierRoute
+  '/auth': typeof AuthRoute
   '/bespoke': typeof BespokeRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/collection/$productId': typeof CollectionProductIdRoute
+  '/admin/products/$id': typeof AdminProductsIdRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/admin': typeof AdminRouteWithChildren
   '/atelier': typeof AtelierRoute
+  '/auth': typeof AuthRoute
   '/bespoke': typeof BespokeRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/collection/$productId': typeof CollectionProductIdRoute
+  '/admin/products/$id': typeof AdminProductsIdRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
+    | '/admin'
     | '/atelier'
+    | '/auth'
     | '/bespoke'
     | '/cart'
     | '/collection'
     | '/wedding'
     | '/wishlist'
     | '/collection/$productId'
+    | '/admin/products/$id'
+    | '/admin/products/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/account'
+    | '/admin'
     | '/atelier'
+    | '/auth'
     | '/bespoke'
     | '/cart'
     | '/collection'
     | '/wedding'
     | '/wishlist'
     | '/collection/$productId'
+    | '/admin/products/$id'
+    | '/admin/products/new'
   id:
     | '__root__'
     | '/'
+    | '/account'
+    | '/admin'
     | '/atelier'
+    | '/auth'
     | '/bespoke'
     | '/cart'
     | '/collection'
     | '/wedding'
     | '/wishlist'
     | '/collection/$productId'
+    | '/admin/products/$id'
+    | '/admin/products/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AtelierRoute: typeof AtelierRoute
+  AuthRoute: typeof AuthRoute
   BespokeRoute: typeof BespokeRoute
   CartRoute: typeof CartRoute
   CollectionRoute: typeof CollectionRouteWithChildren
@@ -170,11 +233,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BespokeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/atelier': {
       id: '/atelier'
       path: '/atelier'
       fullPath: '/atelier'
       preLoaderRoute: typeof AtelierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -191,8 +275,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionProductIdRouteImport
       parentRoute: typeof CollectionRoute
     }
+    '/admin/products/new': {
+      id: '/admin/products/new'
+      path: '/products/new'
+      fullPath: '/admin/products/new'
+      preLoaderRoute: typeof AdminProductsNewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/products/$id': {
+      id: '/admin/products/$id'
+      path: '/products/$id'
+      fullPath: '/admin/products/$id'
+      preLoaderRoute: typeof AdminProductsIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminProductsIdRoute: typeof AdminProductsIdRoute
+  AdminProductsNewRoute: typeof AdminProductsNewRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminProductsIdRoute: AdminProductsIdRoute,
+  AdminProductsNewRoute: AdminProductsNewRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface CollectionRouteChildren {
   CollectionProductIdRoute: typeof CollectionProductIdRoute
@@ -208,7 +318,10 @@ const CollectionRouteWithChildren = CollectionRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
+  AdminRoute: AdminRouteWithChildren,
   AtelierRoute: AtelierRoute,
+  AuthRoute: AuthRoute,
   BespokeRoute: BespokeRoute,
   CartRoute: CartRoute,
   CollectionRoute: CollectionRouteWithChildren,
@@ -218,12 +331,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

@@ -5,6 +5,7 @@ import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import { WishlistProvider } from "@/context/WishlistContext";
 import { CartProvider } from "@/context/CartContext";
 import { CartDrawer } from "@/components/CartDrawer";
+import { AuthProvider } from "@/context/AuthContext";
 
 import appCss from "../styles.css?url";
 
@@ -66,16 +67,18 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   return (
-    <WishlistProvider>
-      <CartProvider>
-        <Header />
-        <main className="min-h-screen bg-ink">
-          <Outlet />
-        </main>
-        <Footer />
-        <WhatsAppFloat />
-        <CartDrawer />
-      </CartProvider>
-    </WishlistProvider>
+    <AuthProvider>
+      <WishlistProvider>
+        <CartProvider>
+          <Header />
+          <main className="min-h-screen bg-ink">
+            <Outlet />
+          </main>
+          <Footer />
+          <WhatsAppFloat />
+          <CartDrawer />
+        </CartProvider>
+      </WishlistProvider>
+    </AuthProvider>
   );
 }
