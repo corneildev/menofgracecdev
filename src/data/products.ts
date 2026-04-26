@@ -94,15 +94,27 @@ const buildSrcSet = (entries: { url: string; w: number }[]) =>
 export type ImageSources = {
   avifSrcSet?: string;
   webpSrcSet?: string;
-  jpgSrcSet?: string;
+  /** Always present — falls back to the single JPG URL when no variants exist. */
+  jpgSrcSet: string;
   avif?: string;
   webp?: string;
   jpg: string;
 };
 
+/**
+ * Returns image sources for a given JPG URL. Guarantees a valid `jpg` and
+ * `jpgSrcSet` even when no AVIF/WebP/responsive variants are registered
+ * for the product, so the `<img>` fallback inside `<picture>` can always
+ * use srcSet+sizes safely.
+ */
 export function getImageSources(src: string): ImageSources {
   const v = imageVariants[src];
-  if (!v) return { jpg: src };
+  if (!v) {
+    // Synthesize a single-candidate srcset so consumers can always pass
+    // srcSet+sizes to <img> without conditionals. The 1024w descriptor is
+    // a conservative default for our atelier photography.
+    return { jpg: src, jpgSrcSet: `${src} 1024w` };
+  }
   return {
     avifSrcSet: buildSrcSet(v.avif),
     webpSrcSet: buildSrcSet(v.webp),
