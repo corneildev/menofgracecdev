@@ -695,7 +695,7 @@ function ProductView({ product }: { product: Product }) {
             });
           })()}
           {similarInStock.length > 0 && (
-          <Carousel opts={{ align: "start" }} className="w-full">
+          <Carousel opts={{ align: "start" }} setApi={setCarouselApi} className="w-full">
             <CarouselContent className="-ml-4">
               {similarInStock.map((p, idx) => {
                 const pPrice = formatPrice(p);
