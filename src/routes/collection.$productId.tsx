@@ -132,6 +132,14 @@ function ProductView({ product }: { product: Product }) {
 
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
+  // Track which similar-product ids we've already emitted a <link rel="preload">
+  // for in this carousel session — prevents duplicate preload tags across
+  // re-renders (filter changes, currency switches, etc.). Reset per product page.
+  const warmedPreloadsRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    warmedPreloadsRef.current = new Set();
+  }, [product.id]);
+
   // Tune the near-viewport lookahead by device: mobile users scroll faster
   // relative to viewport height and benefit from a longer runway, while
   // desktop's wider viewport already covers more layout — a tighter margin
@@ -679,17 +687,30 @@ function ProductView({ product }: { product: Product }) {
             thumbnails as soon as the carousel section nears the viewport.
             All preloads use srcSet+sizes so the browser fetches the right
             resolution for the device.
+
+            De-duplication: `warmedPreloadsRef` records every product id we've
+            ever emitted a <link rel="preload"> for in this carousel session,
+            so filter changes / re-renders never produce duplicate preload
+            tags for the same image.
           */}
           {(() => {
             const sizes =
               "(min-width: 1600px) 384px, (min-width: 1280px) calc(25vw - 40px), (min-width: 1024px) calc(33.33vw - 48px), (min-width: 768px) calc(50vw - 64px), (min-width: 640px) calc(50vw - 40px), calc(66.67vw - 48px)";
-            // Index 0 → high priority (LCP). Indices 1-2 → low, gated on near-viewport.
-            const preloads: { idx: number; priority: "high" | "low" }[] = [];
-            if (similarInStock[0]?.image) preloads.push({ idx: 0, priority: "high" });
+            // Build the candidate list (index 0 = LCP, 1-2 = near-viewport low priority).
+            const candidates: { idx: number; priority: "high" | "low" }[] = [];
+            if (similarInStock[0]?.image) candidates.push({ idx: 0, priority: "high" });
             if (carouselNear) {
-              if (similarInStock[1]?.image) preloads.push({ idx: 1, priority: "low" });
-              if (similarInStock[2]?.image) preloads.push({ idx: 2, priority: "low" });
+              if (similarInStock[1]?.image) candidates.push({ idx: 1, priority: "low" });
+              if (similarInStock[2]?.image) candidates.push({ idx: 2, priority: "low" });
             }
+            // Filter out anything we've already warmed in this session.
+            const preloads = candidates.filter(({ idx }) => {
+              const item = similarInStock[idx];
+              if (!item) return false;
+              if (warmedPreloadsRef.current.has(item.id)) return false;
+              warmedPreloadsRef.current.add(item.id);
+              return true;
+            });
             return preloads.map(({ idx, priority }) => {
               const item = similarInStock[idx];
               const s = getImageSources(item.image);
