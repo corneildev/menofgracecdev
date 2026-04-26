@@ -327,6 +327,50 @@ function ProductView({ product }: { product: Product }) {
           </ul>
         </div>
       </div>
+
+      {/* Similar in-stock products — shown when this piece is fully sold out */}
+      {allSoldOut && similarInStock.length > 0 && (
+        <div className="px-6 md:px-12 max-w-[1600px] mx-auto mt-32">
+          <div className="border-t border-hairline pt-12 mb-10">
+            <div className="eyebrow text-bone/60 mb-4">— Disponibles maintenant —</div>
+            <h2 className="display text-3xl md:text-4xl">Pièces similaires en stock</h2>
+            <p className="text-bone/60 font-light mt-3 max-w-xl">
+              Sélection de la même catégorie, prête à être expédiée.
+            </p>
+          </div>
+          <Carousel opts={{ align: "start" }} className="w-full">
+            <CarouselContent className="-ml-4">
+              {similarInStock.map((p) => {
+                const pPrice = formatPrice(p);
+                return (
+                  <CarouselItem key={p.id} className="pl-4 basis-2/3 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                    <Link
+                      to="/collection/$productId"
+                      params={{ productId: p.id }}
+                      className="group block"
+                    >
+                      <div className="aspect-[4/5] bg-secondary overflow-hidden mb-4">
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="eyebrow text-bone/50 text-[10px] mb-2">{p.category}</div>
+                      <h3 className="font-serif text-bone text-lg mb-1 group-hover:text-bone/80 transition-colors">
+                        {p.name}
+                      </h3>
+                      <div className="text-bone/60 font-light text-sm">{pPrice.fcfa}</div>
+                    </Link>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+            <CarouselPrevious className="hidden md:flex -left-4 bg-ink border-hairline text-bone hover:bg-ink hover:text-bone" />
+            <CarouselNext className="hidden md:flex -right-4 bg-ink border-hairline text-bone hover:bg-ink hover:text-bone" />
+          </Carousel>
+        </div>
+      )}
     </div>
   );
 }
