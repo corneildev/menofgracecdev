@@ -740,12 +740,19 @@ function ProductView({ product }: { product: Product }) {
               if (similarInStock[1]?.image) candidates.push({ idx: 1, priority: "low" });
               if (similarInStock[2]?.image) candidates.push({ idx: 2, priority: "low" });
             }
-            // Filter out anything we've already warmed in this session.
+            // Filter out anything we've already warmed in this session,
+            // counting both successful emissions and would-be duplicates so
+            // we can verify the dedup gate is actually working in production.
+            preloadStatsRef.current.evaluations += 1;
             const preloads = candidates.filter(({ idx }) => {
               const item = similarInStock[idx];
               if (!item) return false;
-              if (warmedPreloadsRef.current.has(item.id)) return false;
+              if (warmedPreloadsRef.current.has(item.id)) {
+                preloadStatsRef.current.duplicates += 1;
+                return false;
+              }
               warmedPreloadsRef.current.add(item.id);
+              preloadStatsRef.current.emitted += 1;
               return true;
             });
             return preloads.map(({ idx, priority }) => {
