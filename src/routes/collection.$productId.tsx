@@ -8,6 +8,7 @@ import { RestockAlertForm } from "@/components/RestockAlertForm";
 import { trackProductEvent } from "@/lib/analytics";
 import { useImagePrefetch, isImageCached, prefetchImage } from "@/hooks/useImagePrefetch";
 import { SimilarPerfReport } from "@/components/SimilarPerfReport";
+import { detectImageFormats, getFormatSupport } from "@/lib/imageFormatSupport";
 import {
   Carousel,
   CarouselContent,
