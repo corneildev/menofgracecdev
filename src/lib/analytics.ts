@@ -7,7 +7,8 @@ export type ProductEventType =
   | "similar_select_size_click"
   | "similar_carousel_impression"
   | "similar_carousel_card_click"
-  | "similar_carousel_filter_change";
+  | "similar_carousel_filter_change"
+  | "similar_preload_stats";
 
 type Args = {
   type: ProductEventType;
