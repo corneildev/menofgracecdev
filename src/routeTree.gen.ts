@@ -20,6 +20,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionProductIdRouteImport } from './routes/collection.$productId'
+import { Route as AdminRestockAlertsRouteImport } from './routes/admin.restock-alerts'
 import { Route as AdminProductsNewRouteImport } from './routes/admin.products.new'
 import { Route as AdminProductsIdRouteImport } from './routes/admin.products.$id'
 
@@ -78,6 +79,11 @@ const CollectionProductIdRoute = CollectionProductIdRouteImport.update({
   path: '/$productId',
   getParentRoute: () => CollectionRoute,
 } as any)
+const AdminRestockAlertsRoute = AdminRestockAlertsRouteImport.update({
+  id: '/restock-alerts',
+  path: '/restock-alerts',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminProductsNewRoute = AdminProductsNewRouteImport.update({
   id: '/products/new',
   path: '/products/new',
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
+  '/admin/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection/$productId': typeof CollectionProductIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByTo {
   '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
+  '/admin/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection/$productId': typeof CollectionProductIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
@@ -131,6 +139,7 @@ export interface FileRoutesById {
   '/collection': typeof CollectionRouteWithChildren
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
+  '/admin/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection/$productId': typeof CollectionProductIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
@@ -148,6 +157,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/wedding'
     | '/wishlist'
+    | '/admin/restock-alerts'
     | '/collection/$productId'
     | '/admin/products/$id'
     | '/admin/products/new'
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/wedding'
     | '/wishlist'
+    | '/admin/restock-alerts'
     | '/collection/$productId'
     | '/admin/products/$id'
     | '/admin/products/new'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/collection'
     | '/wedding'
     | '/wishlist'
+    | '/admin/restock-alerts'
     | '/collection/$productId'
     | '/admin/products/$id'
     | '/admin/products/new'
@@ -275,6 +287,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionProductIdRouteImport
       parentRoute: typeof CollectionRoute
     }
+    '/admin/restock-alerts': {
+      id: '/admin/restock-alerts'
+      path: '/restock-alerts'
+      fullPath: '/admin/restock-alerts'
+      preLoaderRoute: typeof AdminRestockAlertsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/products/new': {
       id: '/admin/products/new'
       path: '/products/new'
@@ -293,11 +312,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminRestockAlertsRoute: typeof AdminRestockAlertsRoute
   AdminProductsIdRoute: typeof AdminProductsIdRoute
   AdminProductsNewRoute: typeof AdminProductsNewRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminRestockAlertsRoute: AdminRestockAlertsRoute,
   AdminProductsIdRoute: AdminProductsIdRoute,
   AdminProductsNewRoute: AdminProductsNewRoute,
 }

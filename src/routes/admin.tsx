@@ -49,9 +49,14 @@ function AdminDashboard() {
         </div>
 
         <section>
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
             <h2 className="display text-2xl">Catalogue</h2>
-            <Link to="/admin/products/new" className="luxury-btn luxury-btn-solid">+ Nouveau produit</Link>
+            <div className="flex gap-3 items-center">
+              <Link to="/admin/restock-alerts" className="eyebrow text-[10px] text-bone/70 hover:text-bone border border-hairline px-4 py-2">
+                Alertes de réassort
+              </Link>
+              <Link to="/admin/products/new" className="luxury-btn luxury-btn-solid">+ Nouveau produit</Link>
+            </div>
           </div>
 
           {products.length === 0 ? (
