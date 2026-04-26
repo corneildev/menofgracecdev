@@ -692,6 +692,7 @@ function ProductView({ product }: { product: Product }) {
                           alt={p.name}
                           eager={eager}
                           highPriority={idx === 0}
+                          label={`#${idx} ${p.name}`}
                         />
                         <div className="eyebrow text-bone/50 text-[10px] mb-2">{p.category}</div>
                         <h3 className="font-serif text-bone text-lg mb-1 group-hover:text-bone/80 transition-colors">
@@ -768,20 +769,48 @@ function Chip({
   );
 }
 
+// Dev-only: log which srcset candidate the browser chose and whether it's the
+// smallest variant whose intrinsic width still covers rendered CSS width × DPR.
+// Helps verify mobile devices pick the 480w (not 1024w) thumbnail.
+const SRCSET_CANDIDATE_WIDTHS = [480, 768, 1024] as const;
+function logSrcsetChoice(img: HTMLImageElement, label: string) {
+  if (typeof window === "undefined") return;
+  if (!import.meta.env.DEV) return;
+  const rendered = img.getBoundingClientRect().width;
+  if (rendered === 0) return;
+  const dpr = window.devicePixelRatio || 1;
+  const needed = rendered * dpr;
+  // currentSrc reflects the actually-fetched candidate (after picture/srcset resolution).
+  const chosen = img.currentSrc || img.src;
+  const match = chosen.match(/-(\d+)\.(?:avif|webp|jpg|jpeg|png)(?:\?|$)/i);
+  const chosenWidth = match ? Number(match[1]) : null;
+  const optimal =
+    SRCSET_CANDIDATE_WIDTHS.find((w) => w >= needed) ??
+    SRCSET_CANDIDATE_WIDTHS[SRCSET_CANDIDATE_WIDTHS.length - 1];
+  const ok = chosenWidth === optimal;
+  // eslint-disable-next-line no-console
+  console[ok ? "info" : "warn"](
+    `[srcset:${ok ? "ok" : "suboptimal"}] ${label} | rendered=${rendered.toFixed(0)}px dpr=${dpr} needed=${needed.toFixed(0)}px → chose ${chosenWidth ?? "?"}w (optimal ${optimal}w) ${chosen.split("/").pop()}`,
+  );
+}
+
 function SimilarThumb({
   src,
   alt,
   eager,
   highPriority,
+  label,
 }: {
   src: string;
   alt: string;
   eager: boolean;
   highPriority: boolean;
+  label?: string;
 }) {
   // If the image is already in the in-memory cache, skip the skeleton entirely.
   const cached = isImageCached(src);
   const [loaded, setLoaded] = useState(cached);
+  const imgRef = useRef<HTMLImageElement | null>(null);
 
   // Re-evaluate when the src changes (filter switch reuses the slot).
   useEffect(() => {
@@ -792,6 +821,20 @@ function SimilarThumb({
   // Match the carousel slide width at each breakpoint (see preload <link> above).
   const sizes =
     "(min-width: 1600px) 384px, (min-width: 1280px) calc(25vw - 40px), (min-width: 1024px) calc(33.33vw - 48px), (min-width: 768px) calc(50vw - 64px), (min-width: 640px) calc(50vw - 40px), calc(66.67vw - 48px)";
+
+  const handleLoad = () => {
+    setLoaded(true);
+    if (imgRef.current) logSrcsetChoice(imgRef.current, label ?? alt);
+  };
+
+  // If the image was already cached/complete on mount, run the check once.
+  useEffect(() => {
+    const node = imgRef.current;
+    if (!node) return;
+    if (node.complete && node.naturalWidth > 0) {
+      logSrcsetChoice(node, label ?? alt);
+    }
+  }, [src, alt, label]);
 
   return (
     <div className="relative aspect-[4/5] bg-secondary overflow-hidden mb-4">
@@ -815,6 +858,7 @@ function SimilarThumb({
           <source type="image/webp" srcSet={sources.webp} sizes={sizes} />
         )}
         <img
+          ref={imgRef}
           src={sources.jpg}
           srcSet={sources.jpgSrcSet}
           alt={alt}
@@ -822,7 +866,7 @@ function SimilarThumb({
           decoding={cached ? "sync" : "async"}
           fetchPriority={highPriority ? "high" : eager ? "auto" : "low"}
           sizes={sizes}
-          onLoad={() => setLoaded(true)}
+          onLoad={handleLoad}
           onError={() => setLoaded(true)}
           className={`h-full w-full object-cover transition-all duration-700 group-hover:scale-105 ${
             loaded ? "opacity-100" : "opacity-0"
