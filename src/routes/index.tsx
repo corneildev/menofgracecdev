@@ -33,17 +33,17 @@ function Index() {
         <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/30 to-ink" />
 
         <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
-          <div className="eyebrow text-bone/70 mb-8 fade-in-slow">Maison de Couture · Est. MMXX</div>
+          <div className="eyebrow text-bone/70 mb-8 fade-in-slow">Maison de Couture · Fondée en MMXX</div>
           <h1 className="display text-bone text-[15vw] md:text-[7rem] leading-[0.9] mb-6 fade-up">
             MEN <span className="italic font-light">of</span> GRACE
           </h1>
           <div className="hairline w-16 my-8 fade-in-slow" />
           <p className="font-serif italic text-bone/85 text-xl md:text-2xl mb-12 fade-up" style={{ animationDelay: "200ms" }}>
-            Bespoke Excellence
+            L'Excellence sur Mesure
           </p>
           <div className="flex flex-col sm:flex-row gap-4 fade-up" style={{ animationDelay: "400ms" }}>
-            <Link to="/collection" className="luxury-btn luxury-btn-solid">Shop Collection</Link>
-            <Link to="/bespoke" className="luxury-btn">Book a Fitting</Link>
+            <Link to="/collection" className="luxury-btn luxury-btn-solid">Découvrir la Collection</Link>
+            <Link to="/bespoke" className="luxury-btn">Réserver un Essayage</Link>
           </div>
         </div>
 
