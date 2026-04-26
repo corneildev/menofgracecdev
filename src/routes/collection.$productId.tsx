@@ -74,15 +74,58 @@ function ProductView({ product }: { product: Product }) {
     product.sizes.length > 0 &&
     product.sizes.every((s) => product.soldOutSizes?.includes(s));
 
-  const similarInStock = useMemo(() => {
+  // Pool of all other in-stock products (any category) — base for the carousel.
+  const similarPool = useMemo(() => {
     return products
-      .filter((p) => p.id !== product.id && p.category === product.category)
+      .filter((p) => p.id !== product.id)
       .filter((p) => {
         if (!p.sizes || p.sizes.length === 0) return true;
         return p.sizes.some((s) => !p.soldOutSizes?.includes(s));
-      })
-      .slice(0, 8);
+      });
+  }, [product.id]);
+
+  // Available category filters, ordered with current category first.
+  const categoryOptions = useMemo(() => {
+    const set = new Set<string>(similarPool.map((p) => p.category));
+    const all = Array.from(set);
+    all.sort();
+    const ordered = [
+      ...(set.has(product.category) ? [product.category] : []),
+      ...all.filter((c) => c !== product.category),
+    ];
+    return ordered;
+  }, [similarPool, product.category]);
+
+  type PriceTier = "all" | "under" | "similar" | "over";
+  const [activeCategory, setActiveCategory] = useState<string | "all">(product.category);
+  const [priceTier, setPriceTier] = useState<PriceTier>("all");
+
+  // Reset filters when navigating to a new product.
+  useEffect(() => {
+    setActiveCategory(product.category);
+    setPriceTier("all");
   }, [product.id, product.category]);
+
+  const similarInStock = useMemo(() => {
+    const ref = product.fcfa;
+    const filtered = similarPool
+      .filter((p) => activeCategory === "all" || p.category === activeCategory)
+      .filter((p) => {
+        if (priceTier === "all") return true;
+        if (priceTier === "under") return p.fcfa < ref * 0.9;
+        if (priceTier === "over") return p.fcfa > ref * 1.1;
+        // "similar" — within ±10%
+        return p.fcfa >= ref * 0.9 && p.fcfa <= ref * 1.1;
+      });
+    // Soft ranking: same category first, then closest price.
+    filtered.sort((a, b) => {
+      const aSame = a.category === product.category ? 0 : 1;
+      const bSame = b.category === product.category ? 0 : 1;
+      if (aSame !== bSame) return aSame - bSame;
+      return Math.abs(a.fcfa - ref) - Math.abs(b.fcfa - ref);
+    });
+    return filtered.slice(0, 8);
+  }, [similarPool, activeCategory, priceTier, product.category, product.fcfa]);
 
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const impressionLogged = useRef(false);
@@ -90,7 +133,7 @@ function ProductView({ product }: { product: Product }) {
     impressionLogged.current = false;
   }, [product.id]);
   useEffect(() => {
-    if (!allSoldOut || similarInStock.length === 0) return;
+    if (!allSoldOut || similarPool.length === 0) return;
     const node = carouselRef.current;
     if (!node || impressionLogged.current) return;
     if (typeof IntersectionObserver === "undefined") return;
@@ -435,14 +478,14 @@ function ProductView({ product }: { product: Product }) {
       </div>
 
       {/* Similar in-stock products — shown when this piece is fully sold out */}
-      {allSoldOut && similarInStock.length > 0 && (
+      {allSoldOut && similarPool.length > 0 && (
         <div ref={carouselRef} className="px-6 md:px-12 max-w-[1600px] mx-auto mt-32">
-          <div className="border-t border-hairline pt-12 mb-10 flex flex-wrap items-end justify-between gap-6">
+          <div className="border-t border-hairline pt-12 mb-8 flex flex-wrap items-end justify-between gap-6">
             <div>
               <div className="eyebrow text-bone/60 mb-4">— Disponibles maintenant —</div>
               <h2 className="display text-3xl md:text-4xl">Pièces similaires en stock</h2>
               <p className="text-bone/60 font-light mt-3 max-w-xl">
-                Sélection de la même catégorie, prête à être expédiée.
+                Affinez par collection ou gamme de prix pour trouver la pièce qui vous correspond.
               </p>
             </div>
             <div className="flex items-center gap-2" role="group" aria-label="Devise">
@@ -463,10 +506,94 @@ function ProductView({ product }: { product: Product }) {
               ))}
             </div>
           </div>
+
+          {/* Filters: collection + price tier */}
+          <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Collection">
+              <span className="eyebrow text-bone/40 text-[10px] mr-2">Collection</span>
+              {(["all", ...categoryOptions] as const).map((c) => {
+                const active = activeCategory === c;
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => {
+                      setActiveCategory(c);
+                      trackProductEvent({
+                        type: "similar_carousel_filter_change",
+                        productSlug: product.id,
+                        productName: product.name,
+                        metadata: { filter: "category", value: c },
+                      });
+                    }}
+                    aria-pressed={active}
+                    className={`px-3 py-1.5 text-[10px] tracking-[0.25em] uppercase border transition-colors ${
+                      active
+                        ? "border-bone bg-bone text-ink"
+                        : "border-hairline text-bone/60 hover:border-bone hover:text-bone"
+                    }`}
+                  >
+                    {c === "all" ? "Toutes" : c}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Gamme de prix">
+              <span className="eyebrow text-bone/40 text-[10px] mr-2">Prix</span>
+              {([
+                { v: "all", l: "Tous" },
+                { v: "under", l: "− abordable" },
+                { v: "similar", l: "Équivalent" },
+                { v: "over", l: "+ premium" },
+              ] as const).map((opt) => {
+                const active = priceTier === opt.v;
+                return (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    onClick={() => {
+                      setPriceTier(opt.v);
+                      trackProductEvent({
+                        type: "similar_carousel_filter_change",
+                        productSlug: product.id,
+                        productName: product.name,
+                        metadata: { filter: "price_tier", value: opt.v },
+                      });
+                    }}
+                    aria-pressed={active}
+                    className={`px-3 py-1.5 text-[10px] tracking-[0.25em] uppercase border transition-colors ${
+                      active
+                        ? "border-bone bg-bone text-ink"
+                        : "border-hairline text-bone/60 hover:border-bone hover:text-bone"
+                    }`}
+                  >
+                    {opt.l}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {similarInStock.length === 0 && (
+            <div className="border border-hairline px-6 py-10 text-center text-bone/60 font-light text-sm">
+              Aucune pièce ne correspond à ces filtres.{" "}
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveCategory("all");
+                  setPriceTier("all");
+                }}
+                className="underline underline-offset-4 hover:text-bone"
+              >
+                Réinitialiser
+              </button>
+            </div>
+          )}
           {/* Preload the first thumbnail to speed up LCP on mobile */}
           {similarInStock[0]?.image && (
             <link rel="preload" as="image" href={similarInStock[0].image} fetchPriority="high" />
           )}
+          {similarInStock.length > 0 && (
           <Carousel opts={{ align: "start" }} className="w-full">
             <CarouselContent className="-ml-4">
               {similarInStock.map((p, idx) => {
@@ -529,6 +656,7 @@ function ProductView({ product }: { product: Product }) {
             <CarouselPrevious className="hidden md:flex -left-4 bg-ink border-hairline text-bone hover:bg-ink hover:text-bone" />
             <CarouselNext className="hidden md:flex -right-4 bg-ink border-hairline text-bone hover:bg-ink hover:text-bone" />
           </Carousel>
+          )}
         </div>
       )}
     </div>

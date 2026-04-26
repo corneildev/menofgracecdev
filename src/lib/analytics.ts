@@ -6,7 +6,8 @@ export type ProductEventType =
   | "all_sold_out_booking_click"
   | "similar_select_size_click"
   | "similar_carousel_impression"
-  | "similar_carousel_card_click";
+  | "similar_carousel_card_click"
+  | "similar_carousel_filter_change";
 
 type Args = {
   type: ProductEventType;
