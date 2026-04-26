@@ -81,9 +81,20 @@ function ProductView({ product }: { product: Product }) {
   const [sizeError, setSizeError] = useState<string | null>(null);
   const [carouselCurrency, setCarouselCurrency] = useState<"fcfa" | "usd" | "eur">("fcfa");
 
-  const allSoldOut =
+  const actuallySoldOut =
     product.sizes.length > 0 &&
     product.sizes.every((s) => product.soldOutSizes?.includes(s));
+
+  // Dev-only override: ?forceCarousel=1 renders the similar-products carousel
+  // even when the current product still has stock, so preload tags can be
+  // visually verified on mobile and Safari. Gated behind import.meta.env.DEV
+  // so it cannot ship to production builds.
+  const forceCarousel =
+    import.meta.env.DEV &&
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("forceCarousel") === "1";
+
+  const allSoldOut = actuallySoldOut || forceCarousel;
 
   // Pool of all other in-stock products (any category) — base for the carousel.
   const similarPool = useMemo(() => {
