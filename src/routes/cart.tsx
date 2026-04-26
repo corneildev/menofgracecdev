@@ -13,7 +13,7 @@ export const Route = createFileRoute("/cart")({
 });
 
 function CartPage() {
-  const { items, ready, remove, setQuantity, clear, totalFcfa, totalUsd, count } = useCart();
+  const { items, ready, remove, setQuantity, setSize, clear, totalFcfa, totalUsd, count } = useCart();
 
   const waMessage = encodeURIComponent(
     `Bonjour MEN OF GRACE — je souhaite finaliser ma commande:\n\n` +
@@ -73,8 +73,25 @@ function CartPage() {
                       </h2>
                       <div className="eyebrow text-bone/50 mb-4 text-[10px]">
                         {it.fit} · {it.lapel} · {it.lining}
-                        {it.size ? ` · Taille ${it.size}` : ""}
                         {it.monogram ? ` · ${it.monogram}` : ""}
+                      </div>
+                      <div className="mb-4 flex items-center gap-3">
+                        <label className="eyebrow text-bone/60 text-[10px]" htmlFor={`size-${it.id}`}>Taille</label>
+                        {it.availableSizes && it.availableSizes.length > 0 ? (
+                          <select
+                            id={`size-${it.id}`}
+                            value={it.size ?? ""}
+                            onChange={(e) => setSize(it.id, e.target.value)}
+                            className="bg-ink border border-hairline text-bone text-xs px-3 py-1.5 focus:outline-none focus:border-bone"
+                          >
+                            {!it.size && <option value="" disabled>Choisir…</option>}
+                            {it.availableSizes.map((s) => (
+                              <option key={s} value={s}>{s}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <span className="text-bone/70 text-xs">{it.size ?? "—"}</span>
+                        )}
                       </div>
                       <div className="text-bone/80 text-sm font-light mb-5">
                         {formatFcfa(it.fcfa * it.quantity)}
