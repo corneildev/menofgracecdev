@@ -150,6 +150,46 @@ function ProductView({ product }: { product: Product }) {
     preloadStatsRef.current = { emitted: 0, duplicates: 0, evaluations: 0 };
   }, [product.id]);
 
+  // Throttled flush: log preload stats to console (dev) and analytics (prod)
+  // at most once every 2s, plus a final flush on page hide. Lets us verify
+  // the dedup gate is doing real work without log spam.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!allSoldOut || similarPool.length === 0) return;
+    const lastSent = { evaluations: 0 };
+    const flush = (reason: "interval" | "pagehide") => {
+      const s = preloadStatsRef.current;
+      if (s.evaluations === lastSent.evaluations) return; // no new activity
+      lastSent.evaluations = s.evaluations;
+      // eslint-disable-next-line no-console
+      if (import.meta.env.DEV) {
+        console.info(
+          `[preload-dedup:${reason}] product=${product.id} evaluations=${s.evaluations} emitted=${s.emitted} duplicates_prevented=${s.duplicates}`,
+        );
+      }
+      // Production analytics — single event with all counters; cheap to filter on.
+      trackProductEvent({
+        type: "similar_preload_stats",
+        productSlug: product.id,
+        productName: product.name,
+        metadata: {
+          reason,
+          evaluations: s.evaluations,
+          emitted: s.emitted,
+          duplicates_prevented: s.duplicates,
+        },
+      });
+    };
+    const interval = window.setInterval(() => flush("interval"), 2000);
+    const onHide = () => flush("pagehide");
+    window.addEventListener("pagehide", onHide);
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("pagehide", onHide);
+      flush("pagehide");
+    };
+  }, [allSoldOut, similarPool.length, product.id, product.name]);
+
   // Run AVIF/WebP feature detection once, then re-render so the preload
   // <link> picks a format the browser actually decodes (Safari <16 lacks
   // AVIF; older Firefox is iffy on AVIF). Until detection resolves we
