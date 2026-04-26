@@ -656,6 +656,7 @@ function ProductView({ product }: { product: Product }) {
             <CarouselPrevious className="hidden md:flex -left-4 bg-ink border-hairline text-bone hover:bg-ink hover:text-bone" />
             <CarouselNext className="hidden md:flex -right-4 bg-ink border-hairline text-bone hover:bg-ink hover:text-bone" />
           </Carousel>
+          )}
         </div>
       )}
     </div>
