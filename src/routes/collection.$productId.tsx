@@ -692,6 +692,7 @@ function ProductView({ product }: { product: Product }) {
                           alt={p.name}
                           eager={eager}
                           highPriority={idx === 0}
+                          label={`#${idx} ${p.name}`}
                         />
                         <div className="eyebrow text-bone/50 text-[10px] mb-2">{p.category}</div>
                         <h3 className="font-serif text-bone text-lg mb-1 group-hover:text-bone/80 transition-colors">
