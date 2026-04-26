@@ -13,8 +13,8 @@
  */
 
 import { useEffect, useState } from "react";
+import { isPreloadDebugEnabled } from "@/lib/preloadDebug";
 import {
-  isPreloadDebugEnabled,
   readAllSessions,
   clearStoredStats,
   type PreloadSession,
