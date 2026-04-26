@@ -132,13 +132,28 @@ function ProductView({ product }: { product: Product }) {
 
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
+  // Tune the near-viewport lookahead by device: mobile users scroll faster
+  // relative to viewport height and benefit from a longer runway, while
+  // desktop's wider viewport already covers more layout — a tighter margin
+  // there avoids prefetching pieces the user may never reach.
+  // Mobile (<768px): 900px · Desktop (≥768px): 600px.
+  const [prefetchRootMargin, setPrefetchRootMargin] = useState("600px 0px");
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mql = window.matchMedia("(max-width: 767px)");
+    const apply = () => setPrefetchRootMargin(mql.matches ? "900px 0px" : "600px 0px");
+    apply();
+    mql.addEventListener("change", apply);
+    return () => mql.removeEventListener("change", apply);
+  }, []);
+
   // Just-in-time prefetch: warm the similar-product thumbnails only when the
-  // carousel section approaches the viewport (~600px lookahead). Sold-out
-  // pages are the only ones that render the carousel, so we gate on that too.
+  // carousel section approaches the viewport. Sold-out pages are the only
+  // ones that render the carousel, so we gate on that too.
   const similarImageSrcs = useMemo(() => similarPool.map((p) => p.image), [similarPool]);
   useImagePrefetch(similarImageSrcs, {
     target: carouselRef,
-    rootMargin: "600px 0px",
+    rootMargin: prefetchRootMargin,
     enabled: allSoldOut && similarPool.length > 0,
   });
 
@@ -164,11 +179,11 @@ function ProductView({ product }: { product: Product }) {
           }
         }
       },
-      { rootMargin: "600px 0px", threshold: 0 },
+      { rootMargin: prefetchRootMargin, threshold: 0 },
     );
     obs.observe(node);
     return () => obs.disconnect();
-  }, [allSoldOut, similarPool.length]);
+  }, [allSoldOut, similarPool.length, prefetchRootMargin]);
 
   // Direction-aware prefetch: as the user scrolls the carousel, warm the
   // upcoming thumbnails in the direction of travel (next 2 forward, or 2
