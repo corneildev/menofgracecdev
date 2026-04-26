@@ -1,9 +1,16 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { getProduct, formatPrice, type Product } from "@/data/products";
+import { useEffect, useMemo, useState } from "react";
+import { getProduct, products, formatPrice, type Product } from "@/data/products";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export const Route = createFileRoute("/collection/$productId")({
   loader: ({ params }) => {
@@ -59,6 +66,20 @@ function ProductView({ product }: { product: Product }) {
   const [lining, setLining] = useState(product.linings[0]);
   const [monogram, setMonogram] = useState("");
   const [sizeError, setSizeError] = useState<string | null>(null);
+
+  const allSoldOut =
+    product.sizes.length > 0 &&
+    product.sizes.every((s) => product.soldOutSizes?.includes(s));
+
+  const similarInStock = useMemo(() => {
+    return products
+      .filter((p) => p.id !== product.id && p.category === product.category)
+      .filter((p) => {
+        if (!p.sizes || p.sizes.length === 0) return true;
+        return p.sizes.some((s) => !p.soldOutSizes?.includes(s));
+      })
+      .slice(0, 8);
+  }, [product.id, product.category]);
 
   // Auto-switch if the currently selected size becomes sold out.
   useEffect(() => {
@@ -195,16 +216,15 @@ function ProductView({ product }: { product: Product }) {
                 })}
               </div>
             </TooltipProvider>
-            {product.sizes.length > 0 &&
-              product.sizes.every((s) => product.soldOutSizes?.includes(s)) && (
-                <p className="text-xs text-bone/60 mt-3 tracking-wider font-light">
-                  Toutes les tailles sont actuellement épuisées —{" "}
-                  <Link to="/bespoke" className="underline underline-offset-4 hover:text-bone">
-                    réservez un essayage
-                  </Link>{" "}
-                  pour une pièce sur mesure.
-                </p>
-              )}
+            {allSoldOut && (
+              <p className="text-xs text-bone/60 mt-3 tracking-wider font-light">
+                Toutes les tailles sont actuellement épuisées —{" "}
+                <Link to="/bespoke" className="underline underline-offset-4 hover:text-bone">
+                  réservez un essayage
+                </Link>{" "}
+                pour une pièce sur mesure.
+              </p>
+            )}
             {sizeError && (
               <p role="alert" className="text-xs text-red-400/90 mt-3 tracking-wider">{sizeError}</p>
             )}
@@ -307,6 +327,50 @@ function ProductView({ product }: { product: Product }) {
           </ul>
         </div>
       </div>
+
+      {/* Similar in-stock products — shown when this piece is fully sold out */}
+      {allSoldOut && similarInStock.length > 0 && (
+        <div className="px-6 md:px-12 max-w-[1600px] mx-auto mt-32">
+          <div className="border-t border-hairline pt-12 mb-10">
+            <div className="eyebrow text-bone/60 mb-4">— Disponibles maintenant —</div>
+            <h2 className="display text-3xl md:text-4xl">Pièces similaires en stock</h2>
+            <p className="text-bone/60 font-light mt-3 max-w-xl">
+              Sélection de la même catégorie, prête à être expédiée.
+            </p>
+          </div>
+          <Carousel opts={{ align: "start" }} className="w-full">
+            <CarouselContent className="-ml-4">
+              {similarInStock.map((p) => {
+                const pPrice = formatPrice(p);
+                return (
+                  <CarouselItem key={p.id} className="pl-4 basis-2/3 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                    <Link
+                      to="/collection/$productId"
+                      params={{ productId: p.id }}
+                      className="group block"
+                    >
+                      <div className="aspect-[4/5] bg-secondary overflow-hidden mb-4">
+                        <img
+                          src={p.image}
+                          alt={p.name}
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="eyebrow text-bone/50 text-[10px] mb-2">{p.category}</div>
+                      <h3 className="font-serif text-bone text-lg mb-1 group-hover:text-bone/80 transition-colors">
+                        {p.name}
+                      </h3>
+                      <div className="text-bone/60 font-light text-sm">{pPrice.fcfa}</div>
+                    </Link>
+                  </CarouselItem>
+                );
+              })}
+            </CarouselContent>
+            <CarouselPrevious className="hidden md:flex -left-4 bg-ink border-hairline text-bone hover:bg-ink hover:text-bone" />
+            <CarouselNext className="hidden md:flex -right-4 bg-ink border-hairline text-bone hover:bg-ink hover:text-bone" />
+          </Carousel>
+        </div>
+      )}
     </div>
   );
 }
