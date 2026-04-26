@@ -602,10 +602,13 @@ function ProductView({ product }: { product: Product }) {
               </button>
             </div>
           )}
-          {/* Preload the first thumbnail to speed up LCP on mobile */}
-          {similarInStock[0]?.image && (
-            <link rel="preload" as="image" href={similarInStock[0].image} fetchPriority="high" />
-          )}
+          {/* Preload the first thumbnail (modern format when available) for faster LCP. */}
+          {similarInStock[0]?.image && (() => {
+            const s = getImageSources(similarInStock[0].image);
+            const href = s.avif ?? s.webp ?? s.jpg;
+            const type = s.avif ? "image/avif" : s.webp ? "image/webp" : "image/jpeg";
+            return <link rel="preload" as="image" href={href} type={type} fetchPriority="high" />;
+          })()}
           {similarInStock.length > 0 && (
           <Carousel opts={{ align: "start" }} className="w-full">
             <CarouselContent className="-ml-4">
