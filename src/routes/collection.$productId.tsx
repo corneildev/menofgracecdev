@@ -745,10 +745,21 @@ function SimilarThumb({
         />
       )}
       <picture>
-        {sources.avif && <source type="image/avif" srcSet={sources.avif} sizes={sizes} />}
-        {sources.webp && <source type="image/webp" srcSet={sources.webp} sizes={sizes} />}
+        {sources.avifSrcSet && (
+          <source type="image/avif" srcSet={sources.avifSrcSet} sizes={sizes} />
+        )}
+        {sources.avif && !sources.avifSrcSet && (
+          <source type="image/avif" srcSet={sources.avif} sizes={sizes} />
+        )}
+        {sources.webpSrcSet && (
+          <source type="image/webp" srcSet={sources.webpSrcSet} sizes={sizes} />
+        )}
+        {sources.webp && !sources.webpSrcSet && (
+          <source type="image/webp" srcSet={sources.webp} sizes={sizes} />
+        )}
         <img
           src={sources.jpg}
+          srcSet={sources.jpgSrcSet}
           alt={alt}
           loading={eager || cached ? "eager" : "lazy"}
           decoding={cached ? "sync" : "async"}
