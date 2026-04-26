@@ -921,14 +921,28 @@ function ProductView({ product }: { product: Product }) {
               resolved,
               warmedPreloadsRef.current,
               preloadStatsRef.current,
-              (d) =>
+              (d) => {
                 logDecision({
                   decision: d.decision,
                   idx: d.idx,
                   productId: d.item.id,
                   href: d.href,
                   priority: d.priority,
-                }),
+                });
+                if (sessionIdRef.current) {
+                  const detail = {
+                    idx: d.idx,
+                    productId: d.item.id,
+                    href: d.href,
+                    priority: d.priority,
+                  };
+                  if (d.decision === "emit") {
+                    recordEmit(sessionIdRef.current, detail);
+                  } else {
+                    recordDuplicate(sessionIdRef.current, detail);
+                  }
+                }
+              },
             );
             logRenderEnd();
 
