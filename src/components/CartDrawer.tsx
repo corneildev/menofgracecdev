@@ -41,8 +41,22 @@ export function CartDrawer() {
                     <h3 className="font-serif text-lg text-bone mb-1 truncate">{it.name}</h3>
                     <div className="eyebrow text-bone/50 mb-2 text-[10px]">
                       {it.fit} · {it.lapel}
-                      {it.size ? ` · ${it.size}` : ""}
                     </div>
+                    {it.availableSizes && it.availableSizes.length > 0 ? (
+                      <select
+                        value={it.size ?? ""}
+                        onChange={(e) => setSize(it.id, e.target.value)}
+                        className="bg-ink border border-hairline text-bone text-[11px] px-2 py-1 mb-2 focus:outline-none focus:border-bone"
+                        aria-label="Taille"
+                      >
+                        {!it.size && <option value="" disabled>Taille…</option>}
+                        {it.availableSizes.map((s) => (
+                          <option key={s} value={s}>Taille {s}</option>
+                        ))}
+                      </select>
+                    ) : it.size ? (
+                      <div className="eyebrow text-bone/50 mb-2 text-[10px]">Taille {it.size}</div>
+                    ) : null}
                     <div className="text-bone/80 text-sm font-light mb-3">{formatFcfa(it.fcfa * it.quantity)}</div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center border border-hairline">
