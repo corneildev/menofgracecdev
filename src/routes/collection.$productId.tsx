@@ -885,8 +885,15 @@ function SimilarThumb({
       {!loaded && (
         <div
           aria-hidden="true"
-          className="absolute inset-0 animate-pulse bg-gradient-to-br from-bone/[0.04] via-bone/[0.08] to-bone/[0.04]"
-        />
+          className="absolute inset-0 overflow-hidden"
+        >
+          {/* Subtle base tint — deeper than bg-secondary so the shimmer reads */}
+          <div className="absolute inset-0 bg-gradient-to-br from-bone/[0.03] via-bone/[0.06] to-bone/[0.03]" />
+          {/* Sweeping highlight — slow, low-contrast, premium feel */}
+          <div className="absolute inset-0 -translate-x-full animate-[shimmer_2.4s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-bone/[0.08] to-transparent" />
+          {/* Hairline inset to anchor the silhouette */}
+          <div className="absolute inset-0 ring-1 ring-inset ring-bone/[0.04]" />
+        </div>
       )}
       <picture>
         {sources.avifSrcSet && (
