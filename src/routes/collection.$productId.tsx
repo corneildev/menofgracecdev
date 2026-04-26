@@ -177,6 +177,12 @@ function ProductView({ product }: { product: Product }) {
   // throttled effect logs the running totals so we can verify dedup in prod.
   const preloadStatsRef = useRef({ emitted: 0, duplicates: 0, evaluations: 0 });
 
+  // Persisted session id for the localStorage stats store. One id per visit
+  // to this product page; reset when the dataset signature changes so the
+  // overlay shows a fresh row after currency-independent filter swaps.
+  const sessionIdRef = useRef<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+
   // Signature of the current carousel dataset. Changes whenever the set of
   // similar products (or their order) shifts — e.g. inventory refresh, filter
   // change, or product variant swap. Resetting on this in addition to
@@ -188,6 +194,12 @@ function ProductView({ product }: { product: Product }) {
   useEffect(() => {
     warmedPreloadsRef.current = new Set();
     preloadStatsRef.current = { emitted: 0, duplicates: 0, evaluations: 0 };
+    if (sessionIdRef.current) {
+      recordReset(sessionIdRef.current, "product-or-dataset-change");
+    }
+    const id = startSession(product.id);
+    sessionIdRef.current = id;
+    setSessionId(id);
   }, [product.id, similarSignature]);
 
   // Throttled flush: log preload stats to console (dev) and analytics (prod)
