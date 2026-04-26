@@ -324,10 +324,17 @@ function ProductView({ product }: { product: Product }) {
             <button
               type="button"
               onClick={handleAddToCart}
-              className="luxury-btn luxury-btn-solid w-full"
+              disabled={allSoldOut}
+              aria-disabled={allSoldOut}
+              className="luxury-btn luxury-btn-solid w-full disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              Ajouter au Panier
+              {allSoldOut ? "Édition épuisée" : "Ajouter au Panier"}
             </button>
+            {allSoldOut && (
+              <p className="eyebrow text-[10px] text-bone/60 text-center leading-relaxed tracking-[0.25em] mt-1">
+                Pièce confectionnée en série limitée — réservez un essayage privé pour une création sur mesure à votre image.
+              </p>
+            )}
             <a href={waHref} target="_blank" rel="noopener noreferrer" className="luxury-btn w-full">
               Reserve via WhatsApp
             </a>
