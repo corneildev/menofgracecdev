@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useCart, formatFcfa, formatUsd } from "@/context/CartContext";
 
 export function CartDrawer() {
-  const { items, isOpen, close, remove, setQuantity, totalFcfa, totalUsd, count } = useCart();
+  const { items, isOpen, close, remove, setQuantity, setSize, totalFcfa, totalUsd, count } = useCart();
 
   return (
     <div
