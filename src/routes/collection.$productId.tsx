@@ -401,12 +401,31 @@ function ProductView({ product }: { product: Product }) {
       {/* Similar in-stock products — shown when this piece is fully sold out */}
       {allSoldOut && similarInStock.length > 0 && (
         <div className="px-6 md:px-12 max-w-[1600px] mx-auto mt-32">
-          <div className="border-t border-hairline pt-12 mb-10">
-            <div className="eyebrow text-bone/60 mb-4">— Disponibles maintenant —</div>
-            <h2 className="display text-3xl md:text-4xl">Pièces similaires en stock</h2>
-            <p className="text-bone/60 font-light mt-3 max-w-xl">
-              Sélection de la même catégorie, prête à être expédiée.
-            </p>
+          <div className="border-t border-hairline pt-12 mb-10 flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <div className="eyebrow text-bone/60 mb-4">— Disponibles maintenant —</div>
+              <h2 className="display text-3xl md:text-4xl">Pièces similaires en stock</h2>
+              <p className="text-bone/60 font-light mt-3 max-w-xl">
+                Sélection de la même catégorie, prête à être expédiée.
+              </p>
+            </div>
+            <div className="flex items-center gap-2" role="group" aria-label="Devise">
+              {(["fcfa", "usd", "eur"] as const).map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setCarouselCurrency(c)}
+                  aria-pressed={carouselCurrency === c}
+                  className={`px-3 py-1.5 text-[10px] tracking-[0.25em] uppercase border transition-colors ${
+                    carouselCurrency === c
+                      ? "border-bone bg-bone text-ink"
+                      : "border-hairline text-bone/60 hover:border-bone hover:text-bone"
+                  }`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
           </div>
           <Carousel opts={{ align: "start" }} className="w-full">
             <CarouselContent className="-ml-4">
