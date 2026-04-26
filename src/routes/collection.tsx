@@ -30,18 +30,28 @@ function Collection() {
             const price = formatPrice(p);
             return (
               <article key={p.id} className="group">
-                <div className="img-zoom aspect-[4/5] bg-secondary mb-6">
+                <Link
+                  to="/collection/$productId"
+                  params={{ productId: p.id }}
+                  className="block img-zoom aspect-[4/5] bg-secondary mb-6"
+                >
                   <img src={p.image} alt={p.name} loading="lazy" className="h-full w-full object-cover" />
-                </div>
+                </Link>
                 <div className="eyebrow text-bone/50 mb-2">{p.category}</div>
-                <h2 className="font-serif text-2xl mb-3">{p.name}</h2>
+                <h2 className="font-serif text-2xl mb-3">
+                  <Link to="/collection/$productId" params={{ productId: p.id }} className="hover:text-bone/70 transition-colors">
+                    {p.name}
+                  </Link>
+                </h2>
                 <p className="text-bone/60 font-light text-sm mb-5 leading-relaxed">{p.description}</p>
                 <div className="flex items-center justify-between border-t border-hairline pt-4">
                   <div className="text-bone/80 text-sm font-light flex flex-col">
                     <span>{price.fcfa}</span>
                     <span className="text-bone/50 text-xs">{price.usd} · {price.eur}</span>
                   </div>
-                  <Link to="/bespoke" className="eyebrow text-bone hover:text-bone/60">Enquire</Link>
+                  <Link to="/collection/$productId" params={{ productId: p.id }} className="eyebrow text-bone hover:text-bone/60">
+                    Discover
+                  </Link>
                 </div>
               </article>
             );
