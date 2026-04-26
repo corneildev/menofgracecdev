@@ -316,6 +316,7 @@ export type Database = {
           short_description: string | null
           sizes: string[]
           slug: string
+          sold_out_sizes: string[]
           stock: number
           story: string | null
           updated_at: string
@@ -343,6 +344,7 @@ export type Database = {
           short_description?: string | null
           sizes?: string[]
           slug: string
+          sold_out_sizes?: string[]
           stock?: number
           story?: string | null
           updated_at?: string
@@ -370,6 +372,7 @@ export type Database = {
           short_description?: string | null
           sizes?: string[]
           slug?: string
+          sold_out_sizes?: string[]
           stock?: number
           story?: string | null
           updated_at?: string

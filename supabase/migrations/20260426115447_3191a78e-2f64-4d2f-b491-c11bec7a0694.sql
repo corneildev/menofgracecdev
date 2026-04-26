@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS sold_out_sizes text[] NOT NULL DEFAULT '{}';
