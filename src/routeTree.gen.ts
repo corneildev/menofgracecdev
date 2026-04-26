@@ -20,6 +20,8 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionProductIdRouteImport } from './routes/collection.$productId'
+import { Route as AdminProductsNewRouteImport } from './routes/admin.products.new'
+import { Route as AdminProductsIdRouteImport } from './routes/admin.products.$id'
 
 const WishlistRoute = WishlistRouteImport.update({
   id: '/wishlist',
@@ -76,11 +78,21 @@ const CollectionProductIdRoute = CollectionProductIdRouteImport.update({
   path: '/$productId',
   getParentRoute: () => CollectionRoute,
 } as any)
+const AdminProductsNewRoute = AdminProductsNewRouteImport.update({
+  id: '/products/new',
+  path: '/products/new',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductsIdRoute = AdminProductsIdRouteImport.update({
+  id: '/products/$id',
+  path: '/products/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/atelier': typeof AtelierRoute
   '/auth': typeof AuthRoute
   '/bespoke': typeof BespokeRoute
@@ -89,11 +101,13 @@ export interface FileRoutesByFullPath {
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/collection/$productId': typeof CollectionProductIdRoute
+  '/admin/products/$id': typeof AdminProductsIdRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/atelier': typeof AtelierRoute
   '/auth': typeof AuthRoute
   '/bespoke': typeof BespokeRoute
@@ -102,12 +116,14 @@ export interface FileRoutesByTo {
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/collection/$productId': typeof CollectionProductIdRoute
+  '/admin/products/$id': typeof AdminProductsIdRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/atelier': typeof AtelierRoute
   '/auth': typeof AuthRoute
   '/bespoke': typeof BespokeRoute
@@ -116,6 +132,8 @@ export interface FileRoutesById {
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/collection/$productId': typeof CollectionProductIdRoute
+  '/admin/products/$id': typeof AdminProductsIdRoute
+  '/admin/products/new': typeof AdminProductsNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +149,8 @@ export interface FileRouteTypes {
     | '/wedding'
     | '/wishlist'
     | '/collection/$productId'
+    | '/admin/products/$id'
+    | '/admin/products/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +164,8 @@ export interface FileRouteTypes {
     | '/wedding'
     | '/wishlist'
     | '/collection/$productId'
+    | '/admin/products/$id'
+    | '/admin/products/new'
   id:
     | '__root__'
     | '/'
@@ -157,12 +179,14 @@ export interface FileRouteTypes {
     | '/wedding'
     | '/wishlist'
     | '/collection/$productId'
+    | '/admin/products/$id'
+    | '/admin/products/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AtelierRoute: typeof AtelierRoute
   AuthRoute: typeof AuthRoute
   BespokeRoute: typeof BespokeRoute
@@ -251,8 +275,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionProductIdRouteImport
       parentRoute: typeof CollectionRoute
     }
+    '/admin/products/new': {
+      id: '/admin/products/new'
+      path: '/products/new'
+      fullPath: '/admin/products/new'
+      preLoaderRoute: typeof AdminProductsNewRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/products/$id': {
+      id: '/admin/products/$id'
+      path: '/products/$id'
+      fullPath: '/admin/products/$id'
+      preLoaderRoute: typeof AdminProductsIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminProductsIdRoute: typeof AdminProductsIdRoute
+  AdminProductsNewRoute: typeof AdminProductsNewRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminProductsIdRoute: AdminProductsIdRoute,
+  AdminProductsNewRoute: AdminProductsNewRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface CollectionRouteChildren {
   CollectionProductIdRoute: typeof CollectionProductIdRoute
@@ -269,7 +319,7 @@ const CollectionRouteWithChildren = CollectionRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   AtelierRoute: AtelierRoute,
   AuthRoute: AuthRoute,
   BespokeRoute: BespokeRoute,
