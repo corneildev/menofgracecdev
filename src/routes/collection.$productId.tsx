@@ -1021,6 +1021,8 @@ function ProductView({ product }: { product: Product }) {
         </div>
       )}
     </div>
+      <PreloadDebugOverlay currentSessionId={sessionId} />
+    </>
   );
 }
 
