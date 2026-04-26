@@ -47,6 +47,8 @@ function ProductDetail() {
 
 function ProductView({ product }: { product: Product }) {
   const price = formatPrice(product);
+  const { has, toggle, ready } = useWishlist();
+  const saved = ready && has(product.id);
   const [activeImage, setActiveImage] = useState(product.gallery[0] ?? product.image);
   const [size, setSize] = useState<string | null>(null);
   const [fit, setFit] = useState(product.fits[0]);
@@ -166,6 +168,17 @@ function ProductView({ product }: { product: Product }) {
               Reserve via WhatsApp
             </a>
             <Link to="/bespoke" className="luxury-btn w-full">Book a Fitting</Link>
+            <button
+              type="button"
+              onClick={() => toggle(product.id)}
+              aria-pressed={saved}
+              className="luxury-btn w-full flex items-center justify-center gap-3"
+            >
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.4">
+                <path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 3.1c0 5.6-7.5 10.2-7.5 10.2Z" />
+              </svg>
+              {saved ? "Saved" : "Save to Wishlist"}
+            </button>
           </div>
 
           <p className="eyebrow text-bone/40 mt-8 leading-relaxed">
