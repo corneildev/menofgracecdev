@@ -22,6 +22,7 @@ export type Product = {
   };
   details: string[];
   sizes: string[];
+  soldOutSizes?: string[];
   fits: string[];
   lapels: string[];
   linings: string[];
@@ -54,6 +55,7 @@ export const products: Product[] = [
       "Side adjusters — no belt loops",
     ],
     sizes: ["46", "48", "50", "52", "54", "56"],
+    soldOutSizes: ["46", "56"],
     fits: ["Tailored", "Slim", "Classic"],
     lapels: ["Peak", "Notch"],
     linings: ["Onyx", "Burgundy", "Azure"],
@@ -84,6 +86,7 @@ export const products: Product[] = [
       "Hand-rolled pocket squares, jetted hip pockets",
     ],
     sizes: ["46", "48", "50", "52", "54", "56"],
+    soldOutSizes: ["48"],
     fits: ["Tailored", "Slim"],
     lapels: ["Peak", "Shawl"],
     linings: ["Midnight", "Ivory", "Bordeaux"],

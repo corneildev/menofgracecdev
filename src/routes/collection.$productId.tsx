@@ -140,9 +140,20 @@ function ProductView({ product }: { product: Product }) {
           {/* Size */}
           <Section label="Size">
             <div className="flex flex-wrap gap-2">
-              {product.sizes.map((s) => (
-                <Chip key={s} active={size === s} onClick={() => { setSize(s); setSizeError(false); }}>{s}</Chip>
-              ))}
+              {product.sizes.map((s) => {
+                const soldOut = product.soldOutSizes?.includes(s) ?? false;
+                return (
+                  <Chip
+                    key={s}
+                    active={size === s}
+                    disabled={soldOut}
+                    onClick={() => { if (soldOut) return; setSize(s); setSizeError(false); }}
+                  >
+                    <span className={soldOut ? "line-through" : ""}>{s}</span>
+                    {soldOut && <span className="ml-2 text-[9px] tracking-[0.18em] opacity-70">Sold out</span>}
+                  </Chip>
+                );
+              })}
             </div>
             {sizeError && (
               <p className="text-xs text-bone/80 mt-3 tracking-wider">Veuillez sélectionner une taille.</p>
@@ -259,14 +270,28 @@ function Section({ label, children }: { label: string; children: React.ReactNode
   );
 }
 
-function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function Chip({
+  active,
+  onClick,
+  children,
+  disabled = false,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+  disabled?: boolean;
+}) {
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
+      aria-disabled={disabled}
       className={`px-4 py-2 text-xs tracking-[0.2em] uppercase border transition-colors ${
-        active
-          ? "border-bone bg-bone text-ink"
-          : "border-hairline text-bone/70 hover:border-bone hover:text-bone"
+        disabled
+          ? "border-hairline text-bone/30 cursor-not-allowed"
+          : active
+            ? "border-bone bg-bone text-ink"
+            : "border-hairline text-bone/70 hover:border-bone hover:text-bone"
       }`}
     >
       {children}
