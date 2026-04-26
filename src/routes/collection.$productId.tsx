@@ -249,24 +249,37 @@ function ProductView({ product }: { product: Product }) {
             </TooltipProvider>
             {allSoldOut && (
               <>
-                <p className="text-xs text-bone/60 mt-3 tracking-wider font-light">
-                  Toutes les tailles sont actuellement épuisées —{" "}
-                  <Link
-                    to="/bespoke"
-                    onClick={() =>
-                      trackProductEvent({
-                        type: "all_sold_out_booking_click",
-                        productSlug: product.id,
-                        productName: product.name,
-                        metadata: { source: "all_sold_out_notice" },
-                      })
-                    }
-                    className="underline underline-offset-4 hover:text-bone"
-                  >
-                    réservez un essayage
-                  </Link>{" "}
-                  pour une pièce sur mesure.
-                </p>
+                {(() => {
+                  const soldOutMsg = encodeURIComponent(
+                    `Hello MEN OF GRACE — la pièce "${product.name}"` +
+                      (size ? ` en taille ${size}` : "") +
+                      ` est épuisée. J'aimerais réserver un essayage pour une création sur mesure.`,
+                  );
+                  const soldOutWaHref = `https://wa.me/?text=${soldOutMsg}`;
+                  return (
+                    <p className="text-xs text-bone/60 mt-3 tracking-wider font-light">
+                      Toutes les tailles sont actuellement épuisées —{" "}
+                      <a
+                        href={soldOutWaHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() =>
+                          trackProductEvent({
+                            type: "all_sold_out_booking_click",
+                            productSlug: product.id,
+                            productName: product.name,
+                            size,
+                            metadata: { source: "all_sold_out_notice", channel: "whatsapp" },
+                          })
+                        }
+                        className="underline underline-offset-4 hover:text-bone"
+                      >
+                        réservez un essayage via WhatsApp
+                      </a>{" "}
+                      pour une pièce sur mesure.
+                    </p>
+                  );
+                })()}
                 <RestockAlertForm
                   productSlug={product.id}
                   productName={product.name}
