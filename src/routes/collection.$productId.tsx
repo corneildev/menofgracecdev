@@ -440,28 +440,46 @@ function ProductView({ product }: { product: Product }) {
                 const eager = idx < 2; // first two visible on mobile (basis-2/3)
                 return (
                   <CarouselItem key={p.id} className="pl-4 basis-2/3 sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-                    <Link
-                      to="/collection/$productId"
-                      params={{ productId: p.id }}
-                      className="group block"
-                    >
-                      <div className="aspect-[4/5] bg-secondary overflow-hidden mb-4">
-                        <img
-                          src={p.image}
-                          alt={p.name}
-                          loading={eager ? "eager" : "lazy"}
-                          decoding="async"
-                          fetchPriority={idx === 0 ? "high" : eager ? "auto" : "low"}
-                          sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 66vw"
-                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                      </div>
-                      <div className="eyebrow text-bone/50 text-[10px] mb-2">{p.category}</div>
-                      <h3 className="font-serif text-bone text-lg mb-1 group-hover:text-bone/80 transition-colors">
-                        {p.name}
-                      </h3>
-                      <div className="text-bone/60 font-light text-sm">{pPrice[carouselCurrency]}</div>
-                    </Link>
+                    <div className="group block">
+                      <Link
+                        to="/collection/$productId"
+                        params={{ productId: p.id }}
+                        className="block"
+                      >
+                        <div className="aspect-[4/5] bg-secondary overflow-hidden mb-4">
+                          <img
+                            src={p.image}
+                            alt={p.name}
+                            loading={eager ? "eager" : "lazy"}
+                            decoding="async"
+                            fetchPriority={idx === 0 ? "high" : eager ? "auto" : "low"}
+                            sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 66vw"
+                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          />
+                        </div>
+                        <div className="eyebrow text-bone/50 text-[10px] mb-2">{p.category}</div>
+                        <h3 className="font-serif text-bone text-lg mb-1 group-hover:text-bone/80 transition-colors">
+                          {p.name}
+                        </h3>
+                        <div className="text-bone/60 font-light text-sm mb-3">{pPrice[carouselCurrency]}</div>
+                      </Link>
+                      <Link
+                        to="/collection/$productId"
+                        params={{ productId: p.id }}
+                        hash="size-picker"
+                        onClick={() =>
+                          trackProductEvent({
+                            type: "similar_select_size_click",
+                            productSlug: p.id,
+                            productName: p.name,
+                            metadata: { source: "similar_carousel", from: product.id },
+                          })
+                        }
+                        className="inline-block eyebrow text-[10px] text-bone/80 border-b border-hairline hover:border-bone hover:text-bone transition-colors pb-1"
+                      >
+                        Choisir une taille →
+                      </Link>
+                    </div>
                   </CarouselItem>
                 );
               })}
