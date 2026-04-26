@@ -10,6 +10,7 @@ export type CartItem = {
   fcfa: number;
   usd: number;
   size: string | null;
+  availableSizes?: string[];
   fit: string;
   lapel: string;
   lining: string;
@@ -24,6 +25,7 @@ type CartContextValue = {
   add: (item: AddInput) => void;
   remove: (id: string) => void;
   setQuantity: (id: string, q: number) => void;
+  setSize: (id: string, size: string) => void;
   clear: () => void;
   count: number;
   totalFcfa: number;
