@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { products, formatPrice } from "@/data/products";
 import { useWishlist } from "@/context/WishlistContext";
 import { WishlistButton } from "@/components/WishlistButton";
+import { generateWishlistPdf } from "@/lib/wishlistPdf";
 
 export const Route = createFileRoute("/wishlist")({
   head: () => ({
