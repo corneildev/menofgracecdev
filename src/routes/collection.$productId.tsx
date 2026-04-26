@@ -625,8 +625,8 @@ function ProductView({ product }: { product: Product }) {
                           <img
                             src={p.image}
                             alt={p.name}
-                            loading={eager ? "eager" : "lazy"}
-                            decoding="async"
+                            loading={eager || isImageCached(p.image) ? "eager" : "lazy"}
+                            decoding={isImageCached(p.image) ? "sync" : "async"}
                             fetchPriority={idx === 0 ? "high" : eager ? "auto" : "low"}
                             sizes="(min-width: 1280px) 25vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 66vw"
                             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
