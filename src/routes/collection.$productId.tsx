@@ -140,9 +140,12 @@ function ProductView({ product }: { product: Product }) {
           <Section label="Size">
             <div className="flex flex-wrap gap-2">
               {product.sizes.map((s) => (
-                <Chip key={s} active={size === s} onClick={() => setSize(s)}>{s}</Chip>
+                <Chip key={s} active={size === s} onClick={() => { setSize(s); setSizeError(false); }}>{s}</Chip>
               ))}
             </div>
+            {sizeError && (
+              <p className="text-xs text-bone/80 mt-3 tracking-wider">Veuillez sélectionner une taille.</p>
+            )}
           </Section>
 
           {/* Fit */}
@@ -187,7 +190,14 @@ function ProductView({ product }: { product: Product }) {
 
           {/* CTA */}
           <div className="mt-10 flex flex-col gap-3">
-            <a href={waHref} target="_blank" rel="noopener noreferrer" className="luxury-btn luxury-btn-solid w-full">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="luxury-btn luxury-btn-solid w-full"
+            >
+              Ajouter au Panier
+            </button>
+            <a href={waHref} target="_blank" rel="noopener noreferrer" className="luxury-btn w-full">
               Reserve via WhatsApp
             </a>
             <Link to="/bespoke" className="luxury-btn w-full">Book a Fitting</Link>
