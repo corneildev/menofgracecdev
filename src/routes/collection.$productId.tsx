@@ -132,6 +132,14 @@ function ProductView({ product }: { product: Product }) {
 
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
+  // Track which similar-product ids we've already emitted a <link rel="preload">
+  // for in this carousel session — prevents duplicate preload tags across
+  // re-renders (filter changes, currency switches, etc.). Reset per product page.
+  const warmedPreloadsRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    warmedPreloadsRef.current = new Set();
+  }, [product.id]);
+
   // Tune the near-viewport lookahead by device: mobile users scroll faster
   // relative to viewport height and benefit from a longer runway, while
   // desktop's wider viewport already covers more layout — a tighter margin
