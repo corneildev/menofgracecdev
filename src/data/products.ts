@@ -22,6 +22,7 @@ export type Product = {
   };
   details: string[];
   sizes: string[];
+  soldOutSizes?: string[];
   fits: string[];
   lapels: string[];
   linings: string[];
