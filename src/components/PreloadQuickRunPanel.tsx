@@ -23,6 +23,8 @@ export function PreloadQuickRunPanel() {
   const [enabled] = useState(() => isPreloadDebugEnabled());
   const [history, setHistory] = useState<QuickRunSnapshot[]>([]);
   const [collapsed, setCollapsed] = useState(false);
+  const [query, setQuery] = useState("");
+  const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!enabled) return;
@@ -41,7 +43,24 @@ export function PreloadQuickRunPanel() {
 
   if (!enabled) return null;
 
-  const latest = history[history.length - 1];
+  // newest-first for the history list
+  const ordered = [...history].reverse();
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? ordered.filter((s) => {
+        const ts = new Date(s.takenAt).toLocaleString().toLowerCase();
+        return (
+          s.productId.toLowerCase().includes(q) ||
+          s.runId.toLowerCase().includes(q) ||
+          s.takenAt.toLowerCase().includes(q) ||
+          ts.includes(q)
+        );
+      })
+    : ordered;
+  const selected =
+    (selectedRunId && history.find((s) => s.runId === selectedRunId)) ||
+    ordered[0] ||
+     null;
 
   return (
     <div
@@ -57,13 +76,13 @@ export function PreloadQuickRunPanel() {
           )}
         </span>
         <div className="flex items-center gap-1">
-          {latest && (
+          {selected && (
             <button
               type="button"
-              onClick={() => exportSnapshotAsJson(latest)}
+              onClick={() => exportSnapshotAsJson(selected)}
               className="px-2 py-0.5 border border-white/30 hover:bg-white/10"
-              aria-label="Export latest quick-run snapshot as JSON"
-              title="Download latest snapshot + live fetch report as JSON"
+              aria-label="Export selected quick-run snapshot as JSON"
+              title="Download selected snapshot + live fetch report as JSON"
             >
               ⤓ json
             </button>
@@ -74,6 +93,7 @@ export function PreloadQuickRunPanel() {
               onClick={() => {
                 clearQuickRunHistory();
                 setHistory([]);
+                setSelectedRunId(null);
               }}
               className="px-2 py-0.5 border border-white/30 hover:bg-white/10"
               aria-label="Clear quick-run history"
@@ -94,12 +114,70 @@ export function PreloadQuickRunPanel() {
 
       {!collapsed && (
         <div className="p-3 space-y-3">
-          {!latest ? (
+          {history.length === 0 ? (
             <div className="opacity-70">
               No snapshot yet — click <span className="text-sky-300">⚡ iPhone Safari quick-run</span>.
             </div>
           ) : (
-            <SnapshotView snapshot={latest} />
+            <>
+              <div className="space-y-1">
+                <label className="block opacity-60 text-[10px] uppercase tracking-wider">
+                  search history
+                </label>
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="product id, run id, or timestamp…"
+                  className="w-full bg-black/60 border border-white/20 px-2 py-1 text-[11px] outline-none focus:border-sky-400"
+                  aria-label="Search quick-run history"
+                />
+              </div>
+
+              <details open={history.length > 1}>
+                <summary className="cursor-pointer opacity-80">
+                  history ({filtered.length}/{history.length})
+                </summary>
+                <ul className="mt-2 space-y-1 max-h-40 overflow-auto">
+                  {filtered.length === 0 ? (
+                    <li className="opacity-60">no matches</li>
+                  ) : (
+                    filtered.map((s) => {
+                      const isSel = selected?.runId === s.runId;
+                      return (
+                        <li key={s.runId}>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedRunId(s.runId)}
+                            className={`w-full text-left px-2 py-1 border ${
+                              isSel
+                                ? "border-sky-400 bg-sky-400/10"
+                                : "border-white/10 hover:bg-white/5"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="opacity-90 truncate">{s.productId}</span>
+                              <span
+                                className={
+                                  s.duplicates > 0 ? "text-amber-300" : "text-emerald-300"
+                                }
+                              >
+                                {s.emitted}/{s.duplicates}
+                              </span>
+                            </div>
+                            <div className="opacity-60 text-[10px]">
+                              {new Date(s.takenAt).toLocaleString()}
+                            </div>
+                          </button>
+                        </li>
+                      );
+                    })
+                  )}
+                </ul>
+              </details>
+
+              {selected && <SnapshotView snapshot={selected} />}
+            </>
           )}
         </div>
       )}
