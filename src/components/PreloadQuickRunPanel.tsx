@@ -115,12 +115,70 @@ export function PreloadQuickRunPanel() {
 
       {!collapsed && (
         <div className="p-3 space-y-3">
-          {!latest ? (
+          {history.length === 0 ? (
             <div className="opacity-70">
               No snapshot yet — click <span className="text-sky-300">⚡ iPhone Safari quick-run</span>.
             </div>
           ) : (
-            <SnapshotView snapshot={latest} />
+            <>
+              <div className="space-y-1">
+                <label className="block opacity-60 text-[10px] uppercase tracking-wider">
+                  search history
+                </label>
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="product id, run id, or timestamp…"
+                  className="w-full bg-black/60 border border-white/20 px-2 py-1 text-[11px] outline-none focus:border-sky-400"
+                  aria-label="Search quick-run history"
+                />
+              </div>
+
+              <details open={history.length > 1}>
+                <summary className="cursor-pointer opacity-80">
+                  history ({filtered.length}/{history.length})
+                </summary>
+                <ul className="mt-2 space-y-1 max-h-40 overflow-auto">
+                  {filtered.length === 0 ? (
+                    <li className="opacity-60">no matches</li>
+                  ) : (
+                    filtered.map((s) => {
+                      const isSel = selected?.runId === s.runId;
+                      return (
+                        <li key={s.runId}>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedRunId(s.runId)}
+                            className={`w-full text-left px-2 py-1 border ${
+                              isSel
+                                ? "border-sky-400 bg-sky-400/10"
+                                : "border-white/10 hover:bg-white/5"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="opacity-90 truncate">{s.productId}</span>
+                              <span
+                                className={
+                                  s.duplicates > 0 ? "text-amber-300" : "text-emerald-300"
+                                }
+                              >
+                                {s.emitted}/{s.duplicates}
+                              </span>
+                            </div>
+                            <div className="opacity-60 text-[10px]">
+                              {new Date(s.takenAt).toLocaleString()}
+                            </div>
+                          </button>
+                        </li>
+                      );
+                    })
+                  )}
+                </ul>
+              </details>
+
+              {selected && <SnapshotView snapshot={selected} />}
+            </>
           )}
         </div>
       )}
