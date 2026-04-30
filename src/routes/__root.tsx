@@ -8,6 +8,7 @@ import { WishlistProvider } from "@/context/WishlistContext";
 import { CartProvider } from "@/context/CartContext";
 import { CartDrawer } from "@/components/CartDrawer";
 import { AuthProvider } from "@/context/AuthContext";
+import { LangBootstrap } from "@/components/LangBootstrap";
 import "@/i18n";
 
 import appCss from "../styles.css?url";
@@ -75,6 +76,7 @@ function RootComponent() {
       <AuthProvider>
         <WishlistProvider>
           <CartProvider>
+            <LangBootstrap />
             <Header />
             <main className="min-h-screen bg-ink">
               <Outlet />
