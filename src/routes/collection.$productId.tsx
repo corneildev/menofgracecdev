@@ -21,6 +21,7 @@ import {
   runProfileTests,
   logProfileResults,
 } from "@/lib/preloadTestProfiles";
+import { runIphoneSafariQuickRun } from "@/lib/preloadQuickRun";
 import {
   startSession,
   recordEmit,
