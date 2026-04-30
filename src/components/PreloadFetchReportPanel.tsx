@@ -12,19 +12,27 @@
  * needed because resource entries persist for the page's lifetime.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { isPreloadDebugEnabled } from "@/lib/preloadDebug";
-import { readSession } from "@/lib/preloadStatsStore";
+import { readSession, recordThresholdFailure } from "@/lib/preloadStatsStore";
 import {
   buildFetchReport,
   type FetchReport,
   type FetchCount,
 } from "@/lib/preloadFetchReport";
+import {
+  loadThresholds,
+  evaluateThresholds,
+  type PreloadThresholds,
+  type ThresholdEvaluation,
+} from "@/lib/preloadThresholds";
 
 type Props = {
   currentSessionId: string | null;
   /** Polling interval for refreshing the report. Default 2000ms. */
   intervalMs?: number;
+  /** Override thresholds; defaults to URL/localStorage/defaults. */
+  thresholds?: PreloadThresholds;
 };
 
 export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000 }: Props) {
