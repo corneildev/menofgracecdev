@@ -43,6 +43,7 @@ function Caption({ eyebrow, line }: { eyebrow: string; line: string }) {
 }
 
 function LookbookPage() {
+  const { t } = useTranslation();
   return (
     <main className="bg-ink text-bone">
       {/* HERO */}
