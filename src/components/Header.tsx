@@ -34,6 +34,7 @@ export function Header() {
     { to: "/wedding", label: t("nav.wedding") },
     { to: "/lookbook", label: t("nav.lookbook") },
     { to: "/atelier", label: t("nav.atelier") },
+    { to: "/trunk-shows", label: "Trunk Shows" },
     { to: "/wishlist", label: t("nav.wishlist") },
   ] as const;
 

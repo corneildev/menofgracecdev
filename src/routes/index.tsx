@@ -187,9 +187,9 @@ function Index() {
       <section className="py-32 px-6 md:px-12 border-b border-hairline">
         <div className="max-w-[1400px] mx-auto grid md:grid-cols-3 gap-16 text-center">
           {[
-            ["Premium Fabrics", "Loro Piana, Vitale Barberis, Scabal — sourced from European mills established before 1850."],
-            ["Handcrafted Precision", "Every buttonhole, every lapel — sewn by a single master tailor."],
-            ["International Standard", "Delivered to over forty countries. Atelier appointments worldwide."],
+            ["Curated Cloth", "Loro Piana, Vitale Barberis Canonico, Drago, Scabal — chosen mill by mill, season by season."],
+            ["Two Partner Ateliers", "Biella for the bespoke commission. Foshan for made-to-measure and ready-to-wear. One standard."],
+            ["By Appointment", "Fittings held in private, during our seasonal trunk shows in Cotonou, Lagos, Abidjan and Paris."],
           ].map(([title, body]) => (
             <div key={title}>
               <div className="hairline w-12 mx-auto mb-8" />
@@ -226,13 +226,16 @@ function Index() {
         </div>
       </section>
 
-      {/* SUBTLE URGENCY / CTA */}
+      {/* TRUNK SHOWS / CTA */}
       <section className="border-t border-hairline py-24 px-6 md:px-12 text-center">
-        <div className="eyebrow text-bone/60 mb-6">— By Appointment —</div>
+        <div className="eyebrow text-bone/60 mb-6">— Seasonal —</div>
         <p className="font-serif text-2xl md:text-3xl italic text-bone/85 mb-10 max-w-2xl mx-auto">
-          Limited fittings available this season.
+          Fittings are held in four cities, by private invitation.
         </p>
-        <Link to="/bespoke" className="luxury-btn luxury-btn-solid">Reserve Your Appointment</Link>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link to="/trunk-shows" className="luxury-btn luxury-btn-solid">View Trunk Shows</Link>
+          <Link to="/bespoke" className="luxury-btn">Speak to the Maison</Link>
+        </div>
       </section>
     </div>
   );
