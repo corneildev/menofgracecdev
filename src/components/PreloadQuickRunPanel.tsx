@@ -60,8 +60,7 @@ export function PreloadQuickRunPanel() {
   const selected =
     (selectedRunId && history.find((s) => s.runId === selectedRunId)) ||
     ordered[0] ||
-    null;
-  const latest = ordered[0];
+     null;
 
   return (
     <div
