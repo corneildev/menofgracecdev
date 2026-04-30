@@ -1048,6 +1048,7 @@ function ProductView({ product }: { product: Product }) {
     </div>
       <PreloadDebugOverlay currentSessionId={sessionId} />
       <PreloadFetchReportPanel currentSessionId={sessionId} />
+      <PreloadQuickRunPanel />
     </>
   );
 }
