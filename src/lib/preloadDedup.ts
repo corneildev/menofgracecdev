@@ -83,8 +83,8 @@ export function resolvePreloadCandidates(
 }
 
 export type PreloadDecision =
-  | { decision: "emit"; item: SimilarItem; idx: number; href: string; dedupKey: string; priority: "high" | "low" }
-  | { decision: "duplicate"; item: SimilarItem; idx: number; href: string; dedupKey: string; priority: "high" | "low" };
+  | { decision: "emit"; item: SimilarItem; idx: number; href: string; srcSet?: string; dedupKey: string; priority: "high" | "low" }
+  | { decision: "duplicate"; item: SimilarItem; idx: number; href: string; srcSet?: string; dedupKey: string; priority: "high" | "low" };
 
 /**
  * Filter resolved preloads against the warmed-set, mutating both the set and
