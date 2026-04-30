@@ -191,3 +191,30 @@ export function clearQuickRunHistory() {
     // ignore
   }
 }
+
+/**
+ * Auto-run is opt-in even when `?preloadDebug=1` is on, so opening the panel
+ * to inspect prior runs doesn't surprise the developer with a fresh write.
+ * Activation (any one):
+ *   - URL: `?preloadAutoRun=1` (also accepted: `&preloadAutoRun=1`)
+ *   - Storage: `localStorage["lovable:preloadAutoRun"] = "1"` (sticky)
+ *   - URL `?preloadAutoRun=0` clears the sticky flag.
+ */
+export function isPreloadAutoRunEnabled(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get("preloadAutoRun");
+    if (v === "1" || v === "true") {
+      window.localStorage.setItem("lovable:preloadAutoRun", "1");
+      return true;
+    }
+    if (v === "0" || v === "false") {
+      window.localStorage.removeItem("lovable:preloadAutoRun");
+      return false;
+    }
+    return window.localStorage.getItem("lovable:preloadAutoRun") === "1";
+  } catch {
+    return false;
+  }
+}
