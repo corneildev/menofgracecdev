@@ -591,6 +591,35 @@ function ProductView({ product }: { product: Product }) {
                 })}
               </div>
             </TooltipProvider>
+
+            <div className="mt-4">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button
+                    type="button"
+                    className="eyebrow text-[10px] text-bone/70 underline underline-offset-[6px] decoration-hairline hover:text-bone hover:decoration-bone transition-colors"
+                  >
+                    Find my size →
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="bg-ink border-hairline text-bone max-w-xl">
+                  <DialogHeader>
+                    <DialogTitle className="font-serif text-2xl text-bone">Size Finder</DialogTitle>
+                  </DialogHeader>
+                  <div className="pt-2">
+                    <SizeFinder
+                      availableSizes={product.sizes.filter((s) => !product.soldOutSizes?.includes(s))}
+                      onPick={(s) => {
+                        setSize(s);
+                        setSizeError(null);
+                      }}
+                      variant="compact"
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
             {allSoldOut && (
               <>
                 {(() => {
