@@ -49,7 +49,10 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
     if (!enabled || !currentSessionId) return;
     const tick = () => {
       const session = readSession(currentSessionId);
-      const expected = session?.emittedHrefs ?? [];
+      const expected =
+        session?.emittedEntries && session.emittedEntries.length > 0
+          ? session.emittedEntries
+          : (session?.emittedHrefs ?? []).map((href) => ({ href }));
       setReport(buildFetchReport(expected));
     };
     tick();
