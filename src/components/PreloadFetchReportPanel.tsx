@@ -139,14 +139,32 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
         });
       }
     }
-    return report.duplicates.map((dup) => {
+    const groups = report.duplicates.map((dup) => {
       const variants = byCanonical.get(dup.url) ?? [];
       const distinctPreloads = new Set(
         variants.map((v) => v.primaryCanonical),
       ).size;
       return { dup, variants, distinctPreloads };
     });
-  }, [report, expectations]);
+    if (dupSort === "count") {
+      groups.sort(
+        (a, b) =>
+          b.dup.count - a.dup.count ||
+          b.distinctPreloads - a.distinctPreloads ||
+          a.dup.url.localeCompare(b.dup.url),
+      );
+    } else if (dupSort === "preloads") {
+      groups.sort(
+        (a, b) =>
+          b.distinctPreloads - a.distinctPreloads ||
+          b.dup.count - a.dup.count ||
+          a.dup.url.localeCompare(b.dup.url),
+      );
+    } else {
+      groups.sort((a, b) => a.dup.url.localeCompare(b.dup.url));
+    }
+    return groups;
+  }, [report, expectations, dupSort]);
 
   const evaluation = useMemo<ThresholdEvaluation>(() => {
     return evaluateThresholds(
