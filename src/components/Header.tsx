@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useWishlist } from "@/context/WishlistContext";
@@ -11,6 +11,7 @@ export function Header() {
   const { count } = useWishlist();
   const { count: cartCount, open: openCart } = useCart();
   const { t } = useTranslation();
+  const location = useLocation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -18,6 +19,11 @@ export function Header() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Close mobile drawer on route change
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
 
   const nav = [
     { to: "/collection", label: t("nav.collection") },
