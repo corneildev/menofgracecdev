@@ -212,6 +212,44 @@ function SnapshotView({ snapshot }: { snapshot: QuickRunSnapshot }) {
   );
 }
 
+/**
+ * Bundle the snapshot + a freshly-rebuilt fetch report (matched against the
+ * snapshot's emitted hrefs, since the persisted snapshot only stores
+ * summarised counts) and trigger a download via a blob URL. Filename is
+ * timestamped + tagged with the run id so multiple exports don't collide.
+ */
+function exportSnapshotAsJson(snapshot: QuickRunSnapshot) {
+  const liveFetchReport = buildFetchReport(
+    snapshot.emittedHrefs.map((href) => ({ href })),
+  );
+  const payload = {
+    exportedAt: new Date().toISOString(),
+    schemaVersion: 1,
+    snapshot,
+    liveFetchReport: {
+      supported: liveFetchReport.supported,
+      observedAt: liveFetchReport.observedAt,
+      countsByUrl: Object.fromEntries(liveFetchReport.countsByUrl),
+      duplicates: liveFetchReport.duplicates,
+      unfetchedPreloads: liveFetchReport.unfetchedPreloads,
+    },
+  };
+  const stamp = snapshot.takenAt.replace(/[:.]/g, "-");
+  const filename = `preload-quickrun-${stamp}-${snapshot.runId}.json`;
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  // Revoke on the next tick so the download has time to start (Safari quirk).
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function Stat({
   label,
   value,
