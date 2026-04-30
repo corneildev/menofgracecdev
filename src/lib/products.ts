@@ -14,6 +14,8 @@ export type ProductWithImages = ProductRow & {
 export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   suits: "Suits",
   wedding_suits: "Wedding Suits",
+  business_suits: "Business Suits",
+  executive_suits: "Executive",
   shirts: "Shirts",
   trousers: "Trousers",
   belts: "Belts",
@@ -24,6 +26,8 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
 export const ALL_CATEGORIES: ProductCategory[] = [
   "suits",
   "wedding_suits",
+  "business_suits",
+  "executive_suits",
   "shirts",
   "trousers",
   "belts",
