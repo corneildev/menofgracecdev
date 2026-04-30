@@ -180,13 +180,62 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
                 </div>
               )}
               {report.unfetchedPreloads.length > 0 && (
-                <div className="border border-sky-400/40 p-2">
-                  <div className="text-sky-300 mb-1">
+                <div className="border border-sky-400/40 p-2 space-y-2">
+                  <div className="text-sky-300">
                     ⓘ {report.unfetchedPreloads.length} preload(s) not yet fetched
                   </div>
-                  <ul className="space-y-0.5 break-all opacity-80">
-                    {report.unfetchedPreloads.map((u) => (
-                      <li key={u}>· {u}</li>
+                  <p className="opacity-80 text-[10px] leading-relaxed">
+                    A preload is flagged unfetched when none of the URLs it
+                    advertised in <code>imagesrcset</code> appeared in the
+                    Resource Timing buffer. Most often this means the{" "}
+                    <code>&lt;picture&gt;</code> element picked a different
+                    srcset variant (different width/DPR) than the preload
+                    listed — same image, different file. The "likely
+                    mismatched fetches" below are observed image requests
+                    whose filename stem matches but whose variant doesn't.
+                  </p>
+                  <ul className="space-y-2 break-all">
+                    {report.unfetchedDiagnostics.map((d) => (
+                      <li key={d.primary} className="border-t border-white/10 pt-2">
+                        <div className="opacity-90">· {d.primary}</div>
+                        <details className="mt-1">
+                          <summary className="cursor-pointer opacity-70 text-[10px]">
+                            expected variants ({d.expectedVariants.length})
+                          </summary>
+                          <ul className="mt-1 space-y-0.5 opacity-70 pl-3">
+                            {d.expectedVariants.map((v) => (
+                              <li key={v}>
+                                {v === d.primary ? "↳ primary" : "↳ srcset"} ·{" "}
+                                {v}
+                              </li>
+                            ))}
+                          </ul>
+                        </details>
+                        {d.likelyMismatchedFetches.length > 0 ? (
+                          <div className="mt-1">
+                            <div className="text-amber-300 text-[10px]">
+                              ⚠ {d.likelyMismatchedFetches.length} likely
+                              mismatched fetch(es)
+                            </div>
+                            <ul className="space-y-0.5 opacity-90 pl-3">
+                              {d.likelyMismatchedFetches.map((m) => (
+                                <li key={m.url}>
+                                  <div className="opacity-60 text-[10px]">
+                                    {m.reason}
+                                  </div>
+                                  <div>{m.url}</div>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ) : (
+                          <div className="opacity-60 text-[10px] mt-1">
+                            no near-miss fetches observed yet — preload may
+                            simply not have triggered (carousel scrolled past
+                            before hydration, or network gate skipped it).
+                          </div>
+                        )}
+                      </li>
                     ))}
                   </ul>
                 </div>
