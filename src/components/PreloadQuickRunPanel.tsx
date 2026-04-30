@@ -77,13 +77,13 @@ export function PreloadQuickRunPanel() {
           )}
         </span>
         <div className="flex items-center gap-1">
-          {latest && (
+          {selected && (
             <button
               type="button"
-              onClick={() => exportSnapshotAsJson(latest)}
+              onClick={() => exportSnapshotAsJson(selected)}
               className="px-2 py-0.5 border border-white/30 hover:bg-white/10"
-              aria-label="Export latest quick-run snapshot as JSON"
-              title="Download latest snapshot + live fetch report as JSON"
+              aria-label="Export selected quick-run snapshot as JSON"
+              title="Download selected snapshot + live fetch report as JSON"
             >
               ⤓ json
             </button>
