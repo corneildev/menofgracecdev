@@ -234,21 +234,86 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
                 </div>
               )}
               {report.duplicates.length > 0 && (
-                <div className="border border-amber-400/60 p-2">
-                  <div className="text-amber-300 mb-1">
-                    ⚠ {report.duplicates.length} duplicate fetch(es)
+                <div className="border border-amber-400/60 p-2 space-y-2">
+                  <div className="text-amber-300">
+                    ⚠ {report.duplicates.length} duplicate fetch(es) — grouped
+                    by canonical asset
                   </div>
-                  <ul className="space-y-1 break-all">
-                    {report.duplicates.map((d) => (
-                      <li key={d.url}>
-                        <span className="text-amber-300">×{d.count}</span>{" "}
-                        {d.wasPreloaded && (
-                          <span className="text-emerald-300">[preloaded] </span>
-                        )}
-                        {d.url}
-                        <div className="opacity-60 pl-4">
-                          startTimes: {d.startTimes.join(", ")}ms
+                  <p className="opacity-80 text-[10px] leading-relaxed">
+                    Each group is a single underlying asset that the browser
+                    fetched more than once. The "preload variants" list shows
+                    every <code>&lt;link rel=preload&gt;</code> tag (and srcset
+                    entry) that mapped to it after URL canonicalization — when
+                    multiple distinct preloads collapse onto one asset, that's
+                    your duplicate cause. <code>raw:</code> is the URL as
+                    emitted; <code>can:</code> is its canonical form.
+                  </p>
+                  <ul className="space-y-2 break-all">
+                    {duplicateBreakdown.map(({ dup, variants, distinctPreloads }) => (
+                      <li
+                        key={dup.url}
+                        className="border-t border-white/10 pt-2 first:border-t-0 first:pt-0"
+                      >
+                        <div>
+                          <span className="text-amber-300">×{dup.count}</span>{" "}
+                          {dup.wasPreloaded && (
+                            <span className="text-emerald-300">[preloaded] </span>
+                          )}
+                          {distinctPreloads > 1 && (
+                            <span className="text-amber-300">
+                              [⚠ {distinctPreloads} preloads collapsed]{" "}
+                            </span>
+                          )}
+                          {dup.url}
                         </div>
+                        <div className="opacity-60 pl-4 text-[10px]">
+                          startTimes: {dup.startTimes.join(", ")}ms
+                        </div>
+                        {variants.length > 0 ? (
+                          <details className="mt-1 pl-3">
+                            <summary className="cursor-pointer opacity-80 text-[10px]">
+                              {variants.length} preload variant
+                              {variants.length === 1 ? "" : "s"} mapped here
+                              {distinctPreloads > 1
+                                ? ` (from ${distinctPreloads} distinct preloads)`
+                                : ""}
+                            </summary>
+                            <ul className="mt-1 space-y-1 opacity-90">
+                              {variants.map((v, i) => (
+                                <li
+                                  key={`${v.primaryCanonical}::${v.variantRaw}::${i}`}
+                                  className="border-l border-white/10 pl-2"
+                                >
+                                  <div className="text-[10px] opacity-70">
+                                    ↳ {v.role}
+                                    {v.role === "srcset"
+                                      ? " variant of"
+                                      : " of preload"}{" "}
+                                    {v.primaryCanonical}
+                                  </div>
+                                  <div className="text-[10px]">
+                                    <span className="opacity-60">raw: </span>
+                                    {v.variantRaw}
+                                  </div>
+                                  {v.variantRaw !== v.variantCanonical && (
+                                    <div className="text-[10px]">
+                                      <span className="opacity-60">can: </span>
+                                      <span className="text-amber-300">
+                                        {v.variantCanonical}
+                                      </span>
+                                    </div>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          </details>
+                        ) : (
+                          <div className="opacity-60 pl-4 text-[10px] mt-1">
+                            no matching preload variant — this duplicate is an
+                            organic image fetch (e.g. a non-preloaded{" "}
+                            <code>&lt;img&gt;</code>).
+                          </div>
+                        )}
                       </li>
                     ))}
                   </ul>
