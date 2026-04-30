@@ -22,16 +22,13 @@ void i18n
     react: { useSuspense: false },
   });
 
-// After hydration, switch to the user's stored preference.
+// After hydration, persist language changes to localStorage.
+// IMPORTANT: We do NOT auto-switch the language here on load — that would race
+// against React hydration and cause SSR/CSR text mismatches in the Header.
+// The language is restored from storage by <LangBootstrap /> mounted in __root,
+// inside a useEffect that runs strictly AFTER the first hydration pass.
 if (typeof window !== "undefined") {
   try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored && (SUPPORTED_LANGS as readonly string[]).includes(stored) && stored !== i18n.language) {
-      // Defer to a microtask so initial paint matches SSR.
-      queueMicrotask(() => {
-        void i18n.changeLanguage(stored);
-      });
-    }
     i18n.on("languageChanged", (lng) => {
       try {
         window.localStorage.setItem(STORAGE_KEY, lng.slice(0, 2));
@@ -43,5 +40,7 @@ if (typeof window !== "undefined") {
     // ignore
   }
 }
+
+export const I18N_STORAGE_KEY = STORAGE_KEY;
 
 export default i18n;
