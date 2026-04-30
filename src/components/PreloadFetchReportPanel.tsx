@@ -45,6 +45,7 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
   const [report, setReport] = useState<FetchReport | null>(null);
   const [expectations, setExpectations] = useState<PreloadExpectation[]>([]);
   const [collapsed, setCollapsed] = useState(false);
+  const [dupSort, setDupSort] = useState<"count" | "preloads" | "url">("count");
   const activeThresholds = useMemo<PreloadThresholds>(
     () => thresholds ?? loadThresholds(),
     [thresholds],
@@ -138,14 +139,32 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
         });
       }
     }
-    return report.duplicates.map((dup) => {
+    const groups = report.duplicates.map((dup) => {
       const variants = byCanonical.get(dup.url) ?? [];
       const distinctPreloads = new Set(
         variants.map((v) => v.primaryCanonical),
       ).size;
       return { dup, variants, distinctPreloads };
     });
-  }, [report, expectations]);
+    if (dupSort === "count") {
+      groups.sort(
+        (a, b) =>
+          b.dup.count - a.dup.count ||
+          b.distinctPreloads - a.distinctPreloads ||
+          a.dup.url.localeCompare(b.dup.url),
+      );
+    } else if (dupSort === "preloads") {
+      groups.sort(
+        (a, b) =>
+          b.distinctPreloads - a.distinctPreloads ||
+          b.dup.count - a.dup.count ||
+          a.dup.url.localeCompare(b.dup.url),
+      );
+    } else {
+      groups.sort((a, b) => a.dup.url.localeCompare(b.dup.url));
+    }
+    return groups;
+  }, [report, expectations, dupSort]);
 
   const evaluation = useMemo<ThresholdEvaluation>(() => {
     return evaluateThresholds(
@@ -235,9 +254,26 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
               )}
               {report.duplicates.length > 0 && (
                 <div className="border border-amber-400/60 p-2 space-y-2">
-                  <div className="text-amber-300">
-                    ⚠ {report.duplicates.length} duplicate fetch(es) — grouped
-                    by canonical asset
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="text-amber-300">
+                      ⚠ {report.duplicates.length} duplicate fetch(es) — grouped
+                      by canonical asset
+                    </div>
+                    <label className="flex items-center gap-1 text-[10px] opacity-80">
+                      <span className="uppercase tracking-wider">sort</span>
+                      <select
+                        value={dupSort}
+                        onChange={(e) =>
+                          setDupSort(e.target.value as "count" | "preloads" | "url")
+                        }
+                        className="bg-black/60 border border-white/20 px-1 py-0.5 text-[10px] outline-none focus:border-amber-300"
+                        aria-label="Sort duplicate groups"
+                      >
+                        <option value="count">fetch count ↓</option>
+                        <option value="preloads">preloads ↓</option>
+                        <option value="url">url</option>
+                      </select>
+                    </label>
                   </div>
                   <p className="opacity-80 text-[10px] leading-relaxed">
                     Each group is a single underlying asset that the browser
