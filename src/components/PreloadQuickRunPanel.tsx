@@ -17,7 +17,11 @@ import {
   clearQuickRunHistory,
   type QuickRunSnapshot,
 } from "@/lib/preloadQuickRun";
-import { buildFetchReport } from "@/lib/preloadFetchReport";
+import {
+  buildFetchReport,
+  canonicaliseUrl,
+  parseSrcSetUrls,
+} from "@/lib/preloadFetchReport";
 
 export function PreloadQuickRunPanel() {
   const [enabled] = useState(() => isPreloadDebugEnabled());
@@ -284,6 +288,8 @@ function SnapshotView({ snapshot }: { snapshot: QuickRunSnapshot }) {
         )}
       </section>
 
+      <NormalizationDebug snapshot={snapshot} />
+
       <details className="opacity-80">
         <summary className="cursor-pointer">user agent</summary>
         <div className="mt-1 break-all opacity-70">{snapshot.userAgent}</div>
@@ -459,5 +465,146 @@ function Stat({
       <div className={`text-base ${color}`}>{value}</div>
       <div className="opacity-60 text-[10px] uppercase tracking-wider">{label}</div>
     </div>
+  );
+}
+
+/**
+ * Normalization debugger: shows raw → canonical URL pairs for both the
+ * preloads we emitted (from the snapshot) and the image fetches the browser
+ * actually performed (live from Resource Timing). Lets the developer
+ * eyeball whether `canonicaliseUrl` is collapsing the right pairs (sorted
+ * query params, stripped cache-bust tokens, parsed srcset variants).
+ *
+ * A row is highlighted amber when raw ≠ canonical so transformations stand
+ * out at a glance. Fetched rows that match a canonical preload key get a
+ * "→ matched" tag in emerald.
+ */
+function NormalizationDebug({ snapshot }: { snapshot: QuickRunSnapshot }) {
+  // Collect emitted preloads: primary href + any srcset variants the snapshot
+  // recorded. Snapshot decisions don't include srcSet today (only `recordEmit`
+  // in preloadStatsStore does) — that's fine; the primary hrefs are still
+  // exactly what the dedup gate emitted.
+  const emittedRows: { raw: string; canonical: string; role: "primary" | "variant" }[] =
+    snapshot.emittedHrefs.map((href) => ({
+      raw: href,
+      canonical: canonicaliseUrl(href),
+      role: "primary",
+    }));
+  // If any decision carries a srcSet (future-proofing), expand its variants.
+  for (const d of snapshot.decisions) {
+    const srcSet = (d as { srcSet?: string }).srcSet;
+    for (const v of parseSrcSetUrls(srcSet)) {
+      emittedRows.push({ raw: v, canonical: canonicaliseUrl(v), role: "variant" });
+    }
+  }
+
+  const canonicalPreloadSet = new Set(emittedRows.map((r) => r.canonical));
+
+  // Live fetch entries from the browser, normalized so we can see what the
+  // matcher is comparing against. Filter to image-ish URLs only.
+  const fetchedRows: { raw: string; canonical: string; matched: boolean }[] = [];
+  if (typeof performance !== "undefined") {
+    const entries = performance.getEntriesByType?.("resource") ?? [];
+    for (const e of entries) {
+      const r = e as PerformanceResourceTiming;
+      if (r.initiatorType !== "img" && r.initiatorType !== "link") continue;
+      if (!/\.(?:png|jpe?g|webp|avif|gif|svg)(?:\?|$|#)/i.test(r.name)) continue;
+      const canonical = canonicaliseUrl(r.name);
+      fetchedRows.push({
+        raw: r.name,
+        canonical,
+        matched: canonicalPreloadSet.has(canonical),
+      });
+    }
+  }
+
+  return (
+    <details className="border-t border-white/10 pt-2">
+      <summary className="cursor-pointer opacity-80">
+        normalization debug ({emittedRows.length} emitted · {fetchedRows.length} fetched)
+      </summary>
+      <div className="mt-2 space-y-3">
+        <DebugList
+          title="emitted preloads"
+          tone="sky"
+          rows={emittedRows.map((r) => ({
+            raw: r.raw,
+            canonical: r.canonical,
+            tag: r.role === "variant" ? "srcset" : "preload",
+          }))}
+          emptyHint="no preloads in snapshot"
+        />
+        <DebugList
+          title="observed fetches (live)"
+          tone="emerald"
+          rows={fetchedRows.map((r) => ({
+            raw: r.raw,
+            canonical: r.canonical,
+            tag: r.matched ? "→ matched" : "unmatched",
+            matched: r.matched,
+          }))}
+          emptyHint="Resource Timing buffer is empty for image initiators."
+        />
+      </div>
+    </details>
+  );
+}
+
+function DebugList({
+  title,
+  tone,
+  rows,
+  emptyHint,
+}: {
+  title: string;
+  tone: "sky" | "emerald";
+  rows: { raw: string; canonical: string; tag: string; matched?: boolean }[];
+  emptyHint: string;
+}) {
+  const titleClass = tone === "sky" ? "text-sky-300" : "text-emerald-300";
+  return (
+    <section>
+      <div className={`${titleClass} mb-1 uppercase tracking-wider text-[10px]`}>
+        {title} ({rows.length})
+      </div>
+      {rows.length === 0 ? (
+        <div className="opacity-60">{emptyHint}</div>
+      ) : (
+        <ul className="space-y-2 break-all">
+          {rows.map((r, i) => {
+            const changed = r.raw !== r.canonical;
+            return (
+              <li
+                key={`${title}-${i}`}
+                className={`border ${
+                  changed ? "border-amber-400/40" : "border-white/10"
+                } p-1.5`}
+              >
+                <div className="flex items-center justify-between gap-2 text-[10px] opacity-70">
+                  <span>{changed ? "transformed" : "identity"}</span>
+                  <span
+                    className={
+                      r.matched === false
+                        ? "text-amber-300"
+                        : r.matched
+                        ? "text-emerald-300"
+                        : "opacity-70"
+                    }
+                  >
+                    {r.tag}
+                  </span>
+                </div>
+                <div className="opacity-90">
+                  <span className="opacity-60">raw:</span> {r.raw}
+                </div>
+                <div className={changed ? "text-amber-200" : "opacity-90"}>
+                  <span className="opacity-60">can:</span> {r.canonical}
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
   );
 }
