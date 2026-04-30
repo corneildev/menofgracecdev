@@ -42,6 +42,12 @@ export type PreloadEvent = {
   detail?: Record<string, unknown>;
 };
 
+export type PreloadEmittedEntry = {
+  href: string;
+  /** raw imagesrcset attribute, if any — preserved for variant matching */
+  srcSet?: string;
+};
+
 export type PreloadSession = {
   sessionId: string;
   productId: string;
@@ -50,7 +56,10 @@ export type PreloadSession = {
   evaluations: number;
   emitted: number;
   duplicates: number;
+  /** Legacy: kept for backwards compatibility with stored sessions. */
   emittedHrefs: string[];
+  /** Per-emit detail incl. srcSet, used for variant-aware fetch matching. */
+  emittedEntries: PreloadEmittedEntry[];
   events: PreloadEvent[];
 };
 
