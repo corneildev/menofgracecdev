@@ -59,6 +59,51 @@ export type Database = {
         }
         Relationships: []
       }
+      corporate_inquiries: {
+        Row: {
+          company: string
+          context: string | null
+          country: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          principals_range: string | null
+          role: string | null
+          status: string
+          timeline: string | null
+          updated_at: string
+        }
+        Insert: {
+          company: string
+          context?: string | null
+          country?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          principals_range?: string | null
+          role?: string | null
+          status?: string
+          timeline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          company?: string
+          context?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          principals_range?: string | null
+          role?: string | null
+          status?: string
+          timeline?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       measurements: {
         Row: {
           chest: number | null
