@@ -37,6 +37,22 @@ export type PreloadExpectation = {
   srcSet?: string;
 };
 
+export type UnfetchedPreloadDiagnostic = {
+  /** canonical primary href of the unfetched preload */
+  primary: string;
+  /** raw primary href as supplied to buildFetchReport (pre-canonicalization) */
+  primaryRaw: string;
+  /** canonical variants advertised by the preload's srcset (incl. primary) */
+  expectedVariants: string[];
+  /**
+   * Observed image fetches whose canonical URL is NOT in expectedVariants
+   * but whose filename/path stem matches the preload's filename — the most
+   * common cause of an "unfetched" flag is the carousel's <picture> picking
+   * a different srcset width than the one the preload listed.
+   */
+  likelyMismatchedFetches: { url: string; reason: string }[];
+};
+
 export type FetchReport = {
   supported: boolean;
   observedAt: number;
@@ -49,6 +65,12 @@ export type FetchReport = {
    * appeared in the resource timing buffer. Indexed by the primary href.
    */
   unfetchedPreloads: string[];
+  /**
+   * Per-unfetched-preload diagnostic: which variants we expected and which
+   * observed fetches looked like a near-miss (same filename, different
+   * query/srcset variant).
+   */
+  unfetchedDiagnostics: UnfetchedPreloadDiagnostic[];
 };
 
 /**
