@@ -158,13 +158,19 @@ describe("parseSrcSetUrls", () => {
  * with the supplied preload expectations.
  * ------------------------------------------------------------------ */
 
-type StubEntry = { name: string; startTime: number; entryType: "resource" };
+type StubEntry = {
+  name: string;
+  startTime: number;
+  entryType: "resource";
+  initiatorType: "img" | "link";
+};
 
 function stubResourceTimings(urls: string[]) {
   const entries: StubEntry[] = urls.map((name, i) => ({
     name,
     startTime: 100 + i,
     entryType: "resource",
+    initiatorType: "img",
   }));
   vi.spyOn(performance, "getEntriesByType").mockImplementation((type) =>
     type === "resource" ? (entries as unknown as PerformanceEntryList) : [],
