@@ -74,6 +74,14 @@ function safeRead(): PreloadStatsStore {
     if (!raw) return { sessions: [] };
     const parsed = JSON.parse(raw) as PreloadStatsStore;
     if (!parsed || !Array.isArray(parsed.sessions)) return { sessions: [] };
+    // Backfill emittedEntries for legacy sessions that pre-date the field.
+    for (const s of parsed.sessions) {
+      if (!Array.isArray((s as PreloadSession).emittedEntries)) {
+        (s as PreloadSession).emittedEntries = (s.emittedHrefs ?? []).map(
+          (href) => ({ href }),
+        );
+      }
+    }
     return parsed;
   } catch {
     return { sessions: [] };
