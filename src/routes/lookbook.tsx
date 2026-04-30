@@ -195,17 +195,17 @@ function LookbookPage() {
           <div className="absolute inset-0 bg-ink/80" />
         </div>
         <div className="relative px-6 md:px-12 py-32 md:py-48 text-center">
-          <div className="eyebrow text-bone/70 mb-8">— The Collection —</div>
+          <div className="eyebrow text-bone/70 mb-8">{t("lookbook.finalEyebrow")}</div>
           <h2 className="display text-4xl md:text-6xl mb-12 leading-[1.05]">
-            Each piece is composed<br />
-            <span className="italic">by hand.</span>
+            {t("lookbook.finalTitle")}<br />
+            <span className="italic">{t("lookbook.finalTitleItalic")}</span>
           </h2>
           <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-center justify-center">
             <Link to="/executive" className="luxury-btn luxury-btn-solid">
-              Discover Executive
+              {t("lookbook.ctaExecutive")}
             </Link>
             <Link to="/bespoke" className="luxury-btn">
-              Book a Fitting
+              {t("lookbook.ctaBespoke")}
             </Link>
           </div>
         </div>
