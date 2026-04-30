@@ -35,6 +35,7 @@ export function Header() {
     { to: "/lookbook", label: t("nav.lookbook") },
     { to: "/atelier", label: t("nav.atelier") },
     { to: "/trunk-shows", label: "Trunk Shows" },
+    { to: "/size-finder", label: "Size Finder" },
     { to: "/wishlist", label: t("nav.wishlist") },
   ] as const;
 
