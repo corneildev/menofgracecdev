@@ -1,13 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
+import { LangSwitch } from "@/components/LangSwitch";
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { count } = useWishlist();
   const { count: cartCount, open: openCart } = useCart();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -17,15 +20,15 @@ export function Header() {
   }, []);
 
   const nav = [
-    { to: "/collection", label: "Collection" },
-    { to: "/business", label: "Business" },
-    { to: "/executive", label: "Executive" },
-    { to: "/corporate-program", label: "Corporate" },
-    { to: "/bespoke", label: "Bespoke" },
-    { to: "/wedding", label: "Wedding" },
-    { to: "/lookbook", label: "Lookbook" },
-    { to: "/atelier", label: "Atelier" },
-    { to: "/wishlist", label: "Wishlist" },
+    { to: "/collection", label: t("nav.collection") },
+    { to: "/business", label: t("nav.business") },
+    { to: "/executive", label: t("nav.executive") },
+    { to: "/corporate-program", label: t("nav.corporate") },
+    { to: "/bespoke", label: t("nav.bespoke") },
+    { to: "/wedding", label: t("nav.wedding") },
+    { to: "/lookbook", label: t("nav.lookbook") },
+    { to: "/atelier", label: t("nav.atelier") },
+    { to: "/wishlist", label: t("nav.wishlist") },
   ] as const;
 
   return (
