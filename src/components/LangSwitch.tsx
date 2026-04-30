@@ -9,9 +9,8 @@ interface LangSwitchProps {
 
 export function LangSwitch({ className = "", onChange }: LangSwitchProps) {
   const { i18n } = useTranslation();
-  const [current, setCurrent] = useState<Lang>(
-    ((i18n.resolvedLanguage || i18n.language || "en").slice(0, 2) as Lang)
-  );
+  // Always start at "en" to match SSR-rendered HTML; sync to actual lang after mount.
+  const [current, setCurrent] = useState<Lang>("en");
 
   useEffect(() => {
     const handler = (lng: string) => {
@@ -21,7 +20,7 @@ export function LangSwitch({ className = "", onChange }: LangSwitchProps) {
         document.documentElement.setAttribute("lang", next);
       }
     };
-    // initial sync
+    // initial sync (post-mount, safe for hydration)
     handler(i18n.resolvedLanguage || i18n.language || "en");
     i18n.on("languageChanged", handler);
     return () => {

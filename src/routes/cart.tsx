@@ -136,9 +136,15 @@ function CartPage() {
                   <div className="text-bone/50 text-xs">{formatUsd(totalUsd)}</div>
                 </div>
               </div>
-              <a href={waHref} target="_blank" rel="noopener noreferrer" className="luxury-btn luxury-btn-solid w-full block text-center mb-3">
-                Finaliser via WhatsApp
+              <Link to="/checkout" className="luxury-btn luxury-btn-solid w-full block text-center mb-3">
+                Procéder au Paiement
+              </Link>
+              <a href={waHref} target="_blank" rel="noopener noreferrer" className="luxury-btn w-full block text-center mb-3">
+                Préférer le concierge
               </a>
+              <p className="eyebrow text-bone/40 text-[10px] text-center mb-6 leading-relaxed">
+                Pour les commandes complexes ou multi-pièces
+              </p>
               <Link to="/collection" className="luxury-btn w-full block text-center">
                 Continuer mes achats
               </Link>
