@@ -123,14 +123,14 @@ function Index() {
           <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/40 to-transparent" />
           <div className="relative z-10 h-full flex items-center px-6 md:px-12">
             <div className="max-w-xl">
-              <div className="eyebrow text-bone/70 mb-6">— I · Executive —</div>
+              <div className="eyebrow text-bone/70 mb-6">{t("home.executiveEyebrow")}</div>
               <h2 className="display text-5xl md:text-7xl mb-8 leading-[1]">
-                The Boardroom<br /><span className="italic">Sartoria.</span>
+                {t("home.executiveTitle")}<br /><span className="italic">{t("home.executiveTitleItalic")}</span>
               </h2>
               <p className="text-bone/80 font-light text-lg mb-10 leading-relaxed">
-                Charcoal, navy, pinstripe — the working wardrobe of men who shape decisions.
+                {t("home.executiveBody")}
               </p>
-              <Link to="/executive" className="luxury-btn luxury-btn-solid">Discover Executive</Link>
+              <Link to="/executive" className="luxury-btn luxury-btn-solid">{t("lookbook.ctaExecutive")}</Link>
             </div>
           </div>
         </div>
@@ -146,14 +146,14 @@ function Index() {
           <div className="absolute inset-0 bg-gradient-to-l from-ink/85 via-ink/40 to-transparent" />
           <div className="relative z-10 h-full flex items-center justify-end px-6 md:px-12">
             <div className="max-w-xl text-right">
-              <div className="eyebrow text-bone/70 mb-6">— II · Bespoke —</div>
+              <div className="eyebrow text-bone/70 mb-6">{t("home.bespokeEyebrow")}</div>
               <h2 className="display text-5xl md:text-7xl mb-8 leading-[1]">
-                A Suit<br /><span className="italic">Around You.</span>
+                {t("home.bespokeTitle")}<br /><span className="italic">{t("home.bespokeTitleItalic")}</span>
               </h2>
               <p className="text-bone/80 font-light text-lg mb-10 leading-relaxed">
-                Twenty-eight measurements. Sixty hours of work. A piece that lasts a lifetime.
+                {t("home.bespokeBody")}
               </p>
-              <Link to="/bespoke" className="luxury-btn luxury-btn-solid">Begin Your Bespoke</Link>
+              <Link to="/bespoke" className="luxury-btn luxury-btn-solid">{t("common.bookFitting")}</Link>
             </div>
           </div>
         </div>
@@ -169,14 +169,14 @@ function Index() {
           <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/40 to-transparent" />
           <div className="relative z-10 h-full flex items-center px-6 md:px-12">
             <div className="max-w-xl">
-              <div className="eyebrow text-bone/70 mb-6">— III · Wedding —</div>
+              <div className="eyebrow text-bone/70 mb-6">{t("home.weddingEyebrow")}</div>
               <h2 className="display text-5xl md:text-7xl mb-8 leading-[1]">
-                Wedding<br /><span className="italic">Excellence.</span>
+                {t("home.weddingTitle")}<br /><span className="italic">{t("home.weddingTitleItalic")}</span>
               </h2>
               <p className="text-bone/80 font-light text-lg mb-10 leading-relaxed">
-                From the proposal to the altar — a complete composition for the groom and his witnesses.
+                {t("home.weddingBody")}
               </p>
-              <Link to="/wedding" className="luxury-btn luxury-btn-solid">Book Your Wedding Suit</Link>
+              <Link to="/wedding" className="luxury-btn luxury-btn-solid">{t("nav.wedding")}</Link>
             </div>
           </div>
         </div>
