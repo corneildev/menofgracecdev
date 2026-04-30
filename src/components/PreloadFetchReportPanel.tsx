@@ -35,10 +35,15 @@ type Props = {
   thresholds?: PreloadThresholds;
 };
 
-export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000 }: Props) {
+export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, thresholds }: Props) {
   const [enabled] = useState(() => isPreloadDebugEnabled());
   const [report, setReport] = useState<FetchReport | null>(null);
   const [collapsed, setCollapsed] = useState(false);
+  const activeThresholds = useMemo<PreloadThresholds>(
+    () => thresholds ?? loadThresholds(),
+    [thresholds],
+  );
+  const lastBreachKeyRef = useRef<string>("");
 
   useEffect(() => {
     if (!enabled || !currentSessionId) return;
@@ -64,16 +69,59 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000 }:
       });
   }, [report]);
 
+  const evaluation = useMemo<ThresholdEvaluation>(() => {
+    return evaluateThresholds(
+      {
+        duplicateFetches: report?.duplicates.length ?? 0,
+        unfetchedPreloads: report?.unfetchedPreloads.length ?? 0,
+      },
+      activeThresholds,
+    );
+  }, [report, activeThresholds]);
+
+  // Log a session-level failure event whenever the breach signature changes
+  // (so we don't spam the event log on every 2s poll when status is steady).
+  useEffect(() => {
+    if (!enabled || !currentSessionId) return;
+    if (evaluation.status !== "fail") {
+      lastBreachKeyRef.current = "";
+      return;
+    }
+    const key = evaluation.breaches.map((b) => `${b.metric}:${b.observed}`).join("|");
+    if (key === lastBreachKeyRef.current) return;
+    lastBreachKeyRef.current = key;
+    recordThresholdFailure(currentSessionId, {
+      breaches: evaluation.breaches,
+      thresholds: evaluation.thresholds,
+      observed: {
+        duplicateFetches: report?.duplicates.length ?? 0,
+        unfetchedPreloads: report?.unfetchedPreloads.length ?? 0,
+      },
+    });
+    // eslint-disable-next-line no-console
+    console.warn(
+      `%c[preload·threshold-fail] ${evaluation.breaches.map((b) => b.message).join(" · ")}`,
+      "color:#f59e0b;font-weight:bold",
+    );
+  }, [enabled, currentSessionId, evaluation, report]);
+
   if (!enabled) return null;
+
+  const failing = evaluation.status === "fail";
+  const headerBg = failing ? "bg-amber-500/95 text-black" : "bg-black/90 text-white";
 
   return (
     <div
-      className="fixed bottom-4 left-4 z-[9999] w-[360px] max-h-[60vh] overflow-auto bg-black/90 text-white text-[11px] font-mono border border-white/20 shadow-2xl backdrop-blur"
+      className={`fixed bottom-4 left-4 z-[9999] w-[360px] max-h-[60vh] overflow-auto text-[11px] font-mono border ${
+        failing ? "border-amber-300" : "border-white/20"
+      } shadow-2xl backdrop-blur bg-black/90 text-white`}
       role="region"
       aria-label="Preload fetch report"
     >
-      <div className="sticky top-0 flex items-center justify-between gap-2 px-3 py-2 bg-black/90 border-b border-white/10">
-        <span className="font-semibold tracking-wide">preload · fetch report</span>
+      <div className={`sticky top-0 flex items-center justify-between gap-2 px-3 py-2 border-b border-white/10 ${headerBg}`}>
+        <span className="font-semibold tracking-wide">
+          preload · fetch report {failing ? "· ⚠ FAIL" : "· ✓ OK"}
+        </span>
         <button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
