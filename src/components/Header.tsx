@@ -18,6 +18,7 @@ export function Header() {
 
   const nav = [
     { to: "/collection", label: "Collection" },
+    { to: "/business", label: "Business" },
     { to: "/executive", label: "Executive" },
     { to: "/bespoke", label: "Bespoke" },
     { to: "/wedding", label: "Wedding" },
