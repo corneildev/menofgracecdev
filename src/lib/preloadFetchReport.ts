@@ -126,9 +126,25 @@ export function buildFetchReport(
   const fulfilledPrimaries = new Set<string>();
   /** All canonical image fetches we've observed — used for mismatch hints. */
   const observedImageUrls: string[] = [];
-  const entries = performance.getEntriesByType?.("resource") ?? [];
-  for (const e of entries) {
-    const r = e as PerformanceResourceTiming;
+  // Pull from the session accumulator (which captures lazy/late fetches via
+  // PerformanceObserver) AND from the live buffer, then dedupe by
+  // (canonical, startTime). The accumulator can outlast the browser's
+  // resource-timing buffer; the live buffer catches anything observed before
+  // the accumulator was started (e.g. SSR navigation).
+  const accumulated = readSessionResourceEntries();
+  const live = performance.getEntriesByType?.("resource") ?? [];
+  const seen = new Set<string>();
+  const all: PerformanceResourceTiming[] = [];
+  for (const list of [accumulated, live] as const) {
+    for (const e of list) {
+      const r = e as PerformanceResourceTiming;
+      const key = `${r.name}::${Math.round(r.startTime)}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      all.push(r);
+    }
+  }
+  for (const r of all) {
     if (r.initiatorType !== "img" && r.initiatorType !== "link") continue;
     const canon = canonicaliseUrl(r.name);
     if (!isLikelyImage(canon)) continue;
