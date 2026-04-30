@@ -51,7 +51,7 @@ const en = {
     heroTitle: "MEN OF",
     heroTitleItalic: "GRACE",
     heroTagline:
-      "Bespoke suits for men who command presence — composed by hand in our atelier.",
+      "Bespoke menswear for men who command presence — composed in our maison, crafted by our partner ateliers in Biella and Foshan.",
     heroCtaBespoke: "Book a Fitting",
     heroCtaCollection: "Discover the Collection",
     pillarsEyebrow: "— Three Pillars —",
@@ -75,7 +75,7 @@ const en = {
     heroTitle: "Suits that",
     heroTitleItalic: "lead.",
     heroTagline:
-      "An armoury for men who command rooms — composed in our atelier, finished by hand.",
+      "An armoury for men who command rooms — composed by the maison, crafted by hand in our partner ateliers.",
     ctaBook: "Book a Fitting",
     ctaShop: "Shop the Collection",
   },
@@ -90,7 +90,7 @@ const en = {
     formEyebrow: "— Begin the conversation —",
     formTitle: "Request a Proposal",
     formSubmit: "Submit Request",
-    formSuccess: "Request received. Our atelier will respond within 48 hours.",
+    formSuccess: "Request received. The maison will respond within 48 hours.",
     formError: "Submission could not be recorded. Please try again.",
   },
   bespoke: {
@@ -117,10 +117,10 @@ const en = {
     ctaBespoke: "Book a Fitting",
   },
   atelier: {
-    heroEyebrow: "— The Atelier —",
-    heroTitle: "Where the",
-    heroTitleItalic: "cloth speaks.",
-    heroTagline: "A workshop in Abidjan, hands trained between Naples and Savile Row.",
+    heroEyebrow: "— The House —",
+    heroTitle: "Two houses,",
+    heroTitleItalic: "one vision.",
+    heroTagline: "We do not own these ateliers. We chose them — Biella for the bespoke commission, Foshan for the made-to-measure.",
   },
   collection: {
     title: "The Collection",
