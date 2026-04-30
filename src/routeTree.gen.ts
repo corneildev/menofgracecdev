@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as WeddingRouteImport } from './routes/wedding'
 import { Route as ExecutiveRouteImport } from './routes/executive'
+import { Route as CorporateProgramRouteImport } from './routes/corporate-program'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as BusinessRouteImport } from './routes/business'
@@ -39,6 +40,11 @@ const WeddingRoute = WeddingRouteImport.update({
 const ExecutiveRoute = ExecutiveRouteImport.update({
   id: '/executive',
   path: '/executive',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CorporateProgramRoute = CorporateProgramRouteImport.update({
+  id: '/corporate-program',
+  path: '/corporate-program',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionRoute = CollectionRouteImport.update({
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/business': typeof BusinessRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
+  '/corporate-program': typeof CorporateProgramRoute
   '/executive': typeof ExecutiveRoute
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/business': typeof BusinessRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
+  '/corporate-program': typeof CorporateProgramRoute
   '/executive': typeof ExecutiveRoute
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
@@ -154,6 +162,7 @@ export interface FileRoutesById {
   '/business': typeof BusinessRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
+  '/corporate-program': typeof CorporateProgramRoute
   '/executive': typeof ExecutiveRoute
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/cart'
     | '/collection'
+    | '/corporate-program'
     | '/executive'
     | '/wedding'
     | '/wishlist'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/cart'
     | '/collection'
+    | '/corporate-program'
     | '/executive'
     | '/wedding'
     | '/wishlist'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/cart'
     | '/collection'
+    | '/corporate-program'
     | '/executive'
     | '/wedding'
     | '/wishlist'
@@ -229,6 +241,7 @@ export interface RootRouteChildren {
   BusinessRoute: typeof BusinessRoute
   CartRoute: typeof CartRoute
   CollectionRoute: typeof CollectionRouteWithChildren
+  CorporateProgramRoute: typeof CorporateProgramRoute
   ExecutiveRoute: typeof ExecutiveRoute
   WeddingRoute: typeof WeddingRoute
   WishlistRoute: typeof WishlistRoute
@@ -255,6 +268,13 @@ declare module '@tanstack/react-router' {
       path: '/executive'
       fullPath: '/executive'
       preLoaderRoute: typeof ExecutiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/corporate-program': {
+      id: '/corporate-program'
+      path: '/corporate-program'
+      fullPath: '/corporate-program'
+      preLoaderRoute: typeof CorporateProgramRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collection': {
@@ -387,6 +407,7 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessRoute: BusinessRoute,
   CartRoute: CartRoute,
   CollectionRoute: CollectionRouteWithChildren,
+  CorporateProgramRoute: CorporateProgramRoute,
   ExecutiveRoute: ExecutiveRoute,
   WeddingRoute: WeddingRoute,
   WishlistRoute: WishlistRoute,

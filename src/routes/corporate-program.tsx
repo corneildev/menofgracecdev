@@ -185,6 +185,7 @@ const INITIAL_FORM: FormState = {
   city: "",
   pieces: "",
   timeline: "2-3 months",
+  notes: "",
 };
 
 /* ───────────────────────── Estimate logic ───────────────────────── */
