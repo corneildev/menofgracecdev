@@ -16,11 +16,11 @@ function CartPage() {
   const { items, ready, remove, setQuantity, setSize, clear, totalFcfa, totalUsd, count } = useCart();
 
   return (
-    <div className="pt-40 pb-32 px-6 md:px-12 bg-ink min-h-screen">
+    <div className="pt-32 sm:pt-40 pb-20 sm:pb-32 px-4 sm:px-6 md:px-8 lg:px-12 bg-ink min-h-screen overflow-x-hidden">
       <div className="max-w-[1400px] mx-auto">
-        <div className="text-center mb-20">
+        <div className="text-center mb-12 sm:mb-20">
           <div className="eyebrow text-bone/60 mb-6">— Votre Panier —</div>
-          <h1 className="display text-5xl md:text-7xl mb-6">Panier</h1>
+          <h1 className="display text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-6">Panier</h1>
           <p className="text-bone/60 font-light max-w-xl mx-auto">
             Vos pièces sélectionnées.
           </p>
@@ -32,27 +32,27 @@ function CartPage() {
             <Link to="/collection" className="luxury-btn">Découvrir la Collection</Link>
           </div>
         ) : (
-          <div className="grid lg:grid-cols-[1.6fr_1fr] gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-10 lg:gap-16">
             <div>
-              <div className="flex justify-between items-center mb-8 border-b border-hairline pb-5">
+              <div className="flex justify-between items-center mb-6 sm:mb-8 border-b border-hairline pb-5 gap-4">
                 <span className="eyebrow text-bone/60">{count} {count === 1 ? "pièce" : "pièces"}</span>
                 <button onClick={clear} className="eyebrow text-bone/60 hover:text-bone transition-colors">
                   Tout vider
                 </button>
               </div>
 
-              <ul className="space-y-10">
+              <ul className="space-y-8 sm:space-y-10">
                 {items.map((it) => (
-                  <li key={it.id} className="flex gap-6 border-b border-hairline pb-10">
+                  <li key={it.id} className="flex flex-col sm:flex-row gap-4 sm:gap-6 border-b border-hairline pb-8 sm:pb-10">
                     <Link
                       to="/collection/$productId"
                       params={{ productId: it.productId }}
-                      className="w-32 md:w-40 aspect-[4/5] bg-secondary shrink-0 overflow-hidden"
+                      className="w-full sm:w-32 md:w-40 aspect-[4/5] bg-secondary shrink-0 overflow-hidden max-w-[160px]"
                     >
                       <img src={it.image} alt={it.name} className="h-full w-full object-cover" />
                     </Link>
                     <div className="flex-1 min-w-0">
-                      <h2 className="font-serif text-2xl text-bone mb-2">
+                      <h2 className="font-serif text-xl sm:text-2xl text-bone mb-2">
                         <Link to="/collection/$productId" params={{ productId: it.productId }} className="hover:text-bone/70">
                           {it.name}
                         </Link>
@@ -99,7 +99,7 @@ function CartPage() {
               </ul>
             </div>
 
-            <aside className="lg:sticky lg:top-32 self-start border border-hairline p-8">
+            <aside className="lg:sticky lg:top-32 self-start border border-hairline p-6 sm:p-8">
               <div className="eyebrow text-bone/60 mb-6">— Récapitulatif —</div>
               <div className="space-y-3 mb-8">
                 <div className="flex justify-between text-bone/70 font-light text-sm">
