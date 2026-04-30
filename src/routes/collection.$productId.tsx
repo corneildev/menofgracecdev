@@ -11,6 +11,10 @@ import { SimilarPerfReport } from "@/components/SimilarPerfReport";
 import { detectImageFormats, getFormatSupport } from "@/lib/imageFormatSupport";
 import { resolvePreloadCandidates, filterDuplicates } from "@/lib/preloadDedup";
 import {
+  clearSessionResourceEntries,
+  ensureSessionResourceObserver,
+} from "@/lib/preloadFetchReport";
+import {
   isPreloadDebugEnabled,
   logRenderStart,
   logDecision,
@@ -200,6 +204,11 @@ function ProductView({ product }: { product: Product }) {
     if (sessionIdRef.current) {
       recordReset(sessionIdRef.current, "product-or-dataset-change");
     }
+    // Reset the session-long fetch accumulator so this product's report
+    // reflects only its own image fetches (incl. lazy-loads triggered later
+    // by user scroll / interaction). The observer auto-restarts on next read.
+    clearSessionResourceEntries();
+    ensureSessionResourceObserver();
     const id = startSession(product.id);
     sessionIdRef.current = id;
     setSessionId(id);

@@ -17,6 +17,8 @@ import { isPreloadDebugEnabled } from "@/lib/preloadDebug";
 import { readSession, recordThresholdFailure } from "@/lib/preloadStatsStore";
 import {
   buildFetchReport,
+  ensureSessionResourceObserver,
+  getSessionResourceObserverStatus,
   type FetchReport,
   type FetchCount,
 } from "@/lib/preloadFetchReport";
@@ -47,6 +49,10 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
 
   useEffect(() => {
     if (!enabled || !currentSessionId) return;
+    // Defensive: make sure the session-long resource observer is running so
+    // lazy/late image fetches stream into the report long after the initial
+    // render. Idempotent — the route also calls this on session reset.
+    ensureSessionResourceObserver();
     const tick = () => {
       const session = readSession(currentSessionId);
       const expected =
@@ -288,15 +294,31 @@ function Summary({
 }) {
   const total = report.countsByUrl.size;
   const fetched = [...report.countsByUrl.values()].reduce((n, r) => n + r.count, 0);
+  const obs = getSessionResourceObserverStatus();
+  const obsAge = obs.startedAt ? Math.round((Date.now() - obs.startedAt) / 1000) : 0;
   return (
-    <div className="grid grid-cols-3 gap-2">
-      <Stat label="urls" value={total} />
-      <Stat
-        label="fetches"
-        value={fetched}
-        tone={report.duplicates.length > 0 ? "warn" : "good"}
-      />
-      <Stat label="rows" value={matchedRows} />
+    <div className="space-y-2">
+      <div className="grid grid-cols-3 gap-2">
+        <Stat label="urls" value={total} />
+        <Stat
+          label="fetches"
+          value={fetched}
+          tone={report.duplicates.length > 0 ? "warn" : "good"}
+        />
+        <Stat label="rows" value={matchedRows} />
+      </div>
+      <div className="text-[10px] opacity-70 flex items-center justify-between">
+        <span>
+          live observer:{" "}
+          <span className={obs.active ? "text-emerald-300" : "text-amber-300"}>
+            {obs.active ? "on" : "off"}
+          </span>
+        </span>
+        <span>
+          captured {obs.count} entr{obs.count === 1 ? "y" : "ies"}
+          {obs.active && obsAge > 0 ? ` · ${obsAge}s` : ""}
+        </span>
+      </div>
     </div>
   );
 }

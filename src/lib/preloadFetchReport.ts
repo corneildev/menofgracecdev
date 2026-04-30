@@ -126,9 +126,25 @@ export function buildFetchReport(
   const fulfilledPrimaries = new Set<string>();
   /** All canonical image fetches we've observed — used for mismatch hints. */
   const observedImageUrls: string[] = [];
-  const entries = performance.getEntriesByType?.("resource") ?? [];
-  for (const e of entries) {
-    const r = e as PerformanceResourceTiming;
+  // Pull from the session accumulator (which captures lazy/late fetches via
+  // PerformanceObserver) AND from the live buffer, then dedupe by
+  // (canonical, startTime). The accumulator can outlast the browser's
+  // resource-timing buffer; the live buffer catches anything observed before
+  // the accumulator was started (e.g. SSR navigation).
+  const accumulated = readSessionResourceEntries();
+  const live = performance.getEntriesByType?.("resource") ?? [];
+  const seen = new Set<string>();
+  const all: PerformanceResourceTiming[] = [];
+  for (const list of [accumulated, live] as const) {
+    for (const e of list) {
+      const r = e as PerformanceResourceTiming;
+      const key = `${r.name}::${Math.round(r.startTime)}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      all.push(r);
+    }
+  }
+  for (const r of all) {
     if (r.initiatorType !== "img" && r.initiatorType !== "link") continue;
     const canon = canonicaliseUrl(r.name);
     if (!isLikelyImage(canon)) continue;
@@ -345,4 +361,82 @@ export function canonicaliseUrl(url: string): string {
   } catch {
     return url;
   }
+}
+
+/* ------------------------------------------------------------------------- *
+ * Session-long resource accumulator.
+ *
+ * The browser's resource-timing buffer is bounded (Safari rotates ~150
+ * entries; Chrome 250). On a busy product page that scrolls through dozens
+ * of lazy-loaded carousel images we'd lose early entries by the time the
+ * panel polls. A `PerformanceObserver` lets us subscribe to entries as they
+ * land — so lazy-loads triggered by user scroll, intersection observers, or
+ * dynamic `<img>` injection all flow into the same store the report reads
+ * from.
+ *
+ * The accumulator is module-scoped (one per page session) and idempotent:
+ * `ensureSessionResourceObserver()` is safe to call from anywhere.
+ * `clearSessionResourceEntries()` resets it for a fresh session view; the
+ * route calls it on product/dataset change.
+ * ------------------------------------------------------------------------- */
+
+let sessionEntries: PerformanceResourceTiming[] = [];
+let sessionObserver: PerformanceObserver | null = null;
+let sessionObserverStartedAt = 0;
+
+export function ensureSessionResourceObserver(): { active: boolean } {
+  if (typeof window === "undefined" || typeof PerformanceObserver === "undefined") {
+    return { active: false };
+  }
+  if (sessionObserver) return { active: true };
+  try {
+    const obs = new PerformanceObserver((list) => {
+      for (const e of list.getEntries()) {
+        if (e.entryType !== "resource") continue;
+        const r = e as PerformanceResourceTiming;
+        // Cheap pre-filter so the store only holds image-ish entries; the
+        // panel still re-checks initiator + extension when matching.
+        if (
+          r.initiatorType !== "img" &&
+          r.initiatorType !== "link" &&
+          r.initiatorType !== "css" /* background-image */
+        ) {
+          continue;
+        }
+        if (!/\.(?:png|jpe?g|webp|avif|gif|svg)(?:\?|$|#)/i.test(r.name)) continue;
+        sessionEntries.push(r);
+      }
+    });
+    // `buffered: true` replays entries already in the buffer, so callers
+    // don't lose anything that landed before the observer was registered.
+    obs.observe({ type: "resource", buffered: true });
+    sessionObserver = obs;
+    sessionObserverStartedAt = Date.now();
+    return { active: true };
+  } catch {
+    return { active: false };
+  }
+}
+
+export function readSessionResourceEntries(): PerformanceResourceTiming[] {
+  // Auto-start on first read so callers (tests, panels, server-side render
+  // bypass) don't need to remember the lifecycle wiring.
+  ensureSessionResourceObserver();
+  return sessionEntries;
+}
+
+export function clearSessionResourceEntries() {
+  sessionEntries = [];
+}
+
+export function getSessionResourceObserverStatus(): {
+  active: boolean;
+  startedAt: number;
+  count: number;
+} {
+  return {
+    active: sessionObserver !== null,
+    startedAt: sessionObserverStartedAt,
+    count: sessionEntries.length,
+  };
 }
