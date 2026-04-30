@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import hero from "@/assets/hero-suit.jpg";
 import wedding from "@/assets/wedding.jpg";
 import craft from "@/assets/craft.jpg";
