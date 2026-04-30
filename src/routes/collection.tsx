@@ -74,18 +74,18 @@ function Collection() {
   };
 
   return (
-    <div className="pt-40 pb-32 px-6 md:px-12 bg-ink min-h-screen">
+    <div className="pt-32 sm:pt-40 pb-20 sm:pb-32 px-4 sm:px-6 md:px-8 lg:px-12 bg-ink min-h-screen overflow-x-hidden">
       <div className="max-w-[1600px] mx-auto">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 sm:mb-16">
           <div className="eyebrow text-bone/60 mb-6">— The Collection —</div>
-          <h1 className="display text-5xl md:text-8xl mb-6">Atelier Pieces</h1>
-          <p className="text-bone/60 font-light max-w-xl mx-auto">
+          <h1 className="display text-4xl sm:text-5xl md:text-7xl lg:text-8xl mb-6">Atelier Pieces</h1>
+          <p className="text-bone/60 font-light max-w-xl mx-auto text-sm sm:text-base">
             Each piece composed in our atelier and finished entirely by hand.
           </p>
         </div>
 
         {/* Filter bar */}
-        <div className="border-y border-hairline py-6 mb-16 grid gap-6 md:grid-cols-3">
+        <div className="border-y border-hairline py-5 sm:py-6 mb-12 sm:mb-16 grid gap-5 sm:gap-6 md:grid-cols-3">
           <FilterGroup label="Category">
             <FilterChip active={category === "all"} onClick={() => setParam("category", "all")}>All</FilterChip>
             {ALL_CATEGORIES.map((c) => (
@@ -118,7 +118,7 @@ function Collection() {
             No pieces match these filters.
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12">
             {filtered.map((p) => (
               <article key={p.id} className="group">
                 <div className="relative img-zoom aspect-[4/5] bg-secondary mb-6 overflow-hidden">
