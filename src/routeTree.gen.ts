@@ -15,6 +15,7 @@ import { Route as LookbookRouteImport } from './routes/lookbook'
 import { Route as ExecutiveRouteImport } from './routes/executive'
 import { Route as CorporateProgramRouteImport } from './routes/corporate-program'
 import { Route as CollectionRouteImport } from './routes/collection'
+import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as BusinessRouteImport } from './routes/business'
 import { Route as BespokeRouteImport } from './routes/bespoke'
@@ -25,6 +26,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionProductIdRouteImport } from './routes/collection.$productId'
 import { Route as AdminRestockAlertsRouteImport } from './routes/admin.restock-alerts'
+import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order.confirmation.$orderId'
 import { Route as AdminProductsNewRouteImport } from './routes/admin.products.new'
 import { Route as AdminProductsIdRouteImport } from './routes/admin.products.$id'
 
@@ -56,6 +58,11 @@ const CorporateProgramRoute = CorporateProgramRouteImport.update({
 const CollectionRoute = CollectionRouteImport.update({
   id: '/collection',
   path: '/collection',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CartRoute = CartRouteImport.update({
@@ -108,6 +115,12 @@ const AdminRestockAlertsRoute = AdminRestockAlertsRouteImport.update({
   path: '/restock-alerts',
   getParentRoute: () => AdminRoute,
 } as any)
+const OrderConfirmationOrderIdRoute =
+  OrderConfirmationOrderIdRouteImport.update({
+    id: '/order/confirmation/$orderId',
+    path: '/order/confirmation/$orderId',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AdminProductsNewRoute = AdminProductsNewRouteImport.update({
   id: '/products/new',
   path: '/products/new',
@@ -128,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/bespoke': typeof BespokeRoute
   '/business': typeof BusinessRoute
   '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRouteWithChildren
   '/corporate-program': typeof CorporateProgramRoute
   '/executive': typeof ExecutiveRoute
@@ -138,6 +152,7 @@ export interface FileRoutesByFullPath {
   '/collection/$productId': typeof CollectionProductIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
+  '/order/confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -148,6 +163,7 @@ export interface FileRoutesByTo {
   '/bespoke': typeof BespokeRoute
   '/business': typeof BusinessRoute
   '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRouteWithChildren
   '/corporate-program': typeof CorporateProgramRoute
   '/executive': typeof ExecutiveRoute
@@ -158,6 +174,7 @@ export interface FileRoutesByTo {
   '/collection/$productId': typeof CollectionProductIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
+  '/order/confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -169,6 +186,7 @@ export interface FileRoutesById {
   '/bespoke': typeof BespokeRoute
   '/business': typeof BusinessRoute
   '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRouteWithChildren
   '/corporate-program': typeof CorporateProgramRoute
   '/executive': typeof ExecutiveRoute
@@ -179,6 +197,7 @@ export interface FileRoutesById {
   '/collection/$productId': typeof CollectionProductIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
+  '/order/confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -191,6 +210,7 @@ export interface FileRouteTypes {
     | '/bespoke'
     | '/business'
     | '/cart'
+    | '/checkout'
     | '/collection'
     | '/corporate-program'
     | '/executive'
@@ -201,6 +221,7 @@ export interface FileRouteTypes {
     | '/collection/$productId'
     | '/admin/products/$id'
     | '/admin/products/new'
+    | '/order/confirmation/$orderId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -211,6 +232,7 @@ export interface FileRouteTypes {
     | '/bespoke'
     | '/business'
     | '/cart'
+    | '/checkout'
     | '/collection'
     | '/corporate-program'
     | '/executive'
@@ -221,6 +243,7 @@ export interface FileRouteTypes {
     | '/collection/$productId'
     | '/admin/products/$id'
     | '/admin/products/new'
+    | '/order/confirmation/$orderId'
   id:
     | '__root__'
     | '/'
@@ -231,6 +254,7 @@ export interface FileRouteTypes {
     | '/bespoke'
     | '/business'
     | '/cart'
+    | '/checkout'
     | '/collection'
     | '/corporate-program'
     | '/executive'
@@ -241,6 +265,7 @@ export interface FileRouteTypes {
     | '/collection/$productId'
     | '/admin/products/$id'
     | '/admin/products/new'
+    | '/order/confirmation/$orderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -252,12 +277,14 @@ export interface RootRouteChildren {
   BespokeRoute: typeof BespokeRoute
   BusinessRoute: typeof BusinessRoute
   CartRoute: typeof CartRoute
+  CheckoutRoute: typeof CheckoutRoute
   CollectionRoute: typeof CollectionRouteWithChildren
   CorporateProgramRoute: typeof CorporateProgramRoute
   ExecutiveRoute: typeof ExecutiveRoute
   LookbookRoute: typeof LookbookRoute
   WeddingRoute: typeof WeddingRoute
   WishlistRoute: typeof WishlistRoute
+  OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -302,6 +329,13 @@ declare module '@tanstack/react-router' {
       path: '/collection'
       fullPath: '/collection'
       preLoaderRoute: typeof CollectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cart': {
@@ -374,6 +408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRestockAlertsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/order/confirmation/$orderId': {
+      id: '/order/confirmation/$orderId'
+      path: '/order/confirmation/$orderId'
+      fullPath: '/order/confirmation/$orderId'
+      preLoaderRoute: typeof OrderConfirmationOrderIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/products/new': {
       id: '/admin/products/new'
       path: '/products/new'
@@ -426,12 +467,14 @@ const rootRouteChildren: RootRouteChildren = {
   BespokeRoute: BespokeRoute,
   BusinessRoute: BusinessRoute,
   CartRoute: CartRoute,
+  CheckoutRoute: CheckoutRoute,
   CollectionRoute: CollectionRouteWithChildren,
   CorporateProgramRoute: CorporateProgramRoute,
   ExecutiveRoute: ExecutiveRoute,
   LookbookRoute: LookbookRoute,
   WeddingRoute: WeddingRoute,
   WishlistRoute: WishlistRoute,
+  OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
