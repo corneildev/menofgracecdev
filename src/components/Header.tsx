@@ -126,7 +126,7 @@ export function Header() {
           </ul>
           <div className="absolute bottom-10 left-10 right-10 flex items-center justify-between eyebrow text-bone/60">
             <span>{t("common.locations")}</span>
-            <LangSwitch />
+            <LangSwitch onChange={() => setOpen(false)} />
           </div>
         </aside>
       </div>
