@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import heroSuit from "@/assets/hero-suit.jpg";
 import craft from "@/assets/craft.jpg";
 import wedding from "@/assets/wedding.jpg";
@@ -42,6 +43,7 @@ function Caption({ eyebrow, line }: { eyebrow: string; line: string }) {
 }
 
 function LookbookPage() {
+  const { t } = useTranslation();
   return (
     <main className="bg-ink text-bone">
       {/* HERO */}
@@ -54,13 +56,13 @@ function LookbookPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-ink/30 via-ink/10 to-ink/80" />
         <div className="absolute inset-x-0 bottom-0 pb-20 md:pb-32 px-6 md:px-12 text-center">
           <div className="eyebrow text-bone/70 mb-6">
-            — Campaign · Spring MMXXVI —
+            {t("lookbook.heroEyebrow")}
           </div>
           <h1 className="display text-5xl md:text-8xl leading-[0.95] mb-6">
-            The Quiet Hour
+            {t("lookbook.heroTitle")}
           </h1>
           <p className="font-serif italic text-bone/85 text-lg md:text-2xl max-w-2xl mx-auto">
-            A meditation on power, restraint, and presence.
+            {t("lookbook.heroTagline")}
           </p>
         </div>
       </section>
@@ -194,17 +196,17 @@ function LookbookPage() {
           <div className="absolute inset-0 bg-ink/80" />
         </div>
         <div className="relative px-6 md:px-12 py-32 md:py-48 text-center">
-          <div className="eyebrow text-bone/70 mb-8">— The Collection —</div>
+          <div className="eyebrow text-bone/70 mb-8">{t("lookbook.finalEyebrow")}</div>
           <h2 className="display text-4xl md:text-6xl mb-12 leading-[1.05]">
-            Each piece is composed<br />
-            <span className="italic">by hand.</span>
+            {t("lookbook.finalTitle")}<br />
+            <span className="italic">{t("lookbook.finalTitleItalic")}</span>
           </h2>
           <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-center justify-center">
             <Link to="/executive" className="luxury-btn luxury-btn-solid">
-              Discover Executive
+              {t("lookbook.ctaExecutive")}
             </Link>
             <Link to="/bespoke" className="luxury-btn">
-              Book a Fitting
+              {t("lookbook.ctaBespoke")}
             </Link>
           </div>
         </div>

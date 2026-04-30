@@ -8,6 +8,7 @@ import { WishlistProvider } from "@/context/WishlistContext";
 import { CartProvider } from "@/context/CartContext";
 import { CartDrawer } from "@/components/CartDrawer";
 import { AuthProvider } from "@/context/AuthContext";
+import "@/i18n";
 
 import appCss from "../styles.css?url";
 
