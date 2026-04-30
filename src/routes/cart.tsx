@@ -15,20 +15,6 @@ export const Route = createFileRoute("/cart")({
 function CartPage() {
   const { items, ready, remove, setQuantity, setSize, clear, totalFcfa, totalUsd, count } = useCart();
 
-  const waMessage = encodeURIComponent(
-    `Bonjour MEN OF GRACE — je souhaite finaliser ma commande:\n\n` +
-      items
-        .map(
-          (i) =>
-            `• ${i.name} ×${i.quantity} — ${i.fit}, ${i.lapel}${i.size ? `, taille ${i.size}` : ""}${
-              i.monogram ? `, monogramme ${i.monogram}` : ""
-            } (${formatFcfa(i.fcfa * i.quantity)})`,
-        )
-        .join("\n") +
-      `\n\nTotal: ${formatFcfa(totalFcfa)} (${formatUsd(totalUsd)})`,
-  );
-  const waHref = `https://wa.me/?text=${waMessage}`;
-
   return (
     <div className="pt-40 pb-32 px-6 md:px-12 bg-ink min-h-screen">
       <div className="max-w-[1400px] mx-auto">
@@ -36,7 +22,7 @@ function CartPage() {
           <div className="eyebrow text-bone/60 mb-6">— Votre Panier —</div>
           <h1 className="display text-5xl md:text-7xl mb-6">Panier</h1>
           <p className="text-bone/60 font-light max-w-xl mx-auto">
-            Vos pièces sélectionnées. Réservation finalisée par notre concierge.
+            Vos pièces sélectionnées.
           </p>
         </div>
 
