@@ -10,6 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
+    "test": "vitest run",
+    "test:unit": "vitest run",
     "test:preload": "playwright test tests/preload-uniqueness.spec.ts"
   },
   "dependencies": {
