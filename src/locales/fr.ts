@@ -53,7 +53,7 @@ const fr: Translations = {
     heroTitle: "MEN OF",
     heroTitleItalic: "GRACE",
     heroTagline:
-      "Costumes sur-mesure pour les hommes qui imposent leur présence — composés à la main dans notre atelier.",
+      "Un vestiaire sur-mesure pour les hommes qui imposent leur présence — composé par la maison, façonné par nos ateliers partenaires de Biella et Foshan.",
     heroCtaBespoke: "Prendre rendez-vous",
     heroCtaCollection: "Découvrir la collection",
     pillarsEyebrow: "— Trois piliers —",
@@ -78,7 +78,7 @@ const fr: Translations = {
     heroTitle: "Des costumes qui",
     heroTitleItalic: "dirigent.",
     heroTagline:
-      "Une armurerie pour les hommes qui mènent — composée dans notre atelier, finie à la main.",
+      "Un vestiaire pour les hommes qui mènent — composé par la maison, façonné à la main par nos ateliers partenaires.",
     ctaBook: "Prendre rendez-vous",
     ctaShop: "Découvrir la collection",
   },
@@ -93,7 +93,7 @@ const fr: Translations = {
     formEyebrow: "— Engageons la conversation —",
     formTitle: "Demander une proposition",
     formSubmit: "Envoyer la demande",
-    formSuccess: "Demande reçue. Notre atelier vous répondra sous 48 heures.",
+    formSuccess: "Demande reçue. La maison vous répondra sous 48 heures.",
     formError: "L'envoi n'a pas pu être enregistré. Merci de réessayer.",
   },
   bespoke: {
@@ -120,11 +120,11 @@ const fr: Translations = {
     ctaBespoke: "Prendre rendez-vous",
   },
   atelier: {
-    heroEyebrow: "— L'Atelier —",
-    heroTitle: "Là où le",
-    heroTitleItalic: "tissu parle.",
+    heroEyebrow: "— La Maison —",
+    heroTitle: "Deux ateliers,",
+    heroTitleItalic: "une vision.",
     heroTagline:
-      "Un atelier à Abidjan, des mains formées entre Naples et Savile Row.",
+      "Nous ne possédons pas ces ateliers. Nous les avons choisis — Biella pour le sur-mesure, Foshan pour le made-to-measure.",
   },
   collection: {
     title: "La Collection",
