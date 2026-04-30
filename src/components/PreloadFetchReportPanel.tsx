@@ -45,6 +45,7 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
   const [report, setReport] = useState<FetchReport | null>(null);
   const [expectations, setExpectations] = useState<PreloadExpectation[]>([]);
   const [collapsed, setCollapsed] = useState(false);
+  const [dupSort, setDupSort] = useState<"count" | "preloads" | "url">("count");
   const activeThresholds = useMemo<PreloadThresholds>(
     () => thresholds ?? loadThresholds(),
     [thresholds],
