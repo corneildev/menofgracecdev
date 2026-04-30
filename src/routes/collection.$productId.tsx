@@ -11,6 +11,10 @@ import { SimilarPerfReport } from "@/components/SimilarPerfReport";
 import { detectImageFormats, getFormatSupport } from "@/lib/imageFormatSupport";
 import { resolvePreloadCandidates, filterDuplicates } from "@/lib/preloadDedup";
 import {
+  clearSessionResourceEntries,
+  ensureSessionResourceObserver,
+} from "@/lib/preloadFetchReport";
+import {
   isPreloadDebugEnabled,
   logRenderStart,
   logDecision,
