@@ -485,6 +485,7 @@ export const products: Product[] = [
     monogram: true,
   },
   {
+    id: "weekday-navy",
     name: "Weekday Navy",
     category: "Business",
     fcfa: 790_000,
