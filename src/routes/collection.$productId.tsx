@@ -21,6 +21,7 @@ import {
   runProfileTests,
   logProfileResults,
 } from "@/lib/preloadTestProfiles";
+import { runIphoneSafariQuickRun } from "@/lib/preloadQuickRun";
 import {
   startSession,
   recordEmit,
@@ -712,24 +713,44 @@ function ProductView({ product }: { product: Product }) {
       {allSoldOut && similarPool.length > 0 && (
         <div ref={carouselRef} className="px-6 md:px-12 max-w-[1600px] mx-auto mt-32">
           <SimilarPerfReport />
-          {isPreloadTestEnabled() && (
-            <button
-              type="button"
-              onClick={() => {
-                const results = runProfileTests({
-                  similarInStock,
-                  carouselNear: true,
-                  avifOk: getFormatSupport("avif") === "supported",
-                  webpOk: getFormatSupport("webp") === "supported",
-                  getImageSources,
-                });
-                logProfileResults(results);
-              }}
-              className="fixed bottom-4 left-4 z-50 px-4 py-2 text-[10px] tracking-[0.25em] uppercase bg-bone text-ink border border-bone hover:bg-bone/90 shadow-lg"
-              aria-label="Run preload test against mobile profiles"
-            >
-              ▶ Run preload test
-            </button>
+          {(isPreloadTestEnabled() || isPreloadDebugEnabled()) && (
+            <div className="fixed bottom-4 left-4 z-50 flex flex-col gap-2">
+              {isPreloadTestEnabled() && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const results = runProfileTests({
+                      similarInStock,
+                      carouselNear: true,
+                      avifOk: getFormatSupport("avif") === "supported",
+                      webpOk: getFormatSupport("webp") === "supported",
+                      getImageSources,
+                    });
+                    logProfileResults(results);
+                  }}
+                  className="px-4 py-2 text-[10px] tracking-[0.25em] uppercase bg-bone text-ink border border-bone hover:bg-bone/90 shadow-lg"
+                  aria-label="Run preload test against mobile profiles"
+                >
+                  ▶ Run preload test
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  runIphoneSafariQuickRun({
+                    productId: product.id,
+                    similarInStock,
+                    avifOk: getFormatSupport("avif") === "supported",
+                    webpOk: getFormatSupport("webp") === "supported",
+                    getImageSources,
+                  });
+                }}
+                className="px-4 py-2 text-[10px] tracking-[0.25em] uppercase bg-ink text-bone border border-bone hover:bg-ink/80 shadow-lg"
+                aria-label="Quick-run preload scenarios with iPhone Safari preset and snapshot to localStorage"
+              >
+                ⚡ iPhone Safari quick-run
+              </button>
+            </div>
           )}
           <div className="border-t border-hairline pt-12 mb-8 flex flex-wrap items-end justify-between gap-6">
             <div>
