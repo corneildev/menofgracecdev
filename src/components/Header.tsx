@@ -25,19 +25,12 @@ export function Header() {
     setOpen(false);
   }, [location.pathname]);
 
+  // Minimal nav — e-commerce only.
   const nav = [
-    { to: "/collection", label: t("nav.collection") },
-    { to: "/business", label: t("nav.business") },
-    { to: "/executive", label: t("nav.executive") },
-    { to: "/corporate-program", label: t("nav.corporate") },
-    { to: "/bespoke", label: t("nav.bespoke") },
-    { to: "/wedding", label: t("nav.wedding") },
-    { to: "/lookbook", label: t("nav.lookbook") },
-    { to: "/atelier", label: t("nav.atelier") },
-    { to: "/trunk-shows", label: "Trunk Shows" },
-    { to: "/size-finder", label: "Size Finder" },
-    { to: "/wishlist", label: t("nav.wishlist") },
-  ] as const;
+    { to: "/collection" as const, label: t("nav.collection") },
+    { to: "/wishlist" as const, label: t("nav.wishlist") },
+    { to: "/account" as const, label: "Account" },
+  ];
 
   return (
     <header
@@ -55,10 +48,6 @@ export function Header() {
           <span className="h-px w-4 bg-bone" />
         </button>
 
-        <nav className="hidden md:flex gap-10 absolute left-1/2 -translate-x-1/2 opacity-0 pointer-events-none">
-          {/* spacer for symmetry */}
-        </nav>
-
         <Link
           to="/"
           className="font-serif text-bone text-xl md:text-2xl tracking-[0.35em] mx-auto md:mx-0 md:absolute md:left-1/2 md:-translate-x-1/2"
@@ -67,13 +56,18 @@ export function Header() {
         </Link>
 
         <div className="hidden md:flex items-center gap-8 text-[11px] tracking-[0.28em] uppercase text-bone/85">
-          <Link to="/bespoke" className="hover:text-bone transition-colors">{t("common.bookFitting")}</Link>
-          <Link to="/collection" className="hover:text-bone transition-colors">{t("common.shop")}</Link>
+          <Link to="/collection" className="hover:text-bone transition-colors">{t("nav.collection")}</Link>
+          <Link to="/account" className="hover:text-bone transition-colors" aria-label="Account">
+            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.4">
+              <circle cx="12" cy="8" r="3.5" />
+              <path d="M5 20c1.5-3.5 4-5 7-5s5.5 1.5 7 5" />
+            </svg>
+          </Link>
           <Link to="/wishlist" className="hover:text-bone transition-colors flex items-center gap-2" aria-label={t("nav.wishlist")}>
             <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.4">
               <path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 3.1c0 5.6-7.5 10.2-7.5 10.2Z" />
             </svg>
-            <span>{t("common.saved")}{count > 0 ? ` (${count})` : ""}</span>
+            <span>{count > 0 ? `(${count})` : ""}</span>
           </Link>
           <button
             type="button"
@@ -132,8 +126,7 @@ export function Header() {
               </li>
             ))}
           </ul>
-          <div className="absolute bottom-10 left-10 right-10 flex items-center justify-between eyebrow text-bone/60">
-            <span>{t("common.locations")}</span>
+          <div className="absolute bottom-10 left-10 right-10 flex items-center justify-end eyebrow text-bone/60">
             <LangSwitch onChange={() => setOpen(false)} />
           </div>
         </aside>

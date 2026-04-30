@@ -15,20 +15,6 @@ export const Route = createFileRoute("/cart")({
 function CartPage() {
   const { items, ready, remove, setQuantity, setSize, clear, totalFcfa, totalUsd, count } = useCart();
 
-  const waMessage = encodeURIComponent(
-    `Bonjour MEN OF GRACE — je souhaite finaliser ma commande:\n\n` +
-      items
-        .map(
-          (i) =>
-            `• ${i.name} ×${i.quantity} — ${i.fit}, ${i.lapel}${i.size ? `, taille ${i.size}` : ""}${
-              i.monogram ? `, monogramme ${i.monogram}` : ""
-            } (${formatFcfa(i.fcfa * i.quantity)})`,
-        )
-        .join("\n") +
-      `\n\nTotal: ${formatFcfa(totalFcfa)} (${formatUsd(totalUsd)})`,
-  );
-  const waHref = `https://wa.me/?text=${waMessage}`;
-
   return (
     <div className="pt-40 pb-32 px-6 md:px-12 bg-ink min-h-screen">
       <div className="max-w-[1400px] mx-auto">
@@ -36,7 +22,7 @@ function CartPage() {
           <div className="eyebrow text-bone/60 mb-6">— Votre Panier —</div>
           <h1 className="display text-5xl md:text-7xl mb-6">Panier</h1>
           <p className="text-bone/60 font-light max-w-xl mx-auto">
-            Vos pièces sélectionnées. Réservation finalisée par notre concierge.
+            Vos pièces sélectionnées.
           </p>
         </div>
 
@@ -139,17 +125,11 @@ function CartPage() {
               <Link to="/checkout" className="luxury-btn luxury-btn-solid w-full block text-center mb-3">
                 Procéder au Paiement
               </Link>
-              <a href={waHref} target="_blank" rel="noopener noreferrer" className="luxury-btn w-full block text-center mb-3">
-                Préférer le concierge
-              </a>
-              <p className="eyebrow text-bone/40 text-[10px] text-center mb-6 leading-relaxed">
-                Pour les commandes complexes ou multi-pièces
-              </p>
               <Link to="/collection" className="luxury-btn w-full block text-center">
                 Continuer mes achats
               </Link>
               <p className="eyebrow text-bone/40 mt-6 leading-relaxed text-[10px]">
-                Confection 6–8 semaines · Essayage privé inclus · Livraison mondiale assurée
+                Shipped within 5 business days · Free local alterations
               </p>
             </aside>
           </div>
