@@ -122,6 +122,7 @@ export function startSession(productId: string): string {
     emitted: 0,
     duplicates: 0,
     emittedHrefs: [],
+    emittedEntries: [],
     events: [
       { at: now.toISOString(), kind: "session-start", detail: { productId } },
     ],
