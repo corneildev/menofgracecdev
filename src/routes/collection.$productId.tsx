@@ -461,13 +461,8 @@ function ProductView({ product }: { product: Product }) {
     });
   };
 
-  const waMessage = encodeURIComponent(
-    `Hello MEN OF GRACE — I'd like to enquire about the ${product.name}.\n` +
-      `Fit: ${fit} · Lapel: ${lapel} · Lining: ${lining}` +
-      (size ? ` · Size: ${size}` : "") +
-      (monogram ? ` · Monogram: ${monogram}` : ""),
-  );
-  const waHref = `https://wa.me/?text=${waMessage}`;
+  // WhatsApp / fitting CTAs removed — the maison is now e-commerce only.
+
 
   return (
     <>
@@ -567,24 +562,9 @@ function ProductView({ product }: { product: Product }) {
                         </span>
                       </TooltipTrigger>
                       <TooltipContent side="top" className="max-w-[220px] text-center">
-                        <p className="text-xs leading-relaxed mb-2">
+                        <p className="text-xs leading-relaxed">
                           La taille <span className="font-medium">{s}</span> est actuellement indisponible.
                         </p>
-                        <Link
-                          to="/bespoke"
-                          onClick={() =>
-                            trackProductEvent({
-                              type: "sold_out_booking_click",
-                              productSlug: product.id,
-                              productName: product.name,
-                              size: s,
-                              metadata: { source: "size_tooltip" },
-                            })
-                          }
-                          className="eyebrow text-[10px] underline underline-offset-4 hover:opacity-80"
-                        >
-                          Réserver un essayage →
-                        </Link>
                       </TooltipContent>
                     </Tooltip>
                   );
