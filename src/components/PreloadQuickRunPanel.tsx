@@ -17,7 +17,11 @@ import {
   clearQuickRunHistory,
   type QuickRunSnapshot,
 } from "@/lib/preloadQuickRun";
-import { buildFetchReport } from "@/lib/preloadFetchReport";
+import {
+  buildFetchReport,
+  canonicaliseUrl,
+  parseSrcSetUrls,
+} from "@/lib/preloadFetchReport";
 
 export function PreloadQuickRunPanel() {
   const [enabled] = useState(() => isPreloadDebugEnabled());
