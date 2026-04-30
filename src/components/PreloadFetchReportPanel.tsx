@@ -17,6 +17,8 @@ import { isPreloadDebugEnabled } from "@/lib/preloadDebug";
 import { readSession, recordThresholdFailure } from "@/lib/preloadStatsStore";
 import {
   buildFetchReport,
+  ensureSessionResourceObserver,
+  getSessionResourceObserverStatus,
   type FetchReport,
   type FetchCount,
 } from "@/lib/preloadFetchReport";
