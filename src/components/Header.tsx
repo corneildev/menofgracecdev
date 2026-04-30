@@ -108,7 +108,7 @@ export function Header() {
           }`}
         >
           <div className="flex justify-between items-center mb-20">
-            <span className="eyebrow">Menu</span>
+            <span className="eyebrow">{t("common.menu")}</span>
             <button onClick={() => setOpen(false)} className="text-bone text-2xl font-light">×</button>
           </div>
           <ul className="flex flex-col gap-7">
@@ -124,8 +124,9 @@ export function Header() {
               </li>
             ))}
           </ul>
-          <div className="absolute bottom-10 left-10 right-10 eyebrow text-bone/60">
-            Paris · Lagos · Abidjan · Dubai
+          <div className="absolute bottom-10 left-10 right-10 flex items-center justify-between eyebrow text-bone/60">
+            <span>{t("common.locations")}</span>
+            <LangSwitch />
           </div>
         </aside>
       </div>
