@@ -160,11 +160,21 @@ function updateSession(
 
 export function recordEmit(
   sessionId: string,
-  detail: { idx: number; productId: string; href: string; priority: string },
+  detail: {
+    idx: number;
+    productId: string;
+    href: string;
+    priority: string;
+    srcSet?: string;
+  },
 ) {
   updateSession(sessionId, (s) => {
     s.emitted += 1;
     if (!s.emittedHrefs.includes(detail.href)) s.emittedHrefs.push(detail.href);
+    if (!s.emittedEntries) s.emittedEntries = [];
+    if (!s.emittedEntries.some((e) => e.href === detail.href && e.srcSet === detail.srcSet)) {
+      s.emittedEntries.push({ href: detail.href, srcSet: detail.srcSet });
+    }
     s.events.push({ at: new Date().toISOString(), kind: "emit", detail });
   });
 }
