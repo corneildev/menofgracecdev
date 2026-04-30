@@ -14,6 +14,7 @@ import { Route as WeddingRouteImport } from './routes/wedding'
 import { Route as ExecutiveRouteImport } from './routes/executive'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as BusinessRouteImport } from './routes/business'
 import { Route as BespokeRouteImport } from './routes/bespoke'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AtelierRouteImport } from './routes/atelier'
@@ -48,6 +49,11 @@ const CollectionRoute = CollectionRouteImport.update({
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessRoute = BusinessRouteImport.update({
+  id: '/business',
+  path: '/business',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BespokeRoute = BespokeRouteImport.update({
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/atelier': typeof AtelierRoute
   '/auth': typeof AuthRoute
   '/bespoke': typeof BespokeRoute
+  '/business': typeof BusinessRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
   '/executive': typeof ExecutiveRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/atelier': typeof AtelierRoute
   '/auth': typeof AuthRoute
   '/bespoke': typeof BespokeRoute
+  '/business': typeof BusinessRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
   '/executive': typeof ExecutiveRoute
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/atelier': typeof AtelierRoute
   '/auth': typeof AuthRoute
   '/bespoke': typeof BespokeRoute
+  '/business': typeof BusinessRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
   '/executive': typeof ExecutiveRoute
@@ -162,6 +171,7 @@ export interface FileRouteTypes {
     | '/atelier'
     | '/auth'
     | '/bespoke'
+    | '/business'
     | '/cart'
     | '/collection'
     | '/executive'
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/atelier'
     | '/auth'
     | '/bespoke'
+    | '/business'
     | '/cart'
     | '/collection'
     | '/executive'
@@ -196,6 +207,7 @@ export interface FileRouteTypes {
     | '/atelier'
     | '/auth'
     | '/bespoke'
+    | '/business'
     | '/cart'
     | '/collection'
     | '/executive'
@@ -214,6 +226,7 @@ export interface RootRouteChildren {
   AtelierRoute: typeof AtelierRoute
   AuthRoute: typeof AuthRoute
   BespokeRoute: typeof BespokeRoute
+  BusinessRoute: typeof BusinessRoute
   CartRoute: typeof CartRoute
   CollectionRoute: typeof CollectionRouteWithChildren
   ExecutiveRoute: typeof ExecutiveRoute
@@ -256,6 +269,13 @@ declare module '@tanstack/react-router' {
       path: '/cart'
       fullPath: '/cart'
       preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business': {
+      id: '/business'
+      path: '/business'
+      fullPath: '/business'
+      preLoaderRoute: typeof BusinessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bespoke': {
@@ -364,6 +384,7 @@ const rootRouteChildren: RootRouteChildren = {
   AtelierRoute: AtelierRoute,
   AuthRoute: AuthRoute,
   BespokeRoute: BespokeRoute,
+  BusinessRoute: BusinessRoute,
   CartRoute: CartRoute,
   CollectionRoute: CollectionRouteWithChildren,
   ExecutiveRoute: ExecutiveRoute,
