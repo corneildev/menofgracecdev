@@ -109,82 +109,74 @@ function Index() {
         </div>
       </section>
 
-      {/* BESPOKE EXPERIENCE */}
-      <section className="bg-ink border-y border-hairline py-32 md:py-48 px-6 md:px-12">
-        <div className="max-w-[1600px] mx-auto grid md:grid-cols-12 gap-16 items-center">
-          <div className="md:col-span-5">
-            <div className="img-zoom aspect-[4/5]">
-              <img src={craft} alt="The art of tailoring" loading="lazy" className="h-full w-full object-cover" />
+      {/* THREE PILLARS — symmetric triptych */}
+      <section className="bg-ink">
+        {/* I — EXECUTIVE */}
+        <div className="relative h-[80vh] min-h-[600px] w-full overflow-hidden border-t border-hairline">
+          <img
+            src={executiveHero}
+            alt="Executive in a charcoal three-piece suit before a city skyline"
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/40 to-transparent" />
+          <div className="relative z-10 h-full flex items-center px-6 md:px-12">
+            <div className="max-w-xl">
+              <div className="eyebrow text-bone/70 mb-6">— I · Executive —</div>
+              <h2 className="display text-5xl md:text-7xl mb-8 leading-[1]">
+                The Boardroom<br /><span className="italic">Sartoria.</span>
+              </h2>
+              <p className="text-bone/80 font-light text-lg mb-10 leading-relaxed">
+                Charcoal, navy, pinstripe — the working wardrobe of men who shape decisions.
+              </p>
+              <Link to="/executive" className="luxury-btn luxury-btn-solid">Discover Executive</Link>
             </div>
           </div>
-          <div className="md:col-span-7">
-            <div className="eyebrow text-bone/60 mb-6">— The Bespoke Experience —</div>
-            <h2 className="display text-4xl md:text-6xl mb-12 leading-[1.05]">
-              A suit composed
-              <br />
-              <span className="italic">around you.</span>
-            </h2>
+        </div>
 
-            <ol className="space-y-8 mb-14">
-              {[
-                ["I", "Consultation", "A private conversation. Lifestyle, intent, occasion."],
-                ["II", "Measurements", "Twenty-eight points captured by hand."],
-                ["III", "Craftsmanship", "Sixty hours of work by master tailors in our atelier."],
-                ["IV", "Delivery", "Final fitting, adjustments and a piece that lasts a lifetime."],
-              ].map(([num, title, body]) => (
-                <li key={num} className="grid grid-cols-[3rem_1fr] gap-6 items-baseline border-b border-hairline pb-6">
-                  <span className="font-serif italic text-bone/50 text-2xl">{num}</span>
-                  <div>
-                    <div className="font-serif text-xl mb-1">{title}</div>
-                    <div className="text-bone/60 font-light text-sm">{body}</div>
-                  </div>
-                </li>
-              ))}
-            </ol>
-
-            <Link to="/bespoke" className="luxury-btn">Start Your Custom Suit</Link>
+        {/* II — BESPOKE */}
+        <div className="relative h-[80vh] min-h-[600px] w-full overflow-hidden border-t border-hairline">
+          <img
+            src={craft}
+            alt="The art of tailoring at the atelier"
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-l from-ink/85 via-ink/40 to-transparent" />
+          <div className="relative z-10 h-full flex items-center justify-end px-6 md:px-12">
+            <div className="max-w-xl text-right">
+              <div className="eyebrow text-bone/70 mb-6">— II · Bespoke —</div>
+              <h2 className="display text-5xl md:text-7xl mb-8 leading-[1]">
+                A Suit<br /><span className="italic">Around You.</span>
+              </h2>
+              <p className="text-bone/80 font-light text-lg mb-10 leading-relaxed">
+                Twenty-eight measurements. Sixty hours of work. A piece that lasts a lifetime.
+              </p>
+              <Link to="/bespoke" className="luxury-btn luxury-btn-solid">Begin Your Bespoke</Link>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* EXECUTIVE PILLAR */}
-      <section className="relative h-[80vh] min-h-[600px] w-full overflow-hidden">
-        <img
-          src={executiveHero}
-          alt="Executive in a charcoal three-piece suit before a city skyline"
-          loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover object-center"
-        />
-        <div className="absolute inset-0 bg-gradient-to-l from-ink/85 via-ink/40 to-transparent" />
-        <div className="relative z-10 h-full flex items-center justify-end px-6 md:px-12">
-          <div className="max-w-xl text-right">
-            <div className="eyebrow text-bone/70 mb-6">— The Executive Collection —</div>
-            <h2 className="display text-5xl md:text-7xl mb-8 leading-[1]">
-              The Boardroom<br /><span className="italic">Sartoria.</span>
-            </h2>
-            <p className="text-bone/80 font-light text-lg mb-10 leading-relaxed">
-              Charcoal, navy, pinstripe — the working wardrobe of men who shape decisions.
-              Private fittings in Cotonou, Lagos, Abidjan, Dakar, Dubai, and Paris.
-            </p>
-            <Link to="/executive" className="luxury-btn luxury-btn-solid">Discover Executive</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* WEDDING */}
-      <section className="relative h-[80vh] min-h-[600px] w-full overflow-hidden">
-        <img src={wedding} alt="Groom in a tuxedo" loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/40 to-transparent" />
-        <div className="relative z-10 h-full flex items-center px-6 md:px-12">
-          <div className="max-w-xl">
-            <div className="eyebrow text-bone/70 mb-6">— Maison Mariage —</div>
-            <h2 className="display text-5xl md:text-7xl mb-8 leading-[1]">
-              Wedding<br /><span className="italic">Excellence.</span>
-            </h2>
-            <p className="text-bone/80 font-light text-lg mb-10 leading-relaxed">
-              From the proposal to the altar — a complete sartorial composition for the groom and his witnesses.
-            </p>
-            <Link to="/wedding" className="luxury-btn luxury-btn-solid">Book Your Wedding Suit</Link>
+        {/* III — WEDDING */}
+        <div className="relative h-[80vh] min-h-[600px] w-full overflow-hidden border-t border-hairline">
+          <img
+            src={wedding}
+            alt="Groom in a tuxedo"
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/40 to-transparent" />
+          <div className="relative z-10 h-full flex items-center px-6 md:px-12">
+            <div className="max-w-xl">
+              <div className="eyebrow text-bone/70 mb-6">— III · Wedding —</div>
+              <h2 className="display text-5xl md:text-7xl mb-8 leading-[1]">
+                Wedding<br /><span className="italic">Excellence.</span>
+              </h2>
+              <p className="text-bone/80 font-light text-lg mb-10 leading-relaxed">
+                From the proposal to the altar — a complete composition for the groom and his witnesses.
+              </p>
+              <Link to="/wedding" className="luxury-btn luxury-btn-solid">Book Your Wedding Suit</Link>
+            </div>
           </div>
         </div>
       </section>
