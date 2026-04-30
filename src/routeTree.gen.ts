@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as WeddingRouteImport } from './routes/wedding'
+import { Route as ExecutiveRouteImport } from './routes/executive'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as BespokeRouteImport } from './routes/bespoke'
@@ -32,6 +33,11 @@ const WishlistRoute = WishlistRouteImport.update({
 const WeddingRoute = WeddingRouteImport.update({
   id: '/wedding',
   path: '/wedding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExecutiveRoute = ExecutiveRouteImport.update({
+  id: '/executive',
+  path: '/executive',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionRoute = CollectionRouteImport.update({
@@ -104,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/bespoke': typeof BespokeRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
+  '/executive': typeof ExecutiveRoute
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/bespoke': typeof BespokeRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
+  '/executive': typeof ExecutiveRoute
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
@@ -137,6 +145,7 @@ export interface FileRoutesById {
   '/bespoke': typeof BespokeRoute
   '/cart': typeof CartRoute
   '/collection': typeof CollectionRouteWithChildren
+  '/executive': typeof ExecutiveRoute
   '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/bespoke'
     | '/cart'
     | '/collection'
+    | '/executive'
     | '/wedding'
     | '/wishlist'
     | '/admin/restock-alerts'
@@ -171,6 +181,7 @@ export interface FileRouteTypes {
     | '/bespoke'
     | '/cart'
     | '/collection'
+    | '/executive'
     | '/wedding'
     | '/wishlist'
     | '/admin/restock-alerts'
@@ -187,6 +198,7 @@ export interface FileRouteTypes {
     | '/bespoke'
     | '/cart'
     | '/collection'
+    | '/executive'
     | '/wedding'
     | '/wishlist'
     | '/admin/restock-alerts'
@@ -204,6 +216,7 @@ export interface RootRouteChildren {
   BespokeRoute: typeof BespokeRoute
   CartRoute: typeof CartRoute
   CollectionRoute: typeof CollectionRouteWithChildren
+  ExecutiveRoute: typeof ExecutiveRoute
   WeddingRoute: typeof WeddingRoute
   WishlistRoute: typeof WishlistRoute
 }
@@ -222,6 +235,13 @@ declare module '@tanstack/react-router' {
       path: '/wedding'
       fullPath: '/wedding'
       preLoaderRoute: typeof WeddingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/executive': {
+      id: '/executive'
+      path: '/executive'
+      fullPath: '/executive'
+      preLoaderRoute: typeof ExecutiveRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collection': {
@@ -346,6 +366,7 @@ const rootRouteChildren: RootRouteChildren = {
   BespokeRoute: BespokeRoute,
   CartRoute: CartRoute,
   CollectionRoute: CollectionRouteWithChildren,
+  ExecutiveRoute: ExecutiveRoute,
   WeddingRoute: WeddingRoute,
   WishlistRoute: WishlistRoute,
 }

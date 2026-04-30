@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import hero from "@/assets/hero-suit.jpg";
 import wedding from "@/assets/wedding.jpg";
 import craft from "@/assets/craft.jpg";
+import executiveHero from "@/assets/executive-hero.jpg";
 import { products, formatPrice } from "@/data/products";
 
 export const Route = createFileRoute("/")({
