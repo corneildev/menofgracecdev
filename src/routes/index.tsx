@@ -1,17 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import hero from "@/assets/hero-suit.jpg";
-import wedding from "@/assets/wedding.jpg";
-import craft from "@/assets/craft.jpg";
-import executiveHero from "@/assets/executive-hero.jpg";
 import { products, formatPrice } from "@/data/products";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MEN OF GRACE — Bespoke Excellence" },
-      { name: "description", content: "Luxury bespoke menswear: tailored suits, wedding sartoria and executive collections." },
-      { property: "og:title", content: "MEN OF GRACE — Bespoke Excellence" },
+      { title: "MEN OF GRACE — Tailored Menswear" },
+      { name: "description", content: "Tailored menswear, ready to ship. Italian sizing, finished by hand. Shipped within 5 business days with free local alterations." },
+      { property: "og:title", content: "MEN OF GRACE — Tailored Menswear" },
       { property: "og:description", content: "For men who command presence without speaking." },
       { property: "og:image", content: hero },
       { property: "twitter:image", content: hero },
@@ -21,14 +17,13 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { t } = useTranslation();
   return (
     <div className="bg-ink text-bone">
       {/* HERO */}
       <section className="relative h-screen w-full overflow-hidden">
         <img
           src={hero}
-          alt="Man in a black bespoke suit"
+          alt="Man in a black tailored suit"
           className="absolute inset-0 h-full w-full object-cover object-center"
           width={1536}
           height={1920}
@@ -36,17 +31,16 @@ function Index() {
         <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/30 to-ink" />
 
         <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
-          <div className="eyebrow text-bone/70 mb-8 fade-in-slow">Maison de Couture · Fondée en MMXX</div>
+          <div className="eyebrow text-bone/70 mb-8 fade-in-slow">Maison de Couture</div>
           <h1 className="display text-bone text-[15vw] md:text-[7rem] leading-[0.9] mb-6 fade-up">
             MEN <span className="italic font-light">of</span> GRACE
           </h1>
           <div className="hairline w-16 my-8 fade-in-slow" />
           <p className="font-serif italic text-bone/85 text-xl md:text-2xl mb-12 fade-up" style={{ animationDelay: "200ms" }}>
-            L'Excellence sur Mesure
+            Tailored menswear, ready to ship.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 fade-up" style={{ animationDelay: "400ms" }}>
-            <Link to="/collection" className="luxury-btn luxury-btn-solid">Découvrir la Collection</Link>
-            <Link to="/bespoke" className="luxury-btn">Réserver un Essayage</Link>
+            <Link to="/collection" className="luxury-btn luxury-btn-solid">Shop the Collection</Link>
           </div>
         </div>
 
@@ -111,85 +105,13 @@ function Index() {
         </div>
       </section>
 
-      {/* THREE PILLARS — symmetric triptych */}
-      <section className="bg-ink">
-        {/* I — EXECUTIVE */}
-        <div className="relative h-[80vh] min-h-[600px] w-full overflow-hidden border-t border-hairline">
-          <img
-            src={executiveHero}
-            alt="Executive in a charcoal three-piece suit before a city skyline"
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/40 to-transparent" />
-          <div className="relative z-10 h-full flex items-center px-6 md:px-12">
-            <div className="max-w-xl">
-              <div className="eyebrow text-bone/70 mb-6">{t("home.executiveEyebrow")}</div>
-              <h2 className="display text-5xl md:text-7xl mb-8 leading-[1]">
-                {t("home.executiveTitle")}<br /><span className="italic">{t("home.executiveTitleItalic")}</span>
-              </h2>
-              <p className="text-bone/80 font-light text-lg mb-10 leading-relaxed">
-                {t("home.executiveBody")}
-              </p>
-              <Link to="/executive" className="luxury-btn luxury-btn-solid">{t("lookbook.ctaExecutive")}</Link>
-            </div>
-          </div>
-        </div>
-
-        {/* II — BESPOKE */}
-        <div className="relative h-[80vh] min-h-[600px] w-full overflow-hidden border-t border-hairline">
-          <img
-            src={craft}
-            alt="The art of tailoring at the atelier"
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-l from-ink/85 via-ink/40 to-transparent" />
-          <div className="relative z-10 h-full flex items-center justify-end px-6 md:px-12">
-            <div className="max-w-xl text-right">
-              <div className="eyebrow text-bone/70 mb-6">{t("home.bespokeEyebrow")}</div>
-              <h2 className="display text-5xl md:text-7xl mb-8 leading-[1]">
-                {t("home.bespokeTitle")}<br /><span className="italic">{t("home.bespokeTitleItalic")}</span>
-              </h2>
-              <p className="text-bone/80 font-light text-lg mb-10 leading-relaxed">
-                {t("home.bespokeBody")}
-              </p>
-              <Link to="/bespoke" className="luxury-btn luxury-btn-solid">{t("common.bookFitting")}</Link>
-            </div>
-          </div>
-        </div>
-
-        {/* III — WEDDING */}
-        <div className="relative h-[80vh] min-h-[600px] w-full overflow-hidden border-t border-hairline">
-          <img
-            src={wedding}
-            alt="Groom in a tuxedo"
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/40 to-transparent" />
-          <div className="relative z-10 h-full flex items-center px-6 md:px-12">
-            <div className="max-w-xl">
-              <div className="eyebrow text-bone/70 mb-6">{t("home.weddingEyebrow")}</div>
-              <h2 className="display text-5xl md:text-7xl mb-8 leading-[1]">
-                {t("home.weddingTitle")}<br /><span className="italic">{t("home.weddingTitleItalic")}</span>
-              </h2>
-              <p className="text-bone/80 font-light text-lg mb-10 leading-relaxed">
-                {t("home.weddingBody")}
-              </p>
-              <Link to="/wedding" className="luxury-btn luxury-btn-solid">{t("nav.wedding")}</Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* TRUST */}
-      <section className="py-32 px-6 md:px-12 border-b border-hairline">
+      <section className="py-32 px-6 md:px-12 border-y border-hairline">
         <div className="max-w-[1400px] mx-auto grid md:grid-cols-3 gap-16 text-center">
           {[
-            ["Curated Cloth", "Loro Piana, Vitale Barberis Canonico, Drago, Scabal — chosen mill by mill, season by season."],
-            ["Two Partner Ateliers", "Biella for the bespoke commission. Foshan for made-to-measure and ready-to-wear. One standard."],
-            ["By Appointment", "Fittings held in private, during our seasonal trunk shows in Cotonou, Lagos, Abidjan and Paris."],
+            ["Curated Cloth", "Loro Piana, Vitale Barberis Canonico, Drago, Scabal — chosen mill by mill."],
+            ["Italian Sizing", "Cut from IT 46 to IT 56. A guided Size Finder if you are between sizes."],
+            ["Shipped in 5 Days", "Dispatched within five business days. Free local alterations."],
           ].map(([title, body]) => (
             <div key={title}>
               <div className="hairline w-12 mx-auto mb-8" />
@@ -200,42 +122,13 @@ function Index() {
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
-      <section className="py-32 md:py-48 px-6 md:px-12">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="eyebrow text-bone/60 mb-12">— Voices —</div>
-          <blockquote className="font-serif text-3xl md:text-5xl leading-[1.2] italic text-bone mb-12">
-            “The first time I wore it, the room shifted. <br className="hidden md:block" />
-            I have not worn another house since.”
-          </blockquote>
-          <div className="eyebrow text-bone/60">Olivier K. · CEO, Abidjan</div>
-
-          <div className="hairline w-24 mx-auto my-20" />
-
-          <div className="grid md:grid-cols-2 gap-12 text-left">
-            {[
-              ["“They understand that elegance is restraint.”", "Marc D. · Paris"],
-              ["“My wedding suit will be remembered for decades.”", "Tariq S. · Dubai"],
-            ].map(([quote, author]) => (
-              <div key={author}>
-                <p className="font-serif italic text-xl text-bone/90 mb-4 leading-relaxed">{quote}</p>
-                <div className="eyebrow text-bone/50">{author}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* TRUNK SHOWS / CTA */}
-      <section className="border-t border-hairline py-24 px-6 md:px-12 text-center">
-        <div className="eyebrow text-bone/60 mb-6">— Seasonal —</div>
+      {/* CTA */}
+      <section className="py-24 px-6 md:px-12 text-center">
+        <div className="eyebrow text-bone/60 mb-6">— The Collection —</div>
         <p className="font-serif text-2xl md:text-3xl italic text-bone/85 mb-10 max-w-2xl mx-auto">
-          Fittings are held in four cities, by private invitation.
+          Each piece, ready to be worn.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/trunk-shows" className="luxury-btn luxury-btn-solid">View Trunk Shows</Link>
-          <Link to="/bespoke" className="luxury-btn">Speak to the Maison</Link>
-        </div>
+        <Link to="/collection" className="luxury-btn luxury-btn-solid">Shop the Collection</Link>
       </section>
     </div>
   );
