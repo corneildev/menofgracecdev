@@ -93,11 +93,14 @@ export function CartDrawer() {
               <span className="text-bone text-lg font-light">{formatFcfa(totalFcfa)}</span>
             </div>
             <div className="flex justify-end text-bone/50 text-xs mb-6">{formatUsd(totalUsd)}</div>
-            <Link to="/cart" onClick={close} className="luxury-btn luxury-btn-solid w-full block text-center">
+            <Link to="/checkout" onClick={close} className="luxury-btn luxury-btn-solid w-full block text-center mb-3">
+              Passer commande
+            </Link>
+            <Link to="/cart" onClick={close} className="luxury-btn w-full block text-center">
               Voir le Panier
             </Link>
             <p className="eyebrow text-bone/40 mt-4 text-center text-[10px]">
-              Réservation finalisée via WhatsApp · Livraison mondiale
+              Expédition sous 5 jours ouvrés · Livraison mondiale
             </p>
           </div>
         )}
