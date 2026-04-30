@@ -210,7 +210,7 @@ function formatFcfa(n: number): string {
 /* ───────────────────────── Component ───────────────────────── */
 
 function CorporateProgramPage() {
-  const [form, setForm] = useState<FormState>({ ...INITIAL_FORM, notes: "" });
+  const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
 
   const piecesNum = Number.parseInt(form.pieces, 10);
