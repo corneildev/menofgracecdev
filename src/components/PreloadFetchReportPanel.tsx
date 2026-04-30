@@ -49,6 +49,10 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
 
   useEffect(() => {
     if (!enabled || !currentSessionId) return;
+    // Defensive: make sure the session-long resource observer is running so
+    // lazy/late image fetches stream into the report long after the initial
+    // render. Idempotent — the route also calls this on session reset.
+    ensureSessionResourceObserver();
     const tick = () => {
       const session = readSession(currentSessionId);
       const expected =
