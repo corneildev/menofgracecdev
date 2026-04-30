@@ -4,6 +4,8 @@ import { getProduct, products, formatPrice, getImageSources, type Product } from
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { SizeFinder } from "@/components/SizeFinder";
 import { RestockAlertForm } from "@/components/RestockAlertForm";
 import { trackProductEvent } from "@/lib/analytics";
 import { useImagePrefetch, isImageCached, prefetchImage } from "@/hooks/useImagePrefetch";
