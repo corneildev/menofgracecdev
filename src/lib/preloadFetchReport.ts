@@ -37,6 +37,22 @@ export type PreloadExpectation = {
   srcSet?: string;
 };
 
+export type UnfetchedPreloadDiagnostic = {
+  /** canonical primary href of the unfetched preload */
+  primary: string;
+  /** raw primary href as supplied to buildFetchReport (pre-canonicalization) */
+  primaryRaw: string;
+  /** canonical variants advertised by the preload's srcset (incl. primary) */
+  expectedVariants: string[];
+  /**
+   * Observed image fetches whose canonical URL is NOT in expectedVariants
+   * but whose filename/path stem matches the preload's filename — the most
+   * common cause of an "unfetched" flag is the carousel's <picture> picking
+   * a different srcset width than the one the preload listed.
+   */
+  likelyMismatchedFetches: { url: string; reason: string }[];
+};
+
 export type FetchReport = {
   supported: boolean;
   observedAt: number;
@@ -49,6 +65,12 @@ export type FetchReport = {
    * appeared in the resource timing buffer. Indexed by the primary href.
    */
   unfetchedPreloads: string[];
+  /**
+   * Per-unfetched-preload diagnostic: which variants we expected and which
+   * observed fetches looked like a near-miss (same filename, different
+   * query/srcset variant).
+   */
+  unfetchedDiagnostics: UnfetchedPreloadDiagnostic[];
 };
 
 /**
@@ -68,34 +90,49 @@ export function buildFetchReport(
       countsByUrl: new Map(),
       duplicates: [],
       unfetchedPreloads: expectations.map((e) => e.href),
+      unfetchedDiagnostics: [],
     };
   }
 
   // canonical variant URL -> primary preload href that owns it
   const variantToPrimary = new Map<string, string>();
-  // primary href -> canonical (so we can mark fulfilled later)
+  // primary canonical href -> raw primary as supplied by caller
+  const primaryRaw = new Map<string, string>();
+  // primary canonical href -> all canonical variants (incl. itself)
+  const expectedVariantsByPrimary = new Map<string, Set<string>>();
   const primaries = new Set<string>();
   for (const exp of expectations) {
     const primary = canonicaliseUrl(exp.href);
     primaries.add(primary);
+    if (!primaryRaw.has(primary)) primaryRaw.set(primary, exp.href);
     variantToPrimary.set(primary, primary);
+    let bucket = expectedVariantsByPrimary.get(primary);
+    if (!bucket) {
+      bucket = new Set<string>();
+      expectedVariantsByPrimary.set(primary, bucket);
+    }
+    bucket.add(primary);
     for (const v of parseSrcSetUrls(exp.srcSet)) {
       const canon = canonicaliseUrl(v);
       // Don't overwrite an existing primary mapping with a different one;
       // first writer wins so duplicate variants stay attached to their
       // original preload.
       if (!variantToPrimary.has(canon)) variantToPrimary.set(canon, primary);
+      bucket.add(canon);
     }
   }
 
   const counts = new Map<string, FetchCount>();
   const fulfilledPrimaries = new Set<string>();
+  /** All canonical image fetches we've observed — used for mismatch hints. */
+  const observedImageUrls: string[] = [];
   const entries = performance.getEntriesByType?.("resource") ?? [];
   for (const e of entries) {
     const r = e as PerformanceResourceTiming;
     if (r.initiatorType !== "img" && r.initiatorType !== "link") continue;
     const canon = canonicaliseUrl(r.name);
     if (!isLikelyImage(canon)) continue;
+    observedImageUrls.push(canon);
     const matchedPrimary = variantToPrimary.get(canon);
     if (matchedPrimary) fulfilledPrimaries.add(matchedPrimary);
     const existing = counts.get(canon);
@@ -124,13 +161,88 @@ export function buildFetchReport(
   // A preload is "unfetched" only if NONE of its srcset variants showed up.
   const unfetchedPreloads = [...primaries].filter((p) => !fulfilledPrimaries.has(p));
 
+  // For each unfetched preload, hunt for "near miss" observed fetches: same
+  // filename stem (path's last segment, minus extension) but a different
+  // canonical URL. That's the classic srcset-variant mismatch — the preload
+  // declared `image-800w.jpg` but the <picture> picked `image-1200w.jpg`.
+  const unfetchedDiagnostics: UnfetchedPreloadDiagnostic[] = unfetchedPreloads.map(
+    (primary) => {
+      const expected = [...(expectedVariantsByPrimary.get(primary) ?? [primary])];
+      const expectedSet = new Set(expected);
+      const expectedStems = new Set(expected.map(filenameStem).filter(Boolean));
+      const expectedDirs = new Set(expected.map(pathDir).filter(Boolean));
+      const likely: { url: string; reason: string }[] = [];
+      for (const obs of observedImageUrls) {
+        if (expectedSet.has(obs)) continue; // already counted as a hit
+        const obsStem = filenameStem(obs);
+        const obsDir = pathDir(obs);
+        if (obsStem && expectedStems.has(obsStem)) {
+          likely.push({
+            url: obs,
+            reason: "same filename stem, different variant/query",
+          });
+        } else if (obsDir && expectedDirs.has(obsDir)) {
+          likely.push({
+            url: obs,
+            reason: "same path directory, different filename",
+          });
+        }
+      }
+      return {
+        primary,
+        primaryRaw: primaryRaw.get(primary) ?? primary,
+        expectedVariants: expected,
+        likelyMismatchedFetches: dedupeByUrl(likely).slice(0, 5),
+      };
+    },
+  );
+
   return {
     supported: true,
     observedAt: Date.now(),
     countsByUrl: counts,
     duplicates,
     unfetchedPreloads,
+    unfetchedDiagnostics,
   };
+}
+
+/** "https://cdn/x/foo-800w.jpg?w=800" → "foo-800w" then strip width tokens → "foo". */
+function filenameStem(url: string): string {
+  try {
+    const u = new URL(url);
+    const last = u.pathname.split("/").pop() ?? "";
+    const noExt = last.replace(/\.(?:png|jpe?g|webp|avif|gif|svg)$/i, "");
+    // Strip common variant tokens so `foo-800w` and `foo-1200w` collapse.
+    return noExt
+      .replace(/[-_](?:\d{2,4}w|\d+x|\d+px)$/i, "")
+      .replace(/@\d+x$/i, "");
+  } catch {
+    return "";
+  }
+}
+
+/** Path directory (no filename), used as a coarser fallback hint. */
+function pathDir(url: string): string {
+  try {
+    const u = new URL(url);
+    const parts = u.pathname.split("/");
+    parts.pop();
+    return parts.join("/");
+  } catch {
+    return "";
+  }
+}
+
+function dedupeByUrl<T extends { url: string }>(rows: T[]): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const r of rows) {
+    if (seen.has(r.url)) continue;
+    seen.add(r.url);
+    out.push(r);
+  }
+  return out;
 }
 
 function normaliseExpectations(
