@@ -602,37 +602,9 @@ function ProductView({ product }: { product: Product }) {
 
             {allSoldOut && (
               <>
-                {(() => {
-                  const soldOutMsg = encodeURIComponent(
-                    `Hello MEN OF GRACE — la pièce "${product.name}"` +
-                      (size ? ` en taille ${size}` : "") +
-                      ` est épuisée. J'aimerais réserver un essayage pour une création sur mesure.`,
-                  );
-                  const soldOutWaHref = `https://wa.me/?text=${soldOutMsg}`;
-                  return (
-                    <p className="text-xs text-bone/60 mt-3 tracking-wider font-light">
-                      Toutes les tailles sont actuellement épuisées —{" "}
-                      <a
-                        href={soldOutWaHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={() =>
-                          trackProductEvent({
-                            type: "all_sold_out_booking_click",
-                            productSlug: product.id,
-                            productName: product.name,
-                            size,
-                            metadata: { source: "all_sold_out_notice", channel: "whatsapp" },
-                          })
-                        }
-                        className="underline underline-offset-4 hover:text-bone"
-                      >
-                        réservez un essayage via WhatsApp
-                      </a>{" "}
-                      pour une pièce sur mesure.
-                    </p>
-                  );
-                })()}
+                <p className="text-xs text-bone/60 mt-3 tracking-wider font-light">
+                  Toutes les tailles sont actuellement épuisées. Soyez prévenu dès que la pièce revient.
+                </p>
                 <RestockAlertForm
                   productSlug={product.id}
                   productName={product.name}
@@ -700,13 +672,9 @@ function ProductView({ product }: { product: Product }) {
             </button>
             {allSoldOut && (
               <p className="eyebrow text-[10px] text-bone/60 text-center leading-relaxed tracking-[0.25em] mt-1">
-                Pièce confectionnée en série limitée — réservez un essayage privé pour une création sur mesure à votre image.
+                Pièce confectionnée en série limitée — laissez-nous votre email pour être prévenu du restock.
               </p>
             )}
-            <a href={waHref} target="_blank" rel="noopener noreferrer" className="luxury-btn w-full">
-              Reserve via WhatsApp
-            </a>
-            <Link to="/bespoke" className="luxury-btn w-full">Book a Fitting</Link>
             <button
               type="button"
               onClick={() => toggle(product.id)}
@@ -721,7 +689,7 @@ function ProductView({ product }: { product: Product }) {
           </div>
 
           <p className="eyebrow text-bone/40 mt-8 leading-relaxed">
-            Limited atelier slots · 6–8 week delivery · Worldwide shipping
+            Shipped within 5 business days · Free local alterations
           </p>
         </div>
       </div>
