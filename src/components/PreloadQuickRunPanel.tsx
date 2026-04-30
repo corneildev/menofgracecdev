@@ -134,6 +134,8 @@ export function PreloadQuickRunPanel() {
                 />
               </div>
 
+              <TrendChart history={history} />
+
               <details open={history.length > 1}>
                 <summary className="cursor-pointer opacity-80">
                   history ({filtered.length}/{history.length})
