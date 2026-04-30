@@ -23,6 +23,8 @@ export function PreloadQuickRunPanel() {
   const [enabled] = useState(() => isPreloadDebugEnabled());
   const [history, setHistory] = useState<QuickRunSnapshot[]>([]);
   const [collapsed, setCollapsed] = useState(false);
+  const [query, setQuery] = useState("");
+  const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!enabled) return;
