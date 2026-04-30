@@ -83,8 +83,8 @@ export function resolvePreloadCandidates(
 }
 
 export type PreloadDecision =
-  | { decision: "emit"; item: SimilarItem; idx: number; href: string; dedupKey: string; priority: "high" | "low" }
-  | { decision: "duplicate"; item: SimilarItem; idx: number; href: string; dedupKey: string; priority: "high" | "low" };
+  | { decision: "emit"; item: SimilarItem; idx: number; href: string; srcSet?: string; dedupKey: string; priority: "high" | "low" }
+  | { decision: "duplicate"; item: SimilarItem; idx: number; href: string; srcSet?: string; dedupKey: string; priority: "high" | "low" };
 
 /**
  * Filter resolved preloads against the warmed-set, mutating both the set and
@@ -103,15 +103,15 @@ export function filterDuplicates(
 ): ResolvedPreload[] {
   stats.evaluations += 1;
   return resolved.filter((r) => {
-    const { dedupKey, item, idx, href, priority } = r;
+    const { dedupKey, item, idx, href, srcSet, priority } = r;
     if (warmed.has(dedupKey)) {
       stats.duplicates += 1;
-      onDecision?.({ decision: "duplicate", item, idx, href, dedupKey, priority });
+      onDecision?.({ decision: "duplicate", item, idx, href, srcSet, dedupKey, priority });
       return false;
     }
     warmed.add(dedupKey);
     stats.emitted += 1;
-    onDecision?.({ decision: "emit", item, idx, href, dedupKey, priority });
+    onDecision?.({ decision: "emit", item, idx, href, srcSet, dedupKey, priority });
     return true;
   });
 }

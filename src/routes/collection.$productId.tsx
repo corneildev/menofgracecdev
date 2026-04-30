@@ -957,6 +957,7 @@ function ProductView({ product }: { product: Product }) {
                     idx: d.idx,
                     productId: d.item.id,
                     href: d.href,
+                    srcSet: d.srcSet,
                     priority: d.priority,
                   };
                   if (d.decision === "emit") {

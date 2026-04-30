@@ -42,6 +42,12 @@ export type PreloadEvent = {
   detail?: Record<string, unknown>;
 };
 
+export type PreloadEmittedEntry = {
+  href: string;
+  /** raw imagesrcset attribute, if any — preserved for variant matching */
+  srcSet?: string;
+};
+
 export type PreloadSession = {
   sessionId: string;
   productId: string;
@@ -50,7 +56,10 @@ export type PreloadSession = {
   evaluations: number;
   emitted: number;
   duplicates: number;
+  /** Legacy: kept for backwards compatibility with stored sessions. */
   emittedHrefs: string[];
+  /** Per-emit detail incl. srcSet, used for variant-aware fetch matching. */
+  emittedEntries: PreloadEmittedEntry[];
   events: PreloadEvent[];
 };
 
@@ -65,6 +74,14 @@ function safeRead(): PreloadStatsStore {
     if (!raw) return { sessions: [] };
     const parsed = JSON.parse(raw) as PreloadStatsStore;
     if (!parsed || !Array.isArray(parsed.sessions)) return { sessions: [] };
+    // Backfill emittedEntries for legacy sessions that pre-date the field.
+    for (const s of parsed.sessions) {
+      if (!Array.isArray((s as PreloadSession).emittedEntries)) {
+        (s as PreloadSession).emittedEntries = (s.emittedHrefs ?? []).map(
+          (href) => ({ href }),
+        );
+      }
+    }
     return parsed;
   } catch {
     return { sessions: [] };
@@ -113,6 +130,7 @@ export function startSession(productId: string): string {
     emitted: 0,
     duplicates: 0,
     emittedHrefs: [],
+    emittedEntries: [],
     events: [
       { at: now.toISOString(), kind: "session-start", detail: { productId } },
     ],
@@ -142,11 +160,21 @@ function updateSession(
 
 export function recordEmit(
   sessionId: string,
-  detail: { idx: number; productId: string; href: string; priority: string },
+  detail: {
+    idx: number;
+    productId: string;
+    href: string;
+    priority: string;
+    srcSet?: string;
+  },
 ) {
   updateSession(sessionId, (s) => {
     s.emitted += 1;
     if (!s.emittedHrefs.includes(detail.href)) s.emittedHrefs.push(detail.href);
+    if (!s.emittedEntries) s.emittedEntries = [];
+    if (!s.emittedEntries.some((e) => e.href === detail.href && e.srcSet === detail.srcSet)) {
+      s.emittedEntries.push({ href: detail.href, srcSet: detail.srcSet });
+    }
     s.events.push({ at: new Date().toISOString(), kind: "emit", detail });
   });
 }

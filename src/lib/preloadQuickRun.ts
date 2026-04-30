@@ -134,7 +134,9 @@ export function runIphoneSafariQuickRun(input: QuickRunInput): QuickRunSnapshot 
   };
   const kept = filterDuplicates(resolved, warmed, stats, onDecision);
 
-  const fetchReport: FetchReport = buildFetchReport(kept.map((k) => k.href));
+  const fetchReport: FetchReport = buildFetchReport(
+    kept.map((k) => ({ href: k.href, srcSet: k.srcSet })),
+  );
 
   const snapshot: QuickRunSnapshot = {
     runId: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
