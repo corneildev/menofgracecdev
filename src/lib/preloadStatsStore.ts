@@ -181,6 +181,23 @@ export function recordReset(sessionId: string, reason: string) {
   });
 }
 
+export function recordThresholdFailure(
+  sessionId: string,
+  detail: {
+    breaches: { metric: string; threshold: number; observed: number; message: string }[];
+    thresholds: { duplicateFetches: number; unfetchedPreloads: number };
+    observed: { duplicateFetches: number; unfetchedPreloads: number };
+  },
+) {
+  updateSession(sessionId, (s) => {
+    s.events.push({
+      at: new Date().toISOString(),
+      kind: "threshold-fail",
+      detail,
+    });
+  });
+}
+
 export function readAllSessions(): PreloadSession[] {
   return safeRead().sessions;
 }
