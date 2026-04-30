@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import hero from "@/assets/hero-suit.jpg";
 import wedding from "@/assets/wedding.jpg";
 import craft from "@/assets/craft.jpg";
+import executiveHero from "@/assets/executive-hero.jpg";
 import { products, formatPrice } from "@/data/products";
 
 export const Route = createFileRoute("/")({
@@ -142,6 +143,30 @@ function Index() {
             </ol>
 
             <Link to="/bespoke" className="luxury-btn">Start Your Custom Suit</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* EXECUTIVE PILLAR */}
+      <section className="relative h-[80vh] min-h-[600px] w-full overflow-hidden">
+        <img
+          src={executiveHero}
+          alt="Executive in a charcoal three-piece suit before a city skyline"
+          loading="lazy"
+          className="absolute inset-0 h-full w-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-l from-ink/85 via-ink/40 to-transparent" />
+        <div className="relative z-10 h-full flex items-center justify-end px-6 md:px-12">
+          <div className="max-w-xl text-right">
+            <div className="eyebrow text-bone/70 mb-6">— The Executive Collection —</div>
+            <h2 className="display text-5xl md:text-7xl mb-8 leading-[1]">
+              The Boardroom<br /><span className="italic">Sartoria.</span>
+            </h2>
+            <p className="text-bone/80 font-light text-lg mb-10 leading-relaxed">
+              Charcoal, navy, pinstripe — the working wardrobe of men who shape decisions.
+              Private fittings in Cotonou, Lagos, Abidjan, Dakar, Dubai, and Paris.
+            </p>
+            <Link to="/executive" className="luxury-btn luxury-btn-solid">Discover Executive</Link>
           </div>
         </div>
       </section>
