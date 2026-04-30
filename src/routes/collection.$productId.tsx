@@ -466,18 +466,18 @@ function ProductView({ product }: { product: Product }) {
 
   return (
     <>
-    <div className="bg-ink pt-32 pb-32">
+    <div className="bg-ink pt-32 sm:pt-40 pb-20 sm:pb-32 overflow-x-hidden">
       {/* Breadcrumb */}
-      <div className="px-6 md:px-12 max-w-[1600px] mx-auto mb-10">
-        <div className="eyebrow text-bone/50 flex items-center gap-3">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto mb-8 sm:mb-10">
+        <div className="eyebrow text-bone/50 flex items-center gap-3 flex-wrap">
           <Link to="/collection" className="hover:text-bone">Collection</Link>
           <span>/</span>
-          <span className="text-bone/80">{product.name}</span>
+          <span className="text-bone/80 truncate">{product.name}</span>
         </div>
       </div>
 
       {/* Gallery + Buy panel */}
-      <div className="px-6 md:px-12 max-w-[1600px] mx-auto grid lg:grid-cols-[1.4fr_1fr] gap-12 lg:gap-20">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 sm:gap-12 lg:gap-20">
         {/* Gallery */}
         <div>
           <div className="aspect-[4/5] bg-secondary overflow-hidden mb-4 fade-in-slow">
@@ -506,7 +506,7 @@ function ProductView({ product }: { product: Product }) {
         {/* Buy panel */}
         <div className="lg:sticky lg:top-32 self-start">
           <div className="eyebrow text-bone/60 mb-4">{product.category}</div>
-          <h1 className="display text-4xl md:text-5xl mb-6">{product.name}</h1>
+          <h1 className="display text-3xl sm:text-4xl md:text-5xl mb-6 break-words">{product.name}</h1>
           <p className="text-bone/70 font-light leading-relaxed mb-8">{product.story}</p>
 
           <div className="border-y border-hairline py-6 mb-10">
@@ -695,10 +695,10 @@ function ProductView({ product }: { product: Product }) {
       </div>
 
       {/* Fabric & Details */}
-      <div className="px-6 md:px-12 max-w-[1600px] mx-auto mt-32 grid md:grid-cols-2 gap-16">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto mt-20 sm:mt-32 grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-16">
         <div>
           <div className="eyebrow text-bone/60 mb-6">— The Cloth —</div>
-          <h2 className="display text-3xl md:text-4xl mb-8">Fabric</h2>
+          <h2 className="display text-2xl sm:text-3xl md:text-4xl mb-6 sm:mb-8">Fabric</h2>
           <dl className="space-y-5">
             <Row k="Composition" v={product.fabric.composition} />
             <Row k="Weight" v={product.fabric.weight} />
@@ -708,7 +708,7 @@ function ProductView({ product }: { product: Product }) {
         </div>
         <div>
           <div className="eyebrow text-bone/60 mb-6">— Construction —</div>
-          <h2 className="display text-3xl md:text-4xl mb-8">Hand-finished details</h2>
+          <h2 className="display text-2xl sm:text-3xl md:text-4xl mb-6 sm:mb-8">Hand-finished details</h2>
           <ul className="space-y-4">
             {product.details.map((d) => (
               <li key={d} className="flex gap-4 text-bone/70 font-light leading-relaxed border-b border-hairline pb-4">
@@ -766,7 +766,7 @@ function ProductView({ product }: { product: Product }) {
           <div className="border-t border-hairline pt-12 mb-8 flex flex-wrap items-end justify-between gap-6">
             <div>
               <div className="eyebrow text-bone/60 mb-4">— Disponibles maintenant —</div>
-              <h2 className="display text-3xl md:text-4xl">Pièces similaires en stock</h2>
+              <h2 className="display text-2xl sm:text-3xl md:text-4xl">Pièces similaires en stock</h2>
               <p className="text-bone/60 font-light mt-3 max-w-xl">
                 Affinez par collection ou gamme de prix pour trouver la pièce qui vous correspond.
               </p>
