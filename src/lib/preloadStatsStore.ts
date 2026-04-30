@@ -33,7 +33,8 @@ export type PreloadEventKind =
   | "session-reset"
   | "emit"
   | "duplicate"
-  | "flush";
+  | "flush"
+  | "threshold-fail";
 
 export type PreloadEvent = {
   at: string; // ISO
