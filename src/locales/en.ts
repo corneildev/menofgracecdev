@@ -138,7 +138,7 @@ const en = {
     haveAccount: "Already have an account?",
     noAccount: "No account yet?",
   },
-} as const;
+};
 
 export default en;
 export type Translations = typeof en;
