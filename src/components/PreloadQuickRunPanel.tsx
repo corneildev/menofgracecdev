@@ -284,6 +284,8 @@ function SnapshotView({ snapshot }: { snapshot: QuickRunSnapshot }) {
         )}
       </section>
 
+      <NormalizationDebug snapshot={snapshot} />
+
       <details className="opacity-80">
         <summary className="cursor-pointer">user agent</summary>
         <div className="mt-1 break-all opacity-70">{snapshot.userAgent}</div>
