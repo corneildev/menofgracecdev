@@ -31,6 +31,7 @@ import {
 } from "@/lib/preloadStatsStore";
 import { PreloadDebugOverlay } from "@/components/PreloadDebugOverlay";
 import { PreloadFetchReportPanel } from "@/components/PreloadFetchReportPanel";
+import { PreloadQuickRunPanel } from "@/components/PreloadQuickRunPanel";
 import {
   Carousel,
   CarouselContent,
@@ -1047,6 +1048,7 @@ function ProductView({ product }: { product: Product }) {
     </div>
       <PreloadDebugOverlay currentSessionId={sessionId} />
       <PreloadFetchReportPanel currentSessionId={sessionId} />
+      <PreloadQuickRunPanel />
     </>
   );
 }
