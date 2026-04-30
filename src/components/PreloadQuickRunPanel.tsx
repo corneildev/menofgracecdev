@@ -94,6 +94,7 @@ export function PreloadQuickRunPanel() {
               onClick={() => {
                 clearQuickRunHistory();
                 setHistory([]);
+                setSelectedRunId(null);
               }}
               className="px-2 py-0.5 border border-white/30 hover:bg-white/10"
               aria-label="Clear quick-run history"
