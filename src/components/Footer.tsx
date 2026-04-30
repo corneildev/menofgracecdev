@@ -43,7 +43,7 @@ export function Footer() {
         <div className="hairline mb-8" />
         <div className="flex flex-col md:flex-row justify-between gap-4 eyebrow text-bone/50">
           <span>© {new Date().getFullYear()} MEN OF GRACE · {t("footer.rights")}</span>
-          <span>Crafted in the Atelier · Delivered Worldwide</span>
+          <span>Composed in the Maison · Crafted in Biella & Foshan</span>
         </div>
       </div>
     </footer>
