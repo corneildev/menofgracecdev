@@ -21,6 +21,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { t } = useTranslation();
   return (
     <div className="bg-ink text-bone">
       {/* HERO */}
