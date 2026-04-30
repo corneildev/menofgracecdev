@@ -17,10 +17,13 @@ import { isPreloadDebugEnabled } from "@/lib/preloadDebug";
 import { readSession, recordThresholdFailure } from "@/lib/preloadStatsStore";
 import {
   buildFetchReport,
+  canonicaliseUrl,
   ensureSessionResourceObserver,
   getSessionResourceObserverStatus,
+  parseSrcSetUrls,
   type FetchReport,
   type FetchCount,
+  type PreloadExpectation,
 } from "@/lib/preloadFetchReport";
 import {
   loadThresholds,
@@ -40,6 +43,7 @@ type Props = {
 export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, thresholds }: Props) {
   const [enabled] = useState(() => isPreloadDebugEnabled());
   const [report, setReport] = useState<FetchReport | null>(null);
+  const [expectations, setExpectations] = useState<PreloadExpectation[]>([]);
   const [collapsed, setCollapsed] = useState(false);
   const activeThresholds = useMemo<PreloadThresholds>(
     () => thresholds ?? loadThresholds(),
@@ -59,6 +63,7 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
         session?.emittedEntries && session.emittedEntries.length > 0
           ? session.emittedEntries
           : (session?.emittedHrefs ?? []).map((href) => ({ href }));
+      setExpectations(expected);
       setReport(buildFetchReport(expected));
     };
     tick();
