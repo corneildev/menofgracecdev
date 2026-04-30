@@ -20,6 +20,7 @@ export function Header() {
     { to: "/collection", label: "Collection" },
     { to: "/business", label: "Business" },
     { to: "/executive", label: "Executive" },
+    { to: "/corporate-program", label: "Corporate" },
     { to: "/bespoke", label: "Bespoke" },
     { to: "/wedding", label: "Wedding" },
     { to: "/atelier", label: "Atelier" },
