@@ -61,7 +61,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body className="bg-ink text-bone">
+      <body className="bg-ink text-bone overflow-x-hidden">
         {children}
         <Scripts />
       </body>
@@ -78,7 +78,7 @@ function RootComponent() {
           <CartProvider>
             <LangBootstrap />
             <Header />
-            <main className="min-h-screen bg-ink">
+            <main className="min-h-screen bg-ink overflow-x-hidden">
               <Outlet />
             </main>
             <Footer />
