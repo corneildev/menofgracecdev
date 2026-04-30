@@ -1,15 +1,15 @@
 export function WhatsAppFloat() {
-  const message = encodeURIComponent("Hello, I'm interested in a custom MEN OF GRACE suit.");
+  const message = encodeURIComponent("Bonjour MEN OF GRACE — j'ai une question.");
   return (
     <a
       href={`https://wa.me/22500000000?text=${message}`}
       target="_blank"
       rel="noreferrer"
-      aria-label="Chat on WhatsApp"
+      aria-label="Speak with us on WhatsApp"
       className="fixed bottom-6 right-6 z-40 group"
     >
       <span className="absolute right-full mr-4 top-1/2 -translate-y-1/2 whitespace-nowrap eyebrow text-bone bg-ink/80 backdrop-blur-sm border border-hairline px-4 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        Speak to a Tailor
+        Speak with us
       </span>
       <span className="flex items-center justify-center w-14 h-14 bg-bone text-ink border border-bone hover:bg-transparent hover:text-bone transition-all duration-500">
         <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
