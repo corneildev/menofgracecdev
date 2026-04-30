@@ -83,6 +83,70 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
       });
   }, [report]);
 
+  /**
+   * Group duplicate fetches by canonical asset and list which preload
+   * variants mapped to each one.
+   *
+   * Two preloads can advertise overlapping srcset variants (e.g. a primary
+   * slide and a "next" prefetch both list the same 800w image), or a single
+   * preload's primary href and one of its srcset entries can canonicalise
+   * to the same URL after cache-bust stripping. When that happens the flat
+   * duplicate list can't tell you which `<link>` tags are responsible —
+   * this breakdown does. Each row shows the canonical asset, the count, and
+   * the contributing preload variants with both raw and canonical forms so
+   * contributors can trace cache-bust / query-param differences at a glance.
+   */
+  type DupVariant = {
+    primaryHref: string;
+    primaryCanonical: string;
+    variantRaw: string;
+    variantCanonical: string;
+    role: "primary" | "srcset";
+  };
+  const duplicateBreakdown = useMemo(() => {
+    if (!report) return [] as { dup: FetchCount; variants: DupVariant[]; distinctPreloads: number }[];
+    const byCanonical = new Map<string, DupVariant[]>();
+    for (const exp of expectations) {
+      const primaryCanonical = canonicaliseUrl(exp.href);
+      const push = (v: DupVariant) => {
+        const list = byCanonical.get(v.variantCanonical) ?? [];
+        if (
+          !list.some(
+            (x) =>
+              x.primaryCanonical === v.primaryCanonical &&
+              x.variantRaw === v.variantRaw,
+          )
+        ) {
+          list.push(v);
+          byCanonical.set(v.variantCanonical, list);
+        }
+      };
+      push({
+        primaryHref: exp.href,
+        primaryCanonical,
+        variantRaw: exp.href,
+        variantCanonical: primaryCanonical,
+        role: "primary",
+      });
+      for (const raw of parseSrcSetUrls(exp.srcSet)) {
+        push({
+          primaryHref: exp.href,
+          primaryCanonical,
+          variantRaw: raw,
+          variantCanonical: canonicaliseUrl(raw),
+          role: "srcset",
+        });
+      }
+    }
+    return report.duplicates.map((dup) => {
+      const variants = byCanonical.get(dup.url) ?? [];
+      const distinctPreloads = new Set(
+        variants.map((v) => v.primaryCanonical),
+      ).size;
+      return { dup, variants, distinctPreloads };
+    });
+  }, [report, expectations]);
+
   const evaluation = useMemo<ThresholdEvaluation>(() => {
     return evaluateThresholds(
       {
