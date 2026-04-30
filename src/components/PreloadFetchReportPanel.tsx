@@ -254,9 +254,26 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
               )}
               {report.duplicates.length > 0 && (
                 <div className="border border-amber-400/60 p-2 space-y-2">
-                  <div className="text-amber-300">
-                    ⚠ {report.duplicates.length} duplicate fetch(es) — grouped
-                    by canonical asset
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="text-amber-300">
+                      ⚠ {report.duplicates.length} duplicate fetch(es) — grouped
+                      by canonical asset
+                    </div>
+                    <label className="flex items-center gap-1 text-[10px] opacity-80">
+                      <span className="uppercase tracking-wider">sort</span>
+                      <select
+                        value={dupSort}
+                        onChange={(e) =>
+                          setDupSort(e.target.value as "count" | "preloads" | "url")
+                        }
+                        className="bg-black/60 border border-white/20 px-1 py-0.5 text-[10px] outline-none focus:border-amber-300"
+                        aria-label="Sort duplicate groups"
+                      >
+                        <option value="count">fetch count ↓</option>
+                        <option value="preloads">preloads ↓</option>
+                        <option value="url">url</option>
+                      </select>
+                    </label>
                   </div>
                   <p className="opacity-80 text-[10px] leading-relaxed">
                     Each group is a single underlying asset that the browser
