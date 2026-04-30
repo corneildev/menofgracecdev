@@ -12,25 +12,38 @@
  * needed because resource entries persist for the page's lifetime.
  */
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { isPreloadDebugEnabled } from "@/lib/preloadDebug";
-import { readSession } from "@/lib/preloadStatsStore";
+import { readSession, recordThresholdFailure } from "@/lib/preloadStatsStore";
 import {
   buildFetchReport,
   type FetchReport,
   type FetchCount,
 } from "@/lib/preloadFetchReport";
+import {
+  loadThresholds,
+  evaluateThresholds,
+  type PreloadThresholds,
+  type ThresholdEvaluation,
+} from "@/lib/preloadThresholds";
 
 type Props = {
   currentSessionId: string | null;
   /** Polling interval for refreshing the report. Default 2000ms. */
   intervalMs?: number;
+  /** Override thresholds; defaults to URL/localStorage/defaults. */
+  thresholds?: PreloadThresholds;
 };
 
-export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000 }: Props) {
+export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, thresholds }: Props) {
   const [enabled] = useState(() => isPreloadDebugEnabled());
   const [report, setReport] = useState<FetchReport | null>(null);
   const [collapsed, setCollapsed] = useState(false);
+  const activeThresholds = useMemo<PreloadThresholds>(
+    () => thresholds ?? loadThresholds(),
+    [thresholds],
+  );
+  const lastBreachKeyRef = useRef<string>("");
 
   useEffect(() => {
     if (!enabled || !currentSessionId) return;
@@ -56,16 +69,59 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000 }:
       });
   }, [report]);
 
+  const evaluation = useMemo<ThresholdEvaluation>(() => {
+    return evaluateThresholds(
+      {
+        duplicateFetches: report?.duplicates.length ?? 0,
+        unfetchedPreloads: report?.unfetchedPreloads.length ?? 0,
+      },
+      activeThresholds,
+    );
+  }, [report, activeThresholds]);
+
+  // Log a session-level failure event whenever the breach signature changes
+  // (so we don't spam the event log on every 2s poll when status is steady).
+  useEffect(() => {
+    if (!enabled || !currentSessionId) return;
+    if (evaluation.status !== "fail") {
+      lastBreachKeyRef.current = "";
+      return;
+    }
+    const key = evaluation.breaches.map((b) => `${b.metric}:${b.observed}`).join("|");
+    if (key === lastBreachKeyRef.current) return;
+    lastBreachKeyRef.current = key;
+    recordThresholdFailure(currentSessionId, {
+      breaches: evaluation.breaches,
+      thresholds: evaluation.thresholds,
+      observed: {
+        duplicateFetches: report?.duplicates.length ?? 0,
+        unfetchedPreloads: report?.unfetchedPreloads.length ?? 0,
+      },
+    });
+    // eslint-disable-next-line no-console
+    console.warn(
+      `%c[preload·threshold-fail] ${evaluation.breaches.map((b) => b.message).join(" · ")}`,
+      "color:#f59e0b;font-weight:bold",
+    );
+  }, [enabled, currentSessionId, evaluation, report]);
+
   if (!enabled) return null;
+
+  const failing = evaluation.status === "fail";
+  const headerBg = failing ? "bg-amber-500/95 text-black" : "bg-black/90 text-white";
 
   return (
     <div
-      className="fixed bottom-4 left-4 z-[9999] w-[360px] max-h-[60vh] overflow-auto bg-black/90 text-white text-[11px] font-mono border border-white/20 shadow-2xl backdrop-blur"
+      className={`fixed bottom-4 left-4 z-[9999] w-[360px] max-h-[60vh] overflow-auto text-[11px] font-mono border ${
+        failing ? "border-amber-300" : "border-white/20"
+      } shadow-2xl backdrop-blur bg-black/90 text-white`}
       role="region"
       aria-label="Preload fetch report"
     >
-      <div className="sticky top-0 flex items-center justify-between gap-2 px-3 py-2 bg-black/90 border-b border-white/10">
-        <span className="font-semibold tracking-wide">preload · fetch report</span>
+      <div className={`sticky top-0 flex items-center justify-between gap-2 px-3 py-2 border-b border-white/10 ${headerBg}`}>
+        <span className="font-semibold tracking-wide">
+          preload · fetch report {failing ? "· ⚠ FAIL" : "· ✓ OK"}
+        </span>
         <button
           type="button"
           onClick={() => setCollapsed((c) => !c)}
@@ -85,6 +141,20 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000 }:
           ) : (
             <>
               <Summary report={report} matchedRows={rows.length} />
+              <div className="text-[10px] opacity-70">
+                thresholds: dup ≤ {evaluation.thresholds.duplicateFetches} · unfetched ≤{" "}
+                {evaluation.thresholds.unfetchedPreloads}
+              </div>
+              {failing && (
+                <div className="border border-amber-300 bg-amber-500/10 p-2 text-amber-200">
+                  <div className="font-semibold mb-1">⚠ session failure</div>
+                  <ul className="space-y-0.5">
+                    {evaluation.breaches.map((b) => (
+                      <li key={b.metric}>· {b.message}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               {report.duplicates.length > 0 && (
                 <div className="border border-amber-400/60 p-2">
                   <div className="text-amber-300 mb-1">

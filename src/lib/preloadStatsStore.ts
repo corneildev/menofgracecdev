@@ -33,7 +33,8 @@ export type PreloadEventKind =
   | "session-reset"
   | "emit"
   | "duplicate"
-  | "flush";
+  | "flush"
+  | "threshold-fail";
 
 export type PreloadEvent = {
   at: string; // ISO
@@ -176,6 +177,23 @@ export function recordReset(sessionId: string, reason: string) {
       at: new Date().toISOString(),
       kind: "session-reset",
       detail: { reason },
+    });
+  });
+}
+
+export function recordThresholdFailure(
+  sessionId: string,
+  detail: {
+    breaches: { metric: string; threshold: number; observed: number; message: string }[];
+    thresholds: { duplicateFetches: number; unfetchedPreloads: number };
+    observed: { duplicateFetches: number; unfetchedPreloads: number };
+  },
+) {
+  updateSession(sessionId, (s) => {
+    s.events.push({
+      at: new Date().toISOString(),
+      kind: "threshold-fail",
+      detail,
     });
   });
 }
