@@ -251,31 +251,31 @@ describe("buildFetchReport — srcset variant matching", () => {
   it("flags an unfetched preload + records the near-miss variant", () => {
     // Preload listed the 400w variant; browser picked 1200w (NOT in srcset).
     const expectation: PreloadExpectation = {
-      href: "https://cdn.example.com/banner-400.jpg",
-      srcSet: "https://cdn.example.com/banner-400.jpg 400w",
+      href: "https://cdn.example.com/banner-400w.jpg",
+      srcSet: "https://cdn.example.com/banner-400w.jpg 400w",
     };
-    stubResourceTimings(["https://cdn.example.com/banner-1200.jpg"]);
+    stubResourceTimings(["https://cdn.example.com/banner-1200w.jpg"]);
 
     const report = buildFetchReport([expectation]);
 
     expect(report.unfetchedPreloads).toEqual([
-      canonicaliseUrl("https://cdn.example.com/banner-400.jpg"),
+      canonicaliseUrl("https://cdn.example.com/banner-400w.jpg"),
     ]);
     expect(report.unfetchedDiagnostics).toHaveLength(1);
     const diag = report.unfetchedDiagnostics[0];
     expect(diag.expectedVariants).toEqual([
-      canonicaliseUrl("https://cdn.example.com/banner-400.jpg"),
+      canonicaliseUrl("https://cdn.example.com/banner-400w.jpg"),
     ]);
     // The 1200w fetch shares the `banner` stem, so it's flagged as a
     // likely srcset mismatch (not a totally unrelated image).
     expect(diag.likelyMismatchedFetches.length).toBeGreaterThan(0);
-    expect(diag.likelyMismatchedFetches[0].url).toContain("banner-1200.jpg");
+    expect(diag.likelyMismatchedFetches[0].url).toContain("banner-1200w.jpg");
   });
 
   it("does NOT flag a fetch with an unrelated stem as a near-miss", () => {
     const expectation: PreloadExpectation = {
-      href: "https://cdn.example.com/banner-400.jpg",
-      srcSet: "https://cdn.example.com/banner-400.jpg 400w",
+      href: "https://cdn.example.com/banner-400w.jpg",
+      srcSet: "https://cdn.example.com/banner-400w.jpg 400w",
     };
     stubResourceTimings(["https://cdn.example.com/footer-logo.jpg"]);
 
