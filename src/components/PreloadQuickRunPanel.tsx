@@ -134,6 +134,8 @@ export function PreloadQuickRunPanel() {
                 />
               </div>
 
+              <TrendChart history={history} />
+
               <details open={history.length > 1}>
                 <summary className="cursor-pointer opacity-80">
                   history ({filtered.length}/{history.length})
@@ -286,6 +288,115 @@ function SnapshotView({ snapshot }: { snapshot: QuickRunSnapshot }) {
         <summary className="cursor-pointer">user agent</summary>
         <div className="mt-1 break-all opacity-70">{snapshot.userAgent}</div>
       </details>
+    </div>
+  );
+}
+
+/**
+ * Tiny inline sparkline showing duplicate fetches (amber) and unfetched
+ * preloads (sky) across saved snapshots in chronological order. Pure SVG
+ * so it renders identically on mobile Safari + iPhone PWA without any
+ * charting dependency. Y-axis scales to whichever series has the highest
+ * value, with a minimum of 1 so flat-zero runs still produce a visible
+ * baseline.
+ */
+function TrendChart({ history }: { history: QuickRunSnapshot[] }) {
+  if (history.length === 0) return null;
+
+  const W = 320;
+  const H = 60;
+  const PADX = 4;
+  const PADY = 6;
+
+  const dupSeries = history.map((s) => s.fetchReport.duplicateUrls.length);
+  const unfSeries = history.map((s) => s.fetchReport.unfetchedPreloads.length);
+  const maxY = Math.max(1, ...dupSeries, ...unfSeries);
+
+  const xFor = (i: number) => {
+    if (history.length === 1) return W / 2;
+    return PADX + (i * (W - PADX * 2)) / (history.length - 1);
+  };
+  const yFor = (v: number) => H - PADY - (v / maxY) * (H - PADY * 2);
+
+  const toPath = (series: number[]) =>
+    series
+      .map((v, i) => `${i === 0 ? "M" : "L"}${xFor(i).toFixed(1)},${yFor(v).toFixed(1)}`)
+      .join(" ");
+
+  const totalDupes = dupSeries.reduce((a, b) => a + b, 0);
+  const totalUnf = unfSeries.reduce((a, b) => a + b, 0);
+  const last = history[history.length - 1];
+  const lastDup = last.fetchReport.duplicateUrls.length;
+  const lastUnf = last.fetchReport.unfetchedPreloads.length;
+
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between text-[10px] opacity-70">
+        <span className="uppercase tracking-wider">trend · {history.length} runs</span>
+        <span>peak {maxY}</span>
+      </div>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        width="100%"
+        height={H}
+        className="block bg-black/40 border border-white/10"
+        role="img"
+        aria-label={`Trend chart: ${totalDupes} total duplicate fetches and ${totalUnf} total unfetched preloads across ${history.length} sessions`}
+      >
+        {/* baseline */}
+        <line
+          x1={PADX}
+          x2={W - PADX}
+          y1={H - PADY}
+          y2={H - PADY}
+          stroke="rgba(255,255,255,0.15)"
+          strokeWidth={1}
+        />
+        {/* duplicates: amber */}
+        <path
+          d={toPath(dupSeries)}
+          fill="none"
+          stroke="#f59e0b"
+          strokeWidth={1.5}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+        {dupSeries.map((v, i) => (
+          <circle
+            key={`d-${i}`}
+            cx={xFor(i)}
+            cy={yFor(v)}
+            r={v > 0 ? 2 : 1.2}
+            fill="#f59e0b"
+          />
+        ))}
+        {/* unfetched: sky */}
+        <path
+          d={toPath(unfSeries)}
+          fill="none"
+          stroke="#38bdf8"
+          strokeWidth={1.5}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+        {unfSeries.map((v, i) => (
+          <circle
+            key={`u-${i}`}
+            cx={xFor(i)}
+            cy={yFor(v)}
+            r={v > 0 ? 2 : 1.2}
+            fill="#38bdf8"
+          />
+        ))}
+      </svg>
+      <div className="flex items-center justify-between text-[10px]">
+        <span className="text-amber-300">
+          ● duplicates · last {lastDup} · Σ {totalDupes}
+        </span>
+        <span className="text-sky-300">
+          ● unfetched · last {lastUnf} · Σ {totalUnf}
+        </span>
+      </div>
     </div>
   );
 }
