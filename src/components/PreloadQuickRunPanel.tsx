@@ -43,7 +43,25 @@ export function PreloadQuickRunPanel() {
 
   if (!enabled) return null;
 
-  const latest = history[history.length - 1];
+  // newest-first for the history list
+  const ordered = [...history].reverse();
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? ordered.filter((s) => {
+        const ts = new Date(s.takenAt).toLocaleString().toLowerCase();
+        return (
+          s.productId.toLowerCase().includes(q) ||
+          s.runId.toLowerCase().includes(q) ||
+          s.takenAt.toLowerCase().includes(q) ||
+          ts.includes(q)
+        );
+      })
+    : ordered;
+  const selected =
+    (selectedRunId && history.find((s) => s.runId === selectedRunId)) ||
+    ordered[0] ||
+    null;
+  const latest = ordered[0];
 
   return (
     <div
