@@ -23,6 +23,7 @@ export function Header() {
     { to: "/corporate-program", label: "Corporate" },
     { to: "/bespoke", label: "Bespoke" },
     { to: "/wedding", label: "Wedding" },
+    { to: "/lookbook", label: "Lookbook" },
     { to: "/atelier", label: "Atelier" },
     { to: "/wishlist", label: "Wishlist" },
   ] as const;
