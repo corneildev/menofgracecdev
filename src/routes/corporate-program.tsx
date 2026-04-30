@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { z } from "zod";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import executiveHero from "@/assets/executive-hero.jpg";
 import atelier from "@/assets/executive-atelier.jpg";
 import craft from "@/assets/craft.jpg";
@@ -256,8 +258,12 @@ function CorporateProgramPage() {
     return lines.join("\n");
   };
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (submitting) return;
+
     const parsed = formSchema.safeParse({
       ...form,
       pieces: Number.parseInt(form.pieces, 10),
@@ -275,8 +281,41 @@ function CorporateProgramPage() {
     }
 
     setErrors({});
+    setSubmitting(true);
+
+    const principalsRange =
+      piecesNum >= 100 ? "100+" : piecesNum >= 25 ? "25-99" : "10-24";
+
+    const { error } = await supabase.from("corporate_inquiries").insert({
+      full_name: form.fullName.trim(),
+      company: form.company.trim(),
+      role: form.role.trim() || null,
+      email: form.email.trim(),
+      country: `${form.city.trim() ? form.city.trim() + ", " : ""}${form.country}`,
+      principals_range: principalsRange,
+      timeline: form.timeline,
+      context: form.notes.trim() || null,
+    });
+
+    setSubmitting(false);
+
+    if (error) {
+      console.error("corporate_inquiries insert failed", error);
+      toast.error("Submission could not be recorded. Please try again.");
+      return;
+    }
+
+    toast.success("Request received. Our atelier will respond within 48 hours.");
+
+    // Optional WhatsApp handoff so the lead reaches the atelier instantly
     const text = encodeURIComponent(buildWhatsappMessage());
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${text}`, "_blank", "noopener,noreferrer");
+    window.open(
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+
+    setForm(INITIAL_FORM);
   };
 
   return (
