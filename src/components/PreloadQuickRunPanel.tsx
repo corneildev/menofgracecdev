@@ -484,11 +484,12 @@ function NormalizationDebug({ snapshot }: { snapshot: QuickRunSnapshot }) {
   // recorded. Snapshot decisions don't include srcSet today (only `recordEmit`
   // in preloadStatsStore does) — that's fine; the primary hrefs are still
   // exactly what the dedup gate emitted.
-  const emittedRows = snapshot.emittedHrefs.map((href) => ({
-    raw: href,
-    canonical: canonicaliseUrl(href),
-    role: "primary" as const,
-  }));
+  const emittedRows: { raw: string; canonical: string; role: "primary" | "variant" }[] =
+    snapshot.emittedHrefs.map((href) => ({
+      raw: href,
+      canonical: canonicaliseUrl(href),
+      role: "primary",
+    }));
   // If any decision carries a srcSet (future-proofing), expand its variants.
   for (const d of snapshot.decisions) {
     const srcSet = (d as { srcSet?: string }).srcSet;
