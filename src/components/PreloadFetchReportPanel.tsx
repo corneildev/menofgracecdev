@@ -141,6 +141,20 @@ export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, t
           ) : (
             <>
               <Summary report={report} matchedRows={rows.length} />
+              <div className="text-[10px] opacity-70">
+                thresholds: dup ≤ {evaluation.thresholds.duplicateFetches} · unfetched ≤{" "}
+                {evaluation.thresholds.unfetchedPreloads}
+              </div>
+              {failing && (
+                <div className="border border-amber-300 bg-amber-500/10 p-2 text-amber-200">
+                  <div className="font-semibold mb-1">⚠ session failure</div>
+                  <ul className="space-y-0.5">
+                    {evaluation.breaches.map((b) => (
+                      <li key={b.metric}>· {b.message}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               {report.duplicates.length > 0 && (
                 <div className="border border-amber-400/60 p-2">
                   <div className="text-amber-300 mb-1">
