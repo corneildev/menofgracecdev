@@ -103,15 +103,15 @@ export function filterDuplicates(
 ): ResolvedPreload[] {
   stats.evaluations += 1;
   return resolved.filter((r) => {
-    const { dedupKey, item, idx, href, priority } = r;
+    const { dedupKey, item, idx, href, srcSet, priority } = r;
     if (warmed.has(dedupKey)) {
       stats.duplicates += 1;
-      onDecision?.({ decision: "duplicate", item, idx, href, dedupKey, priority });
+      onDecision?.({ decision: "duplicate", item, idx, href, srcSet, dedupKey, priority });
       return false;
     }
     warmed.add(dedupKey);
     stats.emitted += 1;
-    onDecision?.({ decision: "emit", item, idx, href, dedupKey, priority });
+    onDecision?.({ decision: "emit", item, idx, href, srcSet, dedupKey, priority });
     return true;
   });
 }
