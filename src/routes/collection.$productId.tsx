@@ -205,6 +205,28 @@ function ProductView({ product }: { product: Product }) {
     setSessionId(id);
   }, [product.id, similarSignature]);
 
+  // Auto-run the iPhone Safari quick-run on page load when the developer has
+  // explicitly opted in (?preloadAutoRun=1 alongside ?preloadDebug=1). Fires
+  // once per product page after a short delay so the real preload tags have
+  // a chance to land in Resource Timing before we snapshot the fetch report.
+  const autoRanForRef = useRef<string>("");
+  useEffect(() => {
+    if (!allSoldOut || similarInStock.length === 0) return;
+    if (!isPreloadDebugEnabled() || !isPreloadAutoRunEnabled()) return;
+    if (autoRanForRef.current === product.id) return;
+    autoRanForRef.current = product.id;
+    const handle = window.setTimeout(() => {
+      runIphoneSafariQuickRun({
+        productId: product.id,
+        similarInStock,
+        avifOk: getFormatSupport("avif") === "supported",
+        webpOk: getFormatSupport("webp") === "supported",
+        getImageSources,
+      });
+    }, 500);
+    return () => window.clearTimeout(handle);
+  }, [product.id, allSoldOut, similarInStock]);
+
   // Throttled flush: log preload stats to console (dev) and analytics (prod)
   // at most once every 2s, plus a final flush on page hide. Lets us verify
   // the dedup gate is doing real work without log spam.
