@@ -124,6 +124,10 @@ function ProductView({ product }: { product: ProductWithImages }) {
   const handleAddToCart = () => {
     if (product.sizes.length > 0 && !size) {
       setSizeError("Veuillez sélectionner une taille.");
+      // Scroll size selector into view so user sees the prompt
+      if (typeof document !== "undefined") {
+        document.getElementById("size-picker")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
     }
     if (size && product.sold_out_sizes?.includes(size)) {
@@ -347,6 +351,11 @@ function ProductView({ product }: { product: ProductWithImages }) {
 
           {/* CTA */}
           <div className="mt-10 flex flex-col gap-3">
+            {sizeError && (
+              <p role="alert" className="text-xs text-red-400/90 tracking-wider">
+                {sizeError}
+              </p>
+            )}
             <button
               type="button"
               onClick={handleAddToCart}
