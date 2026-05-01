@@ -124,6 +124,10 @@ function ProductView({ product }: { product: ProductWithImages }) {
   const handleAddToCart = () => {
     if (product.sizes.length > 0 && !size) {
       setSizeError("Veuillez sélectionner une taille.");
+      // Scroll size selector into view so user sees the prompt
+      if (typeof document !== "undefined") {
+        document.getElementById("size-selector")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
       return;
     }
     if (size && product.sold_out_sizes?.includes(size)) {
