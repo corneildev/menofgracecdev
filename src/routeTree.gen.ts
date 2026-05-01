@@ -10,19 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
-import { Route as WeddingRouteImport } from './routes/wedding'
-import { Route as TrunkShowsRouteImport } from './routes/trunk-shows'
 import { Route as SizeFinderRouteImport } from './routes/size-finder'
-import { Route as LookbookRouteImport } from './routes/lookbook'
-import { Route as ExecutiveRouteImport } from './routes/executive'
-import { Route as CorporateProgramRouteImport } from './routes/corporate-program'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
-import { Route as BusinessRouteImport } from './routes/business'
-import { Route as BespokeRouteImport } from './routes/bespoke'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AtelierRouteImport } from './routes/atelier'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
@@ -37,34 +29,9 @@ const WishlistRoute = WishlistRouteImport.update({
   path: '/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WeddingRoute = WeddingRouteImport.update({
-  id: '/wedding',
-  path: '/wedding',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TrunkShowsRoute = TrunkShowsRouteImport.update({
-  id: '/trunk-shows',
-  path: '/trunk-shows',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SizeFinderRoute = SizeFinderRouteImport.update({
   id: '/size-finder',
   path: '/size-finder',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LookbookRoute = LookbookRouteImport.update({
-  id: '/lookbook',
-  path: '/lookbook',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExecutiveRoute = ExecutiveRouteImport.update({
-  id: '/executive',
-  path: '/executive',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CorporateProgramRoute = CorporateProgramRouteImport.update({
-  id: '/corporate-program',
-  path: '/corporate-program',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionRoute = CollectionRouteImport.update({
@@ -82,24 +49,9 @@ const CartRoute = CartRouteImport.update({
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BusinessRoute = BusinessRouteImport.update({
-  id: '/business',
-  path: '/business',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BespokeRoute = BespokeRouteImport.update({
-  id: '/bespoke',
-  path: '/bespoke',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AtelierRoute = AtelierRouteImport.update({
-  id: '/atelier',
-  path: '/atelier',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -148,19 +100,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
-  '/atelier': typeof AtelierRoute
   '/auth': typeof AuthRoute
-  '/bespoke': typeof BespokeRoute
-  '/business': typeof BusinessRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRouteWithChildren
-  '/corporate-program': typeof CorporateProgramRoute
-  '/executive': typeof ExecutiveRoute
-  '/lookbook': typeof LookbookRoute
   '/size-finder': typeof SizeFinderRoute
-  '/trunk-shows': typeof TrunkShowsRoute
-  '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection/$productId': typeof CollectionProductIdRoute
@@ -172,19 +116,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
-  '/atelier': typeof AtelierRoute
   '/auth': typeof AuthRoute
-  '/bespoke': typeof BespokeRoute
-  '/business': typeof BusinessRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRouteWithChildren
-  '/corporate-program': typeof CorporateProgramRoute
-  '/executive': typeof ExecutiveRoute
-  '/lookbook': typeof LookbookRoute
   '/size-finder': typeof SizeFinderRoute
-  '/trunk-shows': typeof TrunkShowsRoute
-  '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection/$productId': typeof CollectionProductIdRoute
@@ -197,19 +133,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
-  '/atelier': typeof AtelierRoute
   '/auth': typeof AuthRoute
-  '/bespoke': typeof BespokeRoute
-  '/business': typeof BusinessRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRouteWithChildren
-  '/corporate-program': typeof CorporateProgramRoute
-  '/executive': typeof ExecutiveRoute
-  '/lookbook': typeof LookbookRoute
   '/size-finder': typeof SizeFinderRoute
-  '/trunk-shows': typeof TrunkShowsRoute
-  '/wedding': typeof WeddingRoute
   '/wishlist': typeof WishlistRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection/$productId': typeof CollectionProductIdRoute
@@ -223,19 +151,11 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
-    | '/atelier'
     | '/auth'
-    | '/bespoke'
-    | '/business'
     | '/cart'
     | '/checkout'
     | '/collection'
-    | '/corporate-program'
-    | '/executive'
-    | '/lookbook'
     | '/size-finder'
-    | '/trunk-shows'
-    | '/wedding'
     | '/wishlist'
     | '/admin/restock-alerts'
     | '/collection/$productId'
@@ -247,19 +167,11 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
-    | '/atelier'
     | '/auth'
-    | '/bespoke'
-    | '/business'
     | '/cart'
     | '/checkout'
     | '/collection'
-    | '/corporate-program'
-    | '/executive'
-    | '/lookbook'
     | '/size-finder'
-    | '/trunk-shows'
-    | '/wedding'
     | '/wishlist'
     | '/admin/restock-alerts'
     | '/collection/$productId'
@@ -271,19 +183,11 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/admin'
-    | '/atelier'
     | '/auth'
-    | '/bespoke'
-    | '/business'
     | '/cart'
     | '/checkout'
     | '/collection'
-    | '/corporate-program'
-    | '/executive'
-    | '/lookbook'
     | '/size-finder'
-    | '/trunk-shows'
-    | '/wedding'
     | '/wishlist'
     | '/admin/restock-alerts'
     | '/collection/$productId'
@@ -296,19 +200,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRouteWithChildren
-  AtelierRoute: typeof AtelierRoute
   AuthRoute: typeof AuthRoute
-  BespokeRoute: typeof BespokeRoute
-  BusinessRoute: typeof BusinessRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   CollectionRoute: typeof CollectionRouteWithChildren
-  CorporateProgramRoute: typeof CorporateProgramRoute
-  ExecutiveRoute: typeof ExecutiveRoute
-  LookbookRoute: typeof LookbookRoute
   SizeFinderRoute: typeof SizeFinderRoute
-  TrunkShowsRoute: typeof TrunkShowsRoute
-  WeddingRoute: typeof WeddingRoute
   WishlistRoute: typeof WishlistRoute
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
 }
@@ -322,46 +218,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WishlistRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/wedding': {
-      id: '/wedding'
-      path: '/wedding'
-      fullPath: '/wedding'
-      preLoaderRoute: typeof WeddingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/trunk-shows': {
-      id: '/trunk-shows'
-      path: '/trunk-shows'
-      fullPath: '/trunk-shows'
-      preLoaderRoute: typeof TrunkShowsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/size-finder': {
       id: '/size-finder'
       path: '/size-finder'
       fullPath: '/size-finder'
       preLoaderRoute: typeof SizeFinderRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/lookbook': {
-      id: '/lookbook'
-      path: '/lookbook'
-      fullPath: '/lookbook'
-      preLoaderRoute: typeof LookbookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/executive': {
-      id: '/executive'
-      path: '/executive'
-      fullPath: '/executive'
-      preLoaderRoute: typeof ExecutiveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/corporate-program': {
-      id: '/corporate-program'
-      path: '/corporate-program'
-      fullPath: '/corporate-program'
-      preLoaderRoute: typeof CorporateProgramRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collection': {
@@ -385,32 +246,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/business': {
-      id: '/business'
-      path: '/business'
-      fullPath: '/business'
-      preLoaderRoute: typeof BusinessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bespoke': {
-      id: '/bespoke'
-      path: '/bespoke'
-      fullPath: '/bespoke'
-      preLoaderRoute: typeof BespokeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/atelier': {
-      id: '/atelier'
-      path: '/atelier'
-      fullPath: '/atelier'
-      preLoaderRoute: typeof AtelierRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -502,19 +342,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AdminRoute: AdminRouteWithChildren,
-  AtelierRoute: AtelierRoute,
   AuthRoute: AuthRoute,
-  BespokeRoute: BespokeRoute,
-  BusinessRoute: BusinessRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   CollectionRoute: CollectionRouteWithChildren,
-  CorporateProgramRoute: CorporateProgramRoute,
-  ExecutiveRoute: ExecutiveRoute,
-  LookbookRoute: LookbookRoute,
   SizeFinderRoute: SizeFinderRoute,
-  TrunkShowsRoute: TrunkShowsRoute,
-  WeddingRoute: WeddingRoute,
   WishlistRoute: WishlistRoute,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
 }
