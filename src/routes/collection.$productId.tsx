@@ -126,7 +126,7 @@ function ProductView({ product }: { product: ProductWithImages }) {
       setSizeError("Veuillez sélectionner une taille.");
       // Scroll size selector into view so user sees the prompt
       if (typeof document !== "undefined") {
-        document.getElementById("size-selector")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        document.getElementById("size-picker")?.scrollIntoView({ behavior: "smooth", block: "center" });
       }
       return;
     }
