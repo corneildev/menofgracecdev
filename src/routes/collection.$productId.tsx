@@ -351,6 +351,11 @@ function ProductView({ product }: { product: ProductWithImages }) {
 
           {/* CTA */}
           <div className="mt-10 flex flex-col gap-3">
+            {sizeError && (
+              <p role="alert" className="text-xs text-red-400/90 tracking-wider">
+                {sizeError}
+              </p>
+            )}
             <button
               type="button"
               onClick={handleAddToCart}
