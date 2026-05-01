@@ -236,6 +236,7 @@ export type Database = {
           delivery_fcfa: number
           guest_email: string | null
           id: string
+          idempotency_key: string | null
           notes: string | null
           order_number: string
           payment_method: Database["public"]["Enums"]["payment_method"] | null
@@ -260,6 +261,7 @@ export type Database = {
           delivery_fcfa?: number
           guest_email?: string | null
           id?: string
+          idempotency_key?: string | null
           notes?: string | null
           order_number?: string
           payment_method?: Database["public"]["Enums"]["payment_method"] | null
@@ -284,6 +286,7 @@ export type Database = {
           delivery_fcfa?: number
           guest_email?: string | null
           id?: string
+          idempotency_key?: string | null
           notes?: string | null
           order_number?: string
           payment_method?: Database["public"]["Enums"]["payment_method"] | null
@@ -566,6 +569,15 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      place_order: {
+        Args: {
+          p_customer: Json
+          p_idempotency_key?: string
+          p_items: Json
+          p_payment: Database["public"]["Enums"]["payment_method"]
+        }
+        Returns: Json
       }
     }
     Enums: {

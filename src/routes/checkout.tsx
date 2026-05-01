@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useCart, formatFcfa, formatUsd } from "@/context/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
@@ -58,6 +58,8 @@ function CheckoutPage() {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const idempotencyKeyRef = useRef<string>(crypto.randomUUID());
+  const lastSubmitRef = useRef<number>(0);
 
   const [form, setForm] = useState({
     fullName: "",
@@ -89,58 +91,55 @@ function CheckoutPage() {
   const back = () => setStep((s) => Math.max(1, s - 1));
 
   async function placeOrder() {
+    // Debounce double-clicks
+    const now = Date.now();
+    if (submitting || now - lastSubmitRef.current < 1000) return;
+    lastSubmitRef.current = now;
+
     setError(null);
     setSubmitting(true);
     try {
-      const { data: order, error: orderErr } = await supabase
-        .from("orders")
-        .insert({
-          user_id: null,
-          guest_email: form.email.trim(),
-          customer_full_name: form.fullName.trim(),
-          customer_email: form.email.trim(),
-          customer_phone: form.phone.trim(),
-          shipping_address: form.address.trim(),
-          shipping_city: form.city.trim(),
-          shipping_country: form.country.trim(),
-          notes: form.notes.trim() || null,
-          payment_method: form.payment,
-          payment_status: "pending",
-          status: "pending_payment",
-          subtotal_fcfa: totalFcfa,
-          subtotal_usd: totalUsd,
-          delivery_fcfa: deliveryFcfa,
-          total_fcfa: finalTotal,
-          total_usd: totalUsd,
-        })
-        .select("id, order_number")
-        .single();
-
-      if (orderErr || !order) throw orderErr ?? new Error("Order creation failed");
-
-      const orderItems = items.map((it) => ({
-        order_id: order.id,
+      const p_items = items.map((it) => ({
         product_id: it.productId,
-        product_name: it.name,
-        product_image: it.image,
         quantity: it.quantity,
-        unit_price_fcfa: it.fcfa,
-        unit_price_usd: it.usd,
-        size: it.size,
-        fit: it.fit,
-        lapel: it.lapel,
-        lining: it.lining,
+        size: it.size ?? null,
+        fit: it.fit ?? null,
+        lapel: it.lapel ?? null,
+        lining: it.lining ?? null,
         monogram: it.monogram ?? null,
+        product_image: it.image ?? null,
       }));
 
-      const { error: itemsErr } = await supabase.from("order_items").insert(orderItems);
-      if (itemsErr) throw itemsErr;
+      const p_customer = {
+        full_name: form.fullName.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        address: form.address.trim(),
+        city: form.city.trim(),
+        country: form.country.trim(),
+        notes: form.notes.trim(),
+      };
+
+      const { data, error: rpcErr } = await supabase.rpc("place_order", {
+        p_items,
+        p_customer,
+        p_payment: form.payment,
+        p_idempotency_key: idempotencyKeyRef.current,
+      });
+
+      if (rpcErr) throw rpcErr;
+      const result = data as { id: string; order_number: string } | null;
+      if (!result?.id) throw new Error("Commande introuvable");
 
       clear();
-      navigate({ to: "/order/confirmation/$orderId", params: { orderId: order.id } });
-    } catch (e) {
+      navigate({ to: "/order/confirmation/$orderId", params: { orderId: result.id } });
+    } catch (e: unknown) {
       console.error(e);
-      setError("Impossible d'enregistrer la commande. Merci de réessayer.");
+      const msg =
+        e && typeof e === "object" && "message" in e && typeof (e as { message: unknown }).message === "string"
+          ? (e as { message: string }).message
+          : "Impossible d'enregistrer la commande. Merci de réessayer.";
+      setError(msg);
     } finally {
       setSubmitting(false);
     }
