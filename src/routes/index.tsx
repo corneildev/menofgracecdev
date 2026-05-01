@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import hero from "@/assets/hero-suit.jpg";
-import { products, formatPrice } from "@/data/products";
+import {
+  listPublishedProducts,
+  formatPriceFcfa,
+  formatPriceUsd,
+  CATEGORY_LABELS,
+} from "@/lib/products";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -17,6 +23,13 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { data: products = [] } = useQuery({
+    queryKey: ["products", "published"],
+    queryFn: listPublishedProducts,
+  });
+
+  const featured = products.slice(0, 6);
+
   return (
     <div className="bg-ink text-bone overflow-x-hidden">
       {/* HERO */}
@@ -62,48 +75,48 @@ function Index() {
       </section>
 
       {/* COLLECTION */}
-      <section className="px-4 sm:px-6 md:px-8 lg:px-12 pb-20 sm:pb-28 md:pb-32">
-        <div className="max-w-[1600px] mx-auto">
-          <div className="flex items-end justify-between mb-12 sm:mb-16 flex-wrap gap-4 sm:gap-6">
-            <div>
-              <div className="eyebrow text-bone/60 mb-3 sm:mb-4">The Collection</div>
-              <h2 className="display text-3xl sm:text-4xl md:text-5xl lg:text-6xl">Spring Sartoria</h2>
+      {featured.length > 0 && (
+        <section className="px-4 sm:px-6 md:px-8 lg:px-12 pb-20 sm:pb-28 md:pb-32">
+          <div className="max-w-[1600px] mx-auto">
+            <div className="flex items-end justify-between mb-12 sm:mb-16 flex-wrap gap-4 sm:gap-6">
+              <div>
+                <div className="eyebrow text-bone/60 mb-3 sm:mb-4">The Collection</div>
+                <h2 className="display text-3xl sm:text-4xl md:text-5xl lg:text-6xl">Spring Sartoria</h2>
+              </div>
+              <Link to="/collection" className="eyebrow text-bone hover:text-bone/60 border-b border-hairline pb-1">
+                Discover All →
+              </Link>
             </div>
-            <Link to="/collection" className="eyebrow text-bone hover:text-bone/60 border-b border-hairline pb-1">
-              Discover All →
-            </Link>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 lg:gap-12">
-            {products.map((p) => {
-              const price = formatPrice(p);
-              return (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10 lg:gap-12">
+              {featured.map((p) => (
                 <Link
                   key={p.id}
-                  to="/collection"
+                  to="/collection/$productId"
+                  params={{ productId: p.slug }}
                   className="group block w-full"
                 >
                   <div className="img-zoom aspect-[4/5] bg-secondary mb-5 sm:mb-6 overflow-hidden">
                     <img
-                      src={p.image}
+                      src={p.primaryImage}
                       alt={p.name}
                       loading="lazy"
                       className="h-full w-full object-cover"
                     />
                   </div>
-                  <div className="eyebrow text-bone/50 mb-2">{p.category}</div>
+                  <div className="eyebrow text-bone/50 mb-2">{CATEGORY_LABELS[p.category]}</div>
                   <div className="font-serif text-xl sm:text-2xl mb-3">{p.name}</div>
                   <div className="text-bone/70 text-sm font-light flex flex-wrap gap-x-4 gap-y-1">
-                    <span>{price.fcfa}</span>
+                    <span>{formatPriceFcfa(p.price_fcfa)}</span>
                     <span className="text-bone/40">·</span>
-                    <span>{price.usd}</span>
+                    <span>{formatPriceUsd(p.price_usd)}</span>
                   </div>
                 </Link>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* TRUST */}
       <section className="py-20 sm:py-28 md:py-32 px-4 sm:px-6 md:px-8 lg:px-12 border-y border-hairline">
