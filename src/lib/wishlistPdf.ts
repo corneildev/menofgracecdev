@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
-import type { Product } from "@/data/products";
+import type { ProductWithImages } from "@/lib/products";
+import { CATEGORY_LABELS } from "@/lib/products";
 
 const fmtFcfa = (n: number) => `${n.toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, " ")} FCFA`;
 const fmtUsd = (n: number) => `$${n.toLocaleString("en-US")}`;
@@ -26,7 +27,7 @@ async function loadImage(src: string): Promise<{ data: string; w: number; h: num
   }
 }
 
-export async function generateWishlistPdf(items: Product[]) {
+export async function generateWishlistPdf(items: ProductWithImages[]) {
   const doc = new jsPDF({ unit: "pt", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -76,7 +77,7 @@ export async function generateWishlistPdf(items: Product[]) {
     const imgBoxH = pageH - margin * 2;
 
     // Image
-    const img = await loadImage(p.image);
+    const img = await loadImage(p.primaryImage);
     if (img) {
       const ratio = img.w / img.h;
       let w = imgBoxW;
@@ -106,7 +107,7 @@ export async function generateWishlistPdf(items: Product[]) {
     doc.setTextColor(...muted);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7);
-    doc.text(p.category.toUpperCase(), colX, y);
+    doc.text(CATEGORY_LABELS[p.category].toUpperCase(), colX, y);
     y += 28;
 
     doc.setTextColor(...bone);
@@ -129,45 +130,55 @@ export async function generateWishlistPdf(items: Product[]) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(11);
     doc.setTextColor(...bone);
-    doc.text(fmtFcfa(p.fcfa), colX, y);
+    doc.text(fmtFcfa(p.price_fcfa), colX, y);
     y += 14;
     doc.setFontSize(9);
     doc.setTextColor(...muted);
-    doc.text(fmtUsd(p.usd), colX, y);
+    doc.text(fmtUsd(p.price_usd), colX, y);
     y += 26;
 
     // Story
-    doc.setFontSize(9);
-    doc.setTextColor(220, 215, 205);
-    const storyLines = doc.splitTextToSize(p.story, colW);
-    doc.text(storyLines, colX, y, { lineHeightFactor: 1.5 });
-    y += storyLines.length * 12 + 18;
+    if (p.story) {
+      doc.setFontSize(9);
+      doc.setTextColor(220, 215, 205);
+      const storyLines = doc.splitTextToSize(p.story, colW);
+      doc.text(storyLines, colX, y, { lineHeightFactor: 1.5 });
+      y += storyLines.length * 12 + 18;
+    }
 
     // The Cloth
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7);
-    doc.setTextColor(...muted);
-    doc.text("— THE CLOTH —", colX, y);
-    y += 14;
-    doc.setFontSize(9);
-    doc.setTextColor(...bone);
-    const cloth = `${p.fabric.composition} · ${p.fabric.weight}\n${p.fabric.mill}`;
-    const clothLines = doc.splitTextToSize(cloth, colW);
-    doc.text(clothLines, colX, y, { lineHeightFactor: 1.5 });
-    y += clothLines.length * 12 + 18;
+    if (p.fabric_composition || p.fabric_weight || p.fabric_mill) {
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(7);
+      doc.setTextColor(...muted);
+      doc.text("— THE CLOTH —", colX, y);
+      y += 14;
+      doc.setFontSize(9);
+      doc.setTextColor(...bone);
+      const clothParts = [
+        [p.fabric_composition, p.fabric_weight].filter(Boolean).join(" · "),
+        p.fabric_mill,
+      ].filter(Boolean) as string[];
+      const cloth = clothParts.join("\n");
+      const clothLines = doc.splitTextToSize(cloth, colW);
+      doc.text(clothLines, colX, y, { lineHeightFactor: 1.5 });
+      y += clothLines.length * 12 + 18;
+    }
 
     // Details
-    doc.setFontSize(7);
-    doc.setTextColor(...muted);
-    doc.text("— CONSTRUCTION —", colX, y);
-    y += 14;
-    doc.setFontSize(9);
-    doc.setTextColor(...bone);
-    for (const d of p.details.slice(0, 4)) {
-      const lines = doc.splitTextToSize(`·  ${d}`, colW);
-      doc.text(lines, colX, y, { lineHeightFactor: 1.4 });
-      y += lines.length * 12 + 2;
-      if (y > pageH - margin) break;
+    if (p.details.length > 0) {
+      doc.setFontSize(7);
+      doc.setTextColor(...muted);
+      doc.text("— CONSTRUCTION —", colX, y);
+      y += 14;
+      doc.setFontSize(9);
+      doc.setTextColor(...bone);
+      for (const d of p.details.slice(0, 4)) {
+        const lines = doc.splitTextToSize(`·  ${d}`, colW);
+        doc.text(lines, colX, y, { lineHeightFactor: 1.4 });
+        y += lines.length * 12 + 2;
+        if (y > pageH - margin) break;
+      }
     }
   }
 
@@ -208,11 +219,11 @@ export async function generateWishlistPdf(items: Product[]) {
     doc.text(p.name, margin, y);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...bone);
-    doc.text(fmtFcfa(p.fcfa), pageW - margin - 160, y, { align: "right" });
+    doc.text(fmtFcfa(p.price_fcfa), pageW - margin - 160, y, { align: "right" });
     doc.setTextColor(...muted);
-    doc.text(fmtUsd(p.usd), pageW - margin, y, { align: "right" });
-    totalF += p.fcfa;
-    totalU += p.usd;
+    doc.text(fmtUsd(p.price_usd), pageW - margin, y, { align: "right" });
+    totalF += p.price_fcfa;
+    totalU += p.price_usd;
     y += 22;
   }
 
@@ -232,7 +243,7 @@ export async function generateWishlistPdf(items: Product[]) {
   doc.setFontSize(7);
   doc.setTextColor(...muted);
   doc.text(
-    "Reserve via WhatsApp · +000 000 000 · menofgrace.com",
+    "menofgrace.com",
     pageW / 2,
     pageH - 60,
     { align: "center" },

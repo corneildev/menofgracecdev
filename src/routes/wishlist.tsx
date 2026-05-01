@@ -1,6 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { products, formatPrice } from "@/data/products";
+import { useQuery } from "@tanstack/react-query";
+import {
+  listPublishedProducts,
+  formatPriceFcfa,
+  formatPriceUsd,
+  formatPriceEur,
+  CATEGORY_LABELS,
+} from "@/lib/products";
 import { useWishlist } from "@/context/WishlistContext";
 import { WishlistButton } from "@/components/WishlistButton";
 import { generateWishlistPdf } from "@/lib/wishlistPdf";
@@ -20,6 +27,10 @@ export const Route = createFileRoute("/wishlist")({
 
 function Wishlist() {
   const { ids, ready, clear, count } = useWishlist();
+  const { data: products = [] } = useQuery({
+    queryKey: ["products", "published"],
+    queryFn: listPublishedProducts,
+  });
   const saved = products.filter((p) => ids.includes(p.id));
   const [downloading, setDownloading] = useState(false);
 
@@ -56,7 +67,7 @@ function Wishlist() {
               <div className="flex items-center gap-6">
                 <button
                   onClick={handleDownload}
-                  disabled={downloading}
+                  disabled={downloading || saved.length === 0}
                   className="eyebrow text-bone hover:text-bone/70 transition-colors disabled:opacity-50 inline-flex items-center gap-2"
                   aria-label="Download wishlist as PDF"
                 >
@@ -72,34 +83,33 @@ function Wishlist() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16">
-              {saved.map((p) => {
-                const price = formatPrice(p);
-                return (
-                  <article key={p.id} className="group">
-                    <div className="relative img-zoom aspect-[4/5] bg-secondary mb-6">
-                      <WishlistButton productId={p.id} />
-                      <Link to="/collection/$productId" params={{ productId: p.id }} className="block h-full w-full">
-                        <img src={p.image} alt={p.name} loading="lazy" className="h-full w-full object-cover" />
-                      </Link>
+              {saved.map((p) => (
+                <article key={p.id} className="group">
+                  <div className="relative img-zoom aspect-[4/5] bg-secondary mb-6">
+                    <WishlistButton productId={p.id} />
+                    <Link to="/collection/$productId" params={{ productId: p.slug }} className="block h-full w-full">
+                      <img src={p.primaryImage} alt={p.name} loading="lazy" className="h-full w-full object-cover" />
+                    </Link>
+                  </div>
+                  <div className="eyebrow text-bone/50 mb-2">{CATEGORY_LABELS[p.category]}</div>
+                  <h2 className="font-serif text-2xl mb-3">
+                    <Link to="/collection/$productId" params={{ productId: p.slug }} className="hover:text-bone/70 transition-colors">
+                      {p.name}
+                    </Link>
+                  </h2>
+                  <div className="flex items-center justify-between border-t border-hairline pt-4">
+                    <div className="text-bone/80 text-sm font-light flex flex-col">
+                      <span>{formatPriceFcfa(p.price_fcfa)}</span>
+                      <span className="text-bone/50 text-xs">
+                        {formatPriceUsd(p.price_usd)} · {formatPriceEur(p.price_eur)}
+                      </span>
                     </div>
-                    <div className="eyebrow text-bone/50 mb-2">{p.category}</div>
-                    <h2 className="font-serif text-2xl mb-3">
-                      <Link to="/collection/$productId" params={{ productId: p.id }} className="hover:text-bone/70 transition-colors">
-                        {p.name}
-                      </Link>
-                    </h2>
-                    <div className="flex items-center justify-between border-t border-hairline pt-4">
-                      <div className="text-bone/80 text-sm font-light flex flex-col">
-                        <span>{price.fcfa}</span>
-                        <span className="text-bone/50 text-xs">{price.usd} · {price.eur}</span>
-                      </div>
-                      <Link to="/collection/$productId" params={{ productId: p.id }} className="eyebrow text-bone hover:text-bone/60">
-                        Discover
-                      </Link>
-                    </div>
-                  </article>
-                );
-              })}
+                    <Link to="/collection/$productId" params={{ productId: p.slug }} className="eyebrow text-bone hover:text-bone/60">
+                      Discover
+                    </Link>
+                  </div>
+                </article>
+              ))}
             </div>
           </>
         )}
