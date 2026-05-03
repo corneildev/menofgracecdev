@@ -17,11 +17,8 @@
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",
     "@hookform/resolvers": "^5.2.2",
-<<<<<<< HEAD
     "@lovable.dev/email-js": "^0.0.4",
     "@lovable.dev/webhooks-js": "^0.0.1",
-=======
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-aspect-ratio": "^1.1.8",
@@ -48,12 +45,8 @@
     "@radix-ui/react-toggle": "^1.1.10",
     "@radix-ui/react-toggle-group": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
-<<<<<<< HEAD
     "@react-email/components": "^1.0.12",
     "@supabase/supabase-js": "^2.105.1",
-=======
-    "@supabase/supabase-js": "^2.104.1",
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-query": "^5.83.0",
     "@tanstack/react-router": "^1.168.0",
@@ -73,10 +66,7 @@
     "react": "^19.2.0",
     "react-day-picker": "^9.14.0",
     "react-dom": "^19.2.0",
-<<<<<<< HEAD
     "react-email": "^6.0.5",
-=======
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     "react-hook-form": "^7.71.2",
     "react-i18next": "^17.0.6",
     "react-resizable-panels": "^4.6.5",
@@ -87,19 +77,11 @@
     "tw-animate-css": "^1.3.4",
     "vaul": "^1.1.2",
     "vite-tsconfig-paths": "^6.0.2",
-<<<<<<< HEAD
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
     "@lovable.dev/vite-tanstack-config": "^1.4.0",
-=======
-    "zod": "^3.23.8"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.32.0",
-    "@lovable.dev/vite-tanstack-config": "^1.5.0",
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     "@playwright/test": "^1.59.1",
     "@types/node": "^22.16.5",
     "@types/react": "^19.2.0",
@@ -116,13 +98,10 @@
     "typescript-eslint": "^8.56.1",
     "vite": "^7.3.1",
     "vitest": "^4.1.5"
-<<<<<<< HEAD
   },
   "pnpm": {
     "overrides": {
       "entities": "4.5.0"
     }
-=======
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   }
 }
