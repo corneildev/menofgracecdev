@@ -34,7 +34,12 @@ export function prefetchImage(src: string): Promise<void> {
     img.decoding = "async";
     img.loading = "eager";
     // fetchpriority is best-effort; not all browsers honour it.
+<<<<<<< HEAD
     (img as HTMLImageElement & { fetchPriority?: string }).fetchPriority = "low";
+=======
+    (img as HTMLImageElement & { fetchPriority?: string }).fetchPriority =
+      "low";
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     img.onload = () => {
       // Decode then cache, so the bitmap is GPU-ready on next render.
       const done = () => {
@@ -92,6 +97,7 @@ export function useImagePrefetch(
     type Conn = { saveData?: boolean; effectiveType?: string };
     const conn = (navigator as Navigator & { connection?: Conn }).connection;
     if (conn?.saveData) return;
+<<<<<<< HEAD
     if (conn?.effectiveType && /^(slow-2g|2g)$/.test(conn.effectiveType)) return;
 
     const idle =
@@ -102,6 +108,24 @@ export function useImagePrefetch(
     const cancelIdle =
       (window as Window & { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback ??
       ((id: number) => window.clearTimeout(id));
+=======
+    if (conn?.effectiveType && /^(slow-2g|2g)$/.test(conn.effectiveType))
+      return;
+
+    const idle =
+      (
+        window as Window & {
+          requestIdleCallback?: (
+            cb: () => void,
+            opts?: { timeout: number },
+          ) => number;
+        }
+      ).requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 200));
+
+    const cancelIdle =
+      (window as Window & { cancelIdleCallback?: (id: number) => void })
+        .cancelIdleCallback ?? ((id: number) => window.clearTimeout(id));
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
     let cancelled = false;
     let idleHandle: number | null = null;
@@ -114,7 +138,12 @@ export function useImagePrefetch(
           if (cancelled) return;
           // Sequential prefetch — gentler on the network than parallel bursts.
           void srcs.reduce(
+<<<<<<< HEAD
             (chain, src) => chain.then(() => (cancelled ? undefined : prefetchImage(src))),
+=======
+            (chain, src) =>
+              chain.then(() => (cancelled ? undefined : prefetchImage(src))),
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
             Promise.resolve(),
           );
         },

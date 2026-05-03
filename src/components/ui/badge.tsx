@@ -8,7 +8,12 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
+<<<<<<< HEAD
         default: "border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80",
+=======
+        default:
+          "border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80",
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
         secondary:
           "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive:
@@ -23,10 +28,21 @@ const badgeVariants = cva(
 );
 
 export interface BadgeProps
+<<<<<<< HEAD
   extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof badgeVariants> {}
 
 function Badge({ className, variant, ...props }: BadgeProps) {
   return <div className={cn(badgeVariants({ variant }), className)} {...props} />;
+=======
+  extends
+    React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof badgeVariants> {}
+
+function Badge({ className, variant, ...props }: BadgeProps) {
+  return (
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+  );
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 }
 
 export { Badge, badgeVariants };

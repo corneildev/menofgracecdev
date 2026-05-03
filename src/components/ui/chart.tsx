@@ -36,7 +36,13 @@ const ChartContainer = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
     config: ChartConfig;
+<<<<<<< HEAD
     children: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>["children"];
+=======
+    children: React.ComponentProps<
+      typeof RechartsPrimitive.ResponsiveContainer
+    >["children"];
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   }
 >(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId();
@@ -54,7 +60,13 @@ const ChartContainer = React.forwardRef<
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
+<<<<<<< HEAD
         <RechartsPrimitive.ResponsiveContainer>{children}</RechartsPrimitive.ResponsiveContainer>
+=======
+        <RechartsPrimitive.ResponsiveContainer>
+          {children}
+        </RechartsPrimitive.ResponsiveContainer>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       </div>
     </ChartContext.Provider>
   );
@@ -62,7 +74,13 @@ const ChartContainer = React.forwardRef<
 ChartContainer.displayName = "Chart";
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
+<<<<<<< HEAD
   const colorConfig = Object.entries(config).filter(([, config]) => config.theme || config.color);
+=======
+  const colorConfig = Object.entries(config).filter(
+    ([, config]) => config.theme || config.color,
+  );
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
   if (!colorConfig.length) {
     return null;
@@ -77,7 +95,13 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 ${prefix} [data-chart=${id}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
+<<<<<<< HEAD
     const color = itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;
+=======
+    const color =
+      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+      itemConfig.color;
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     return color ? `  --color-${key}: ${color};` : null;
   })
   .join("\n")}
@@ -138,7 +162,13 @@ const ChartTooltipContent = React.forwardRef<
 
       if (labelFormatter) {
         return (
+<<<<<<< HEAD
           <div className={cn("font-medium", labelClassName)}>{labelFormatter(value, payload)}</div>
+=======
+          <div className={cn("font-medium", labelClassName)}>
+            {labelFormatter(value, payload)}
+          </div>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
         );
       }
 
@@ -147,7 +177,19 @@ const ChartTooltipContent = React.forwardRef<
       }
 
       return <div className={cn("font-medium", labelClassName)}>{value}</div>;
+<<<<<<< HEAD
     }, [label, labelFormatter, payload, hideLabel, labelClassName, config, labelKey]);
+=======
+    }, [
+      label,
+      labelFormatter,
+      payload,
+      hideLabel,
+      labelClassName,
+      config,
+      labelKey,
+    ]);
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
     if (!active || !payload?.length) {
       return null;
@@ -247,6 +289,7 @@ const ChartLegendContent = React.forwardRef<
       hideIcon?: boolean;
       nameKey?: string;
     }
+<<<<<<< HEAD
 >(({ className, hideIcon = false, payload, verticalAlign = "bottom", nameKey }, ref) => {
   const { config } = useChart();
 
@@ -297,28 +340,113 @@ ChartLegendContent.displayName = "ChartLegend";
 
 // Helper to extract item config from a payload.
 function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key: string) {
+=======
+>(
+  (
+    { className, hideIcon = false, payload, verticalAlign = "bottom", nameKey },
+    ref,
+  ) => {
+    const { config } = useChart();
+
+    if (!payload?.length) {
+      return null;
+    }
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex items-center justify-center gap-4",
+          verticalAlign === "top" ? "pb-3" : "pt-3",
+          className,
+        )}
+      >
+        {payload
+          .filter((item) => item.type !== "none")
+          .map((item) => {
+            const key = `${nameKey || item.dataKey || "value"}`;
+            const itemConfig = getPayloadConfigFromPayload(config, item, key);
+
+            return (
+              <div
+                key={item.value}
+                className={cn(
+                  "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground",
+                )}
+              >
+                {itemConfig?.icon && !hideIcon ? (
+                  <itemConfig.icon />
+                ) : (
+                  <div
+                    className="h-2 w-2 shrink-0 rounded-[2px]"
+                    style={{
+                      backgroundColor: item.color,
+                    }}
+                  />
+                )}
+                {itemConfig?.label}
+              </div>
+            );
+          })}
+      </div>
+    );
+  },
+);
+ChartLegendContent.displayName = "ChartLegend";
+
+// Helper to extract item config from a payload.
+function getPayloadConfigFromPayload(
+  config: ChartConfig,
+  payload: unknown,
+  key: string,
+) {
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   if (typeof payload !== "object" || payload === null) {
     return undefined;
   }
 
   const payloadPayload =
+<<<<<<< HEAD
     "payload" in payload && typeof payload.payload === "object" && payload.payload !== null
+=======
+    "payload" in payload &&
+    typeof payload.payload === "object" &&
+    payload.payload !== null
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       ? payload.payload
       : undefined;
 
   let configLabelKey: string = key;
 
+<<<<<<< HEAD
   if (key in payload && typeof payload[key as keyof typeof payload] === "string") {
+=======
+  if (
+    key in payload &&
+    typeof payload[key as keyof typeof payload] === "string"
+  ) {
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     configLabelKey = payload[key as keyof typeof payload] as string;
   } else if (
     payloadPayload &&
     key in payloadPayload &&
     typeof payloadPayload[key as keyof typeof payloadPayload] === "string"
   ) {
+<<<<<<< HEAD
     configLabelKey = payloadPayload[key as keyof typeof payloadPayload] as string;
   }
 
   return configLabelKey in config ? config[configLabelKey] : config[key as keyof typeof config];
+=======
+    configLabelKey = payloadPayload[
+      key as keyof typeof payloadPayload
+    ] as string;
+  }
+
+  return configLabelKey in config
+    ? config[configLabelKey]
+    : config[key as keyof typeof config];
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 }
 
 export {

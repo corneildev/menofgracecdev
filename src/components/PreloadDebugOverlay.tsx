@@ -56,7 +56,13 @@ export function PreloadDebugOverlay({ currentSessionId }: Props) {
       aria-label="Preload debug overlay"
     >
       <div className="sticky top-0 flex items-center justify-between gap-2 px-3 py-2 bg-black/90 border-b border-white/10">
+<<<<<<< HEAD
         <span className="font-semibold tracking-wide">preload · dedup stats</span>
+=======
+        <span className="font-semibold tracking-wide">
+          preload · dedup stats
+        </span>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
         <div className="flex gap-2">
           <button
             type="button"
@@ -85,10 +91,23 @@ export function PreloadDebugOverlay({ currentSessionId }: Props) {
           <SessionBlock title="current session" session={current} highlight />
           {history.length > 0 && (
             <div>
+<<<<<<< HEAD
               <div className="opacity-60 mb-1">recent sessions ({history.length})</div>
               <div className="space-y-3">
                 {history.map((s) => (
                   <SessionBlock key={s.sessionId} title={s.productId} session={s} />
+=======
+              <div className="opacity-60 mb-1">
+                recent sessions ({history.length})
+              </div>
+              <div className="space-y-3">
+                {history.map((s) => (
+                  <SessionBlock
+                    key={s.sessionId}
+                    title={s.productId}
+                    session={s}
+                  />
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
                 ))}
               </div>
             </div>
@@ -113,7 +132,13 @@ function SessionBlock({
 }) {
   if (!session) {
     return (
+<<<<<<< HEAD
       <div className={`border ${highlight ? "border-emerald-400/40" : "border-white/15"} p-2`}>
+=======
+      <div
+        className={`border ${highlight ? "border-emerald-400/40" : "border-white/15"} p-2`}
+      >
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
         <div className="opacity-60">{title}: (no data)</div>
       </div>
     );
@@ -125,7 +150,13 @@ function SessionBlock({
       className={`border ${highlight ? "border-emerald-400/60" : "border-white/15"} p-2`}
     >
       <div className="flex items-center justify-between gap-2 mb-2">
+<<<<<<< HEAD
         <span className={highlight ? "text-emerald-300" : "text-white"}>{title}</span>
+=======
+        <span className={highlight ? "text-emerald-300" : "text-white"}>
+          {title}
+        </span>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
         <span className="opacity-50">{session.sessionId.slice(-6)}</span>
       </div>
       <div className="grid grid-cols-3 gap-2 mb-2">
@@ -164,8 +195,13 @@ function SessionBlock({
                     e.kind === "emit"
                       ? "text-emerald-300"
                       : e.kind === "duplicate"
+<<<<<<< HEAD
                       ? "text-amber-300"
                       : "text-sky-300"
+=======
+                        ? "text-amber-300"
+                        : "text-sky-300"
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
                   }
                 >
                   {e.kind}
@@ -193,12 +229,23 @@ function Stat({
     tone === "good"
       ? "text-emerald-300"
       : tone === "warn"
+<<<<<<< HEAD
       ? "text-amber-300"
       : "text-white";
   return (
     <div className="border border-white/10 p-1.5 text-center">
       <div className={`text-base ${color}`}>{value}</div>
       <div className="opacity-60 text-[10px] uppercase tracking-wider">{label}</div>
+=======
+        ? "text-amber-300"
+        : "text-white";
+  return (
+    <div className="border border-white/10 p-1.5 text-center">
+      <div className={`text-base ${color}`}>{value}</div>
+      <div className="opacity-60 text-[10px] uppercase tracking-wider">
+        {label}
+      </div>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     </div>
   );
 }

@@ -11,7 +11,14 @@ const NavigationMenu = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <NavigationMenuPrimitive.Root
     ref={ref}
+<<<<<<< HEAD
     className={cn("relative z-10 flex max-w-max flex-1 items-center justify-center", className)}
+=======
+    className={cn(
+      "relative z-10 flex max-w-max flex-1 items-center justify-center",
+      className,
+    )}
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     {...props}
   >
     {children}
@@ -26,7 +33,14 @@ const NavigationMenuList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <NavigationMenuPrimitive.List
     ref={ref}
+<<<<<<< HEAD
     className={cn("group flex flex-1 list-none items-center justify-center space-x-1", className)}
+=======
+    className={cn(
+      "group flex flex-1 list-none items-center justify-center space-x-1",
+      className,
+    )}
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     {...props}
   />
 ));
@@ -88,7 +102,12 @@ const NavigationMenuViewport = React.forwardRef<
     />
   </div>
 ));
+<<<<<<< HEAD
 NavigationMenuViewport.displayName = NavigationMenuPrimitive.Viewport.displayName;
+=======
+NavigationMenuViewport.displayName =
+  NavigationMenuPrimitive.Viewport.displayName;
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 const NavigationMenuIndicator = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Indicator>,
@@ -105,7 +124,12 @@ const NavigationMenuIndicator = React.forwardRef<
     <div className="relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm bg-border shadow-md" />
   </NavigationMenuPrimitive.Indicator>
 ));
+<<<<<<< HEAD
 NavigationMenuIndicator.displayName = NavigationMenuPrimitive.Indicator.displayName;
+=======
+NavigationMenuIndicator.displayName =
+  NavigationMenuPrimitive.Indicator.displayName;
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 export {
   navigationMenuTriggerStyle,

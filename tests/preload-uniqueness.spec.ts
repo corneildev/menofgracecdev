@@ -40,10 +40,22 @@ type PreloadRecord = {
  * We use the exact same dedup key shape as src/lib/preloadDedup.ts so any
  * mismatch here is meaningful.
  */
+<<<<<<< HEAD
 async function snapshotPreloads(page: Page, tick: number): Promise<PreloadRecord[]> {
   return page.evaluate((t) => {
     const links = Array.from(
       document.querySelectorAll<HTMLLinkElement>('link[rel="preload"][as="image"]'),
+=======
+async function snapshotPreloads(
+  page: Page,
+  tick: number,
+): Promise<PreloadRecord[]> {
+  return page.evaluate((t) => {
+    const links = Array.from(
+      document.querySelectorAll<HTMLLinkElement>(
+        'link[rel="preload"][as="image"]',
+      ),
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     );
     return links.map((l) => {
       const href = l.href;
@@ -92,10 +104,14 @@ function mergeSnapshot(
  * Chromium and WebKit timings.
  */
 async function clickFilter(page: Page, name: string) {
+<<<<<<< HEAD
   await page
     .getByRole("button", { name, exact: true })
     .first()
     .click();
+=======
+  await page.getByRole("button", { name, exact: true }).first().click();
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   await page.evaluate(
     () =>
       new Promise<void>((resolve) =>
@@ -109,7 +125,10 @@ async function gotoCarousel(context: BrowserContext): Promise<Page> {
   // Forward browser console for easier triage when an assertion fails.
   page.on("console", (msg) => {
     if (msg.type() === "error" || msg.type() === "warning") {
+<<<<<<< HEAD
       // eslint-disable-next-line no-console
+=======
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       console.log(`[browser:${msg.type()}]`, msg.text());
     }
   });
@@ -144,8 +163,16 @@ for (const browserName of ["chromium", "webkit"] as const) {
       const snapshotAndMerge = async (label: string) => {
         tick += 1;
         const snap = await snapshotPreloads(page, tick);
+<<<<<<< HEAD
         const { intraRenderDuplicates, newlyAdded } = mergeSnapshot(history, snap);
         // eslint-disable-next-line no-console
+=======
+        const { intraRenderDuplicates, newlyAdded } = mergeSnapshot(
+          history,
+          snap,
+        );
+
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
         console.log(
           `  · [${label}] tags=${snap.length} new=${newlyAdded.length} intra-dup=${intraRenderDuplicates.length}`,
         );

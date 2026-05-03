@@ -11,7 +11,14 @@ const Progress = React.forwardRef<
 >(({ className, value, ...props }, ref) => (
   <ProgressPrimitive.Root
     ref={ref}
+<<<<<<< HEAD
     className={cn("relative h-2 w-full overflow-hidden rounded-full bg-primary/20", className)}
+=======
+    className={cn(
+      "relative h-2 w-full overflow-hidden rounded-full bg-primary/20",
+      className,
+    )}
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     {...props}
   >
     <ProgressPrimitive.Indicator

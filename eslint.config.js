@@ -20,7 +20,14 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+<<<<<<< HEAD
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+=======
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true },
+      ],
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       "@typescript-eslint/no-unused-vars": "off",
     },
   },

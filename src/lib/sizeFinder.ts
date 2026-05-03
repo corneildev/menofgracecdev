@@ -48,7 +48,13 @@ function clampToScale(idx: number): string {
 function chestToIt(chestCm: number): string {
   const raw = chestCm / 2;
   const even = Math.round(raw / 2) * 2;
+<<<<<<< HEAD
   return clampToScale(IT_SIZES.indexOf(String(even) as (typeof IT_SIZES)[number]));
+=======
+  return clampToScale(
+    IT_SIZES.indexOf(String(even) as (typeof IT_SIZES)[number]),
+  );
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 }
 
 /**
@@ -92,11 +98,21 @@ export function recommendSize(input: SizeFinderInput): SizeFinderResult {
 
   let note: string;
   if (input.build === "athletic") {
+<<<<<<< HEAD
     note = "Athletic builds often size up a half on the chest while keeping a tailored waist — consider a fitting.";
   } else if (input.build === "fuller") {
     note = "A fuller build wears better in the larger of two adjacent sizes.";
   } else if (input.build === "lean") {
     note = "Lean builds wear better in the smaller of two adjacent sizes, kept close to the body.";
+=======
+    note =
+      "Athletic builds often size up a half on the chest while keeping a tailored waist — consider a fitting.";
+  } else if (input.build === "fuller") {
+    note = "A fuller build wears better in the larger of two adjacent sizes.";
+  } else if (input.build === "lean") {
+    note =
+      "Lean builds wear better in the smaller of two adjacent sizes, kept close to the body.";
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   } else {
     note = "A regular build sits true to size on our cuts.";
   }
@@ -109,11 +125,39 @@ export function recommendSize(input: SizeFinderInput): SizeFinderResult {
   };
 }
 
+<<<<<<< HEAD
 export const BUILD_LABELS: { value: Build; label: string; description: string }[] = [
   { value: "lean", label: "Lean", description: "Slim, narrow shoulders, low body mass." },
   { value: "regular", label: "Regular", description: "Average proportions, comfortable in standard cuts." },
   { value: "athletic", label: "Athletic", description: "Developed shoulders and chest, narrower waist." },
   { value: "fuller", label: "Fuller", description: "More circumference at chest and waist." },
+=======
+export const BUILD_LABELS: {
+  value: Build;
+  label: string;
+  description: string;
+}[] = [
+  {
+    value: "lean",
+    label: "Lean",
+    description: "Slim, narrow shoulders, low body mass.",
+  },
+  {
+    value: "regular",
+    label: "Regular",
+    description: "Average proportions, comfortable in standard cuts.",
+  },
+  {
+    value: "athletic",
+    label: "Athletic",
+    description: "Developed shoulders and chest, narrower waist.",
+  },
+  {
+    value: "fuller",
+    label: "Fuller",
+    description: "More circumference at chest and waist.",
+  },
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 ];
 
 export const IT_SIZE_SCALE = IT_SIZES;

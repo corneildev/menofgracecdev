@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 import { createFileRoute, Link, useNavigate, ErrorComponent, useRouter } from "@tanstack/react-router";
+=======
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 import { zodValidator, fallback } from "@tanstack/zod-adapter";
 import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
@@ -25,17 +34,41 @@ const searchSchema = z.object({
   currency: fallback(z.enum(CURRENCY_VALUES), "FCFA").default("FCFA"),
 });
 
+<<<<<<< HEAD
+=======
+function CollectionErrorComponent({ error }: { error: Error }) {
+  const router = useRouter();
+  return (
+    <div className="pt-40 pb-32 px-6 text-center text-bone">
+      <p className="mb-4">Unable to load collection: {error.message}</p>
+      <button onClick={() => router.invalidate()} className="eyebrow underline">
+        Retry
+      </button>
+    </div>
+  );
+}
+
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 export const Route = createFileRoute("/collection")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
       { title: "Collection — MEN OF GRACE" },
+<<<<<<< HEAD
       { name: "description", content: "Browse the collection of bespoke suits, tuxedos and executive tailoring." },
+=======
+      {
+        name: "description",
+        content:
+          "Browse the collection of bespoke suits, tuxedos and executive tailoring.",
+      },
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       { property: "og:title", content: "Collection — MEN OF GRACE" },
       { property: "og:description", content: "Bespoke suits and tuxedos." },
     ],
   }),
   component: Collection,
+<<<<<<< HEAD
   errorComponent: ({ error }) => {
     const router = useRouter();
     return (
@@ -49,6 +82,18 @@ export const Route = createFileRoute("/collection")({
 });
 
 function formatPrice(p: ProductWithImages, currency: (typeof CURRENCY_VALUES)[number]) {
+=======
+  errorComponent: CollectionErrorComponent,
+  notFoundComponent: () => (
+    <div className="pt-40 text-center text-bone">Not found</div>
+  ),
+});
+
+function formatPrice(
+  p: ProductWithImages,
+  currency: (typeof CURRENCY_VALUES)[number],
+) {
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   if (currency === "USD") return formatPriceUsd(p.price_usd);
   if (currency === "EUR") return formatPriceEur(p.price_eur);
   return formatPriceFcfa(p.price_fcfa);
@@ -70,7 +115,13 @@ function Collection() {
   });
 
   const setParam = (key: "category" | "size" | "currency", value: string) => {
+<<<<<<< HEAD
     navigate({ search: (prev: Record<string, string>) => ({ ...prev, [key]: value }) });
+=======
+    navigate({
+      search: (prev: Record<string, string>) => ({ ...prev, [key]: value }),
+    });
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   };
 
   return (
@@ -78,7 +129,13 @@ function Collection() {
       <div className="max-w-[1600px] mx-auto">
         <div className="text-center mb-12 sm:mb-16">
           <div className="eyebrow text-bone/60 mb-6">— The Collection —</div>
+<<<<<<< HEAD
           <h1 className="display text-4xl sm:text-5xl md:text-7xl lg:text-8xl mb-6">Atelier Pieces</h1>
+=======
+          <h1 className="display text-4xl sm:text-5xl md:text-7xl lg:text-8xl mb-6">
+            Atelier Pieces
+          </h1>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
           <p className="text-bone/60 font-light max-w-xl mx-auto text-sm sm:text-base">
             Each piece composed in our atelier and finished entirely by hand.
           </p>
@@ -87,30 +144,78 @@ function Collection() {
         {/* Filter bar */}
         <div className="border-y border-hairline py-5 sm:py-6 mb-12 sm:mb-16 grid gap-5 sm:gap-6 md:grid-cols-3">
           <FilterGroup label="Category">
+<<<<<<< HEAD
             <FilterChip active={category === "all"} onClick={() => setParam("category", "all")}>All</FilterChip>
             {ALL_CATEGORIES.map((c) => (
               <FilterChip key={c} active={category === c} onClick={() => setParam("category", c)}>
+=======
+            <FilterChip
+              active={category === "all"}
+              onClick={() => setParam("category", "all")}
+            >
+              All
+            </FilterChip>
+            {ALL_CATEGORIES.map((c) => (
+              <FilterChip
+                key={c}
+                active={category === c}
+                onClick={() => setParam("category", c)}
+              >
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
                 {CATEGORY_LABELS[c as ProductCategory]}
               </FilterChip>
             ))}
           </FilterGroup>
 
           <FilterGroup label="Size">
+<<<<<<< HEAD
             <FilterChip active={size === "all"} onClick={() => setParam("size", "all")}>All</FilterChip>
             {ALL_SIZES.map((s) => (
               <FilterChip key={s} active={size === s} onClick={() => setParam("size", s)}>{s}</FilterChip>
+=======
+            <FilterChip
+              active={size === "all"}
+              onClick={() => setParam("size", "all")}
+            >
+              All
+            </FilterChip>
+            {ALL_SIZES.map((s) => (
+              <FilterChip
+                key={s}
+                active={size === s}
+                onClick={() => setParam("size", s)}
+              >
+                {s}
+              </FilterChip>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
             ))}
           </FilterGroup>
 
           <FilterGroup label="Currency">
             {CURRENCY_VALUES.map((c) => (
+<<<<<<< HEAD
               <FilterChip key={c} active={currency === c} onClick={() => setParam("currency", c)}>{c}</FilterChip>
+=======
+              <FilterChip
+                key={c}
+                active={currency === c}
+                onClick={() => setParam("currency", c)}
+              >
+                {c}
+              </FilterChip>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
             ))}
           </FilterGroup>
         </div>
 
         <div className="text-bone/50 eyebrow mb-10">
+<<<<<<< HEAD
           {isLoading ? "Loading…" : `${filtered.length} piece${filtered.length === 1 ? "" : "s"}`}
+=======
+          {isLoading
+            ? "Loading…"
+            : `${filtered.length} piece${filtered.length === 1 ? "" : "s"}`}
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
         </div>
 
         {!isLoading && filtered.length === 0 ? (
@@ -128,21 +233,57 @@ function Collection() {
                     params={{ productId: p.slug }}
                     className="block h-full w-full"
                   >
+<<<<<<< HEAD
                     <img src={p.primaryImage} alt={p.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                   </Link>
                 </div>
                 <div className="eyebrow text-bone/50 mb-2">{CATEGORY_LABELS[p.category]}</div>
                 <h2 className="font-serif text-2xl mb-3">
                   <Link to="/collection/$productId" params={{ productId: p.slug }} className="hover:text-bone/70 transition-colors">
+=======
+                    <img
+                      src={p.primaryImage}
+                      alt={p.name}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </Link>
+                </div>
+                <div className="eyebrow text-bone/50 mb-2">
+                  {CATEGORY_LABELS[p.category]}
+                </div>
+                <h2 className="font-serif text-2xl mb-3">
+                  <Link
+                    to="/collection/$productId"
+                    params={{ productId: p.slug }}
+                    className="hover:text-bone/70 transition-colors"
+                  >
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
                     {p.name}
                   </Link>
                 </h2>
                 {p.short_description && (
+<<<<<<< HEAD
                   <p className="text-bone/60 font-light text-sm mb-5 leading-relaxed">{p.short_description}</p>
                 )}
                 <div className="flex items-center justify-between border-t border-hairline pt-4">
                   <div className="text-bone/80 text-sm font-light">{formatPrice(p, currency)}</div>
                   <Link to="/collection/$productId" params={{ productId: p.slug }} className="eyebrow text-bone hover:text-bone/60">
+=======
+                  <p className="text-bone/60 font-light text-sm mb-5 leading-relaxed">
+                    {p.short_description}
+                  </p>
+                )}
+                <div className="flex items-center justify-between border-t border-hairline pt-4">
+                  <div className="text-bone/80 text-sm font-light">
+                    {formatPrice(p, currency)}
+                  </div>
+                  <Link
+                    to="/collection/$productId"
+                    params={{ productId: p.slug }}
+                    className="eyebrow text-bone hover:text-bone/60"
+                  >
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
                     Discover
                   </Link>
                 </div>
@@ -155,7 +296,17 @@ function Collection() {
   );
 }
 
+<<<<<<< HEAD
 function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
+=======
+function FilterGroup({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   return (
     <div>
       <div className="eyebrow text-bone/50 mb-3">{label}</div>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Confirmez votre compte - MEN OF GRACE</title>
+  <style>
+    /* Google Fonts import */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400&display=swap');
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0A0A0A;
+      color: #FAFAFA;
+      font-family: 'Inter', Helvetica, Arial, sans-serif;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+    }
+    table {
+      border-spacing: 0;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    td {
+      padding: 0;
+    }
+    .wrapper {
+      width: 100%;
+      background-color: #0A0A0A;
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #0A0A0A;
+      border: 1px solid rgba(250, 250, 240, 0.12);
+    }
+    .header {
+      text-align: center;
+      padding: 40px 20px 20px 20px;
+      border-bottom: 1px solid rgba(250, 250, 240, 0.12);
+    }
+    .logo {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 24px;
+      letter-spacing: 0.35em;
+      color: #FAFAFA;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    .content {
+      padding: 40px 30px;
+      text-align: center;
+    }
+    .eyebrow {
+      font-family: 'Inter', Helvetica, Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: rgba(250, 250, 240, 0.6);
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 32px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      margin: 0 0 20px 0;
+      color: #FAFAFA;
+    }
+    p {
+      font-size: 15px;
+      line-height: 1.6;
+      color: rgba(250, 250, 240, 0.8);
+      margin: 0 0 30px 0;
+    }
+    .button-container {
+      margin-bottom: 30px;
+    }
+    .button {
+      display: inline-block;
+      background-color: #FAFAFA;
+      color: #0A0A0A;
+      font-family: 'Inter', Helvetica, Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 16px 32px;
+      border: 1px solid #FAFAFA;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px 30px 40px 30px;
+      font-size: 11px;
+      color: rgba(250, 250, 240, 0.4);
+      border-top: 1px solid rgba(250, 250, 240, 0.12);
+    }
+    .footer a {
+      color: rgba(250, 250, 240, 0.6);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <table role="presentation" class="container">
+      <tr>
+        <td class="header">
+          <a href="{{ .SiteURL }}" class="logo">MEN OF GRACE</a>
+        </td>
+      </tr>
+      <tr>
+        <td class="content">
+          <div class="eyebrow">— BIENVENUE —</div>
+          <h1>Confirmez votre accès</h1>
+          <p>
+            Nous sommes ravis de vous compter parmi nous.<br>
+            Afin de finaliser la création de votre compte privé et d'accéder à la collection Atelier, veuillez confirmer votre adresse e-mail.
+          </p>
+          
+          <div class="button-container">
+            <!-- Supabase will replace {{ .ConfirmationURL }} with the real link -->
+            <a href="{{ .ConfirmationURL }}" class="button">Confirmer mon e-mail</a>
+          </div>
+
+          <p style="font-size: 12px; color: rgba(250, 250, 240, 0.5);">
+            Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail en toute sécurité.
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td class="footer">
+          <p style="margin-bottom: 10px;">
+            MEN OF GRACE<br>
+            Atelier & Couture
+          </p>
+          <p style="margin: 0;">
+            <a href="{{ .SiteURL }}">Visitez le site</a>
+          </p>
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

@@ -1,16 +1,38 @@
+<<<<<<< HEAD
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+=======
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import { formatPriceFcfa, formatPriceUsd } from "@/lib/price";
+import { trackMetaEvent } from "@/lib/metaPixel";
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 const STORAGE_KEY = "mog:cart";
 
 export type CartItem = {
   id: string;
   productId: string;
+<<<<<<< HEAD
+=======
+  productSlug?: string;
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   name: string;
   image: string;
   fcfa: number;
   usd: number;
   size: string | null;
   availableSizes?: string[];
+<<<<<<< HEAD
+=======
+  soldOutSizes?: string[];
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   fit: string;
   lapel: string;
   lining: string;
@@ -51,7 +73,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
+<<<<<<< HEAD
         if (Array.isArray(parsed)) setItems(parsed);
+=======
+        if (Array.isArray(parsed)) {
+          setItems(
+            parsed.map((item) => ({
+              ...item,
+              productSlug:
+                typeof item?.productSlug === "string" &&
+                item.productSlug.length > 0
+                  ? item.productSlug
+                  : item?.productId,
+            })),
+          );
+        }
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       }
     } catch {
       // ignore
@@ -74,11 +111,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prev) => {
       const existing = prev.find((p) => p.id === id);
       if (existing) {
+<<<<<<< HEAD
         return prev.map((p) => (p.id === id ? { ...p, quantity: p.quantity + qty } : p));
+=======
+        return prev.map((p) =>
+          p.id === id ? { ...p, quantity: p.quantity + qty } : p,
+        );
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       }
       return [{ ...input, id, quantity: qty }, ...prev];
     });
     setIsOpen(true);
+<<<<<<< HEAD
+=======
+    trackMetaEvent("AddToCart", {
+      content_type: "product",
+      content_ids: [input.productId],
+      content_name: input.name,
+      currency: "XOF",
+      value: input.fcfa,
+      quantity: qty,
+    });
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   }, []);
 
   const remove = useCallback((id: string) => {
@@ -104,7 +158,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return prev
           .filter((p) => p.id !== id)
           .map((p) =>
+<<<<<<< HEAD
             p.id === newId ? { ...p, quantity: p.quantity + target.quantity } : p,
+=======
+            p.id === newId
+              ? { ...p, quantity: p.quantity + target.quantity }
+              : p,
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
           );
       }
       return prev.map((p) => (p.id === id ? { ...p, size, id: newId } : p));
@@ -144,9 +204,16 @@ export function useCart() {
 }
 
 export function formatFcfa(n: number) {
+<<<<<<< HEAD
   // Stable across SSR/CSR: simple thousands grouping with regular spaces
   return `${n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} FCFA`;
 }
 export function formatUsd(n: number) {
   return `$${n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
+=======
+  return formatPriceFcfa(n);
+}
+export function formatUsd(n: number) {
+  return formatPriceUsd(n);
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 }

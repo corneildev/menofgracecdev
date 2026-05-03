@@ -1,8 +1,16 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+<<<<<<< HEAD
 
 export type ProductRow = Database["public"]["Tables"]["products"]["Row"];
 export type ProductImageRow = Database["public"]["Tables"]["product_images"]["Row"];
+=======
+import { formatPriceEur, formatPriceFcfa, formatPriceUsd } from "@/lib/price";
+
+export type ProductRow = Database["public"]["Tables"]["products"]["Row"];
+export type ProductImageRow =
+  Database["public"]["Tables"]["product_images"]["Row"];
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 export type ProductCategory = Database["public"]["Enums"]["product_category"];
 
 export type ProductWithImages = ProductRow & {
@@ -19,7 +27,10 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   shirts: "Shirts",
   trousers: "Trousers",
   belts: "Belts",
+<<<<<<< HEAD
   shoes: "Chaussures",
+=======
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   accessories: "Accessories",
   bespoke: "Bespoke Collection",
 };
@@ -32,7 +43,10 @@ export const ALL_CATEGORIES: ProductCategory[] = [
   "shirts",
   "trousers",
   "belts",
+<<<<<<< HEAD
   "shoes",
+=======
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   "accessories",
   "bespoke",
 ];
@@ -41,7 +55,13 @@ export const ALL_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "Custom"] as const;
 
 const PLACEHOLDER = "/seed/craft.jpg";
 
+<<<<<<< HEAD
 function shape(row: ProductRow & { product_images?: ProductImageRow[] }): ProductWithImages {
+=======
+function shape(
+  row: ProductRow & { product_images?: ProductImageRow[] },
+): ProductWithImages {
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   const images = (row.product_images ?? []).slice().sort((a, b) => {
     if (a.is_primary !== b.is_primary) return a.is_primary ? -1 : 1;
     return a.position - b.position;
@@ -70,7 +90,13 @@ export async function listAllProducts(): Promise<ProductWithImages[]> {
   return (data ?? []).map(shape);
 }
 
+<<<<<<< HEAD
 export async function getProductBySlug(slug: string): Promise<ProductWithImages | null> {
+=======
+export async function getProductBySlug(
+  slug: string,
+): Promise<ProductWithImages | null> {
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   const { data, error } = await supabase
     .from("products")
     .select("*, product_images(*)")
@@ -80,7 +106,13 @@ export async function getProductBySlug(slug: string): Promise<ProductWithImages 
   return data ? shape(data) : null;
 }
 
+<<<<<<< HEAD
 export async function getProductById(id: string): Promise<ProductWithImages | null> {
+=======
+export async function getProductById(
+  id: string,
+): Promise<ProductWithImages | null> {
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   const { data, error } = await supabase
     .from("products")
     .select("*, product_images(*)")
@@ -90,6 +122,7 @@ export async function getProductById(id: string): Promise<ProductWithImages | nu
   return data ? shape(data) : null;
 }
 
+<<<<<<< HEAD
 export function formatPriceFcfa(n: number) {
   return `${n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} FCFA`;
 }
@@ -99,3 +132,6 @@ export function formatPriceUsd(n: number) {
 export function formatPriceEur(n: number) {
   return `€${n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
 }
+=======
+export { formatPriceFcfa, formatPriceUsd, formatPriceEur };
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)

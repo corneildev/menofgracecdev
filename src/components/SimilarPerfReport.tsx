@@ -105,8 +105,18 @@ export function SimilarPerfReport({ enabled = true }: { enabled?: boolean }) {
       // Replay any resources already loaded before mount.
       ingest(performance.getEntriesByType("resource"));
 
+<<<<<<< HEAD
       resObserver = new PerformanceObserver((list) => ingest(list.getEntries()));
       resObserver.observe({ type: "resource", buffered: true } as PerformanceObserverInit);
+=======
+      resObserver = new PerformanceObserver((list) =>
+        ingest(list.getEntries()),
+      );
+      resObserver.observe({
+        type: "resource",
+        buffered: true,
+      } as PerformanceObserverInit);
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     } catch {
       // Browser doesn't support resource timing — skip silently.
     }
@@ -121,9 +131,17 @@ export function SimilarPerfReport({ enabled = true }: { enabled?: boolean }) {
   useEffect(() => {
     if (!import.meta.env.DEV) return;
     if (report.thumbCount === 0 && report.lcpMs === null) return;
+<<<<<<< HEAD
     const total = report.formats.avif + report.formats.webp + report.formats.jpg;
     const pct = (n: number) => (total === 0 ? 0 : Math.round((n / total) * 100));
     // eslint-disable-next-line no-console
+=======
+    const total =
+      report.formats.avif + report.formats.webp + report.formats.jpg;
+    const pct = (n: number) =>
+      total === 0 ? 0 : Math.round((n / total) * 100);
+
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     console.info(
       `[similar-perf] LCP=${report.lcpMs ?? "…"}ms  thumbs=${report.thumbCount} (${(report.thumbBytes / 1024).toFixed(1)} KB)  AVIF ${pct(report.formats.avif)}% / WebP ${pct(report.formats.webp)}% / JPG ${pct(report.formats.jpg)}%`,
     );
@@ -132,7 +150,14 @@ export function SimilarPerfReport({ enabled = true }: { enabled?: boolean }) {
   if (!import.meta.env.DEV) return null;
 
   const total =
+<<<<<<< HEAD
     report.formats.avif + report.formats.webp + report.formats.jpg + report.formats.other;
+=======
+    report.formats.avif +
+    report.formats.webp +
+    report.formats.jpg +
+    report.formats.other;
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   const pct = (n: number) => (total === 0 ? 0 : Math.round((n / total) * 100));
   const kb = (report.thumbBytes / 1024).toFixed(1);
 
@@ -144,13 +169,24 @@ export function SimilarPerfReport({ enabled = true }: { enabled?: boolean }) {
       <div className="mb-1 text-bone uppercase tracking-[0.15em] text-[9px]">
         Similar perf (dev)
       </div>
+<<<<<<< HEAD
       <div>LCP: {report.lcpMs !== null ? `${report.lcpMs} ms` : "measuring…"}</div>
+=======
+      <div>
+        LCP: {report.lcpMs !== null ? `${report.lcpMs} ms` : "measuring…"}
+      </div>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       <div>
         Thumbs: {report.thumbCount} · {kb} KB
       </div>
       <div>
+<<<<<<< HEAD
         AVIF {pct(report.formats.avif)}% · WebP {pct(report.formats.webp)}% · JPG{" "}
         {pct(report.formats.jpg)}%
+=======
+        AVIF {pct(report.formats.avif)}% · WebP {pct(report.formats.webp)}% ·
+        JPG {pct(report.formats.jpg)}%
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       </div>
     </div>
   );

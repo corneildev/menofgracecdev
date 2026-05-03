@@ -1,17 +1,43 @@
+<<<<<<< HEAD
 import { Outlet, createRootRoute, HeadContent, Scripts, Link } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
+=======
+import {
+  Outlet,
+  createRootRoute,
+  HeadContent,
+  Scripts,
+  Link,
+  useLocation,
+} from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { WhatsAppFloat } from "@/components/WhatsAppFloat";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 import { WishlistProvider } from "@/context/WishlistContext";
 import { CartProvider } from "@/context/CartContext";
 import { CartDrawer } from "@/components/CartDrawer";
 import { AuthProvider } from "@/context/AuthContext";
 import { LangBootstrap } from "@/components/LangBootstrap";
+<<<<<<< HEAD
 import "@/i18n";
 
 import appCss from "../styles.css?url";
+=======
+import { initMetaPixel, trackMetaPageView } from "@/lib/metaPixel";
+import "@/i18n";
+
+
+
+const CONSENT_KEY = "mog:cookie-consent";
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 function NotFoundComponent() {
   return (
@@ -22,13 +48,20 @@ function NotFoundComponent() {
         <p className="text-bone/60 mb-10 font-light">
           The page you seek is not part of this collection.
         </p>
+<<<<<<< HEAD
         <Link to="/" className="luxury-btn">Return Home</Link>
+=======
+        <Link to="/" className="luxury-btn">
+          Return Home
+        </Link>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       </div>
     </div>
   );
 }
 
 export const Route = createRootRoute({
+<<<<<<< HEAD
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -51,10 +84,13 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootShell,
+=======
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });
 
+<<<<<<< HEAD
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -62,12 +98,93 @@ function RootShell({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="bg-ink text-bone overflow-x-hidden">
+=======
+function RootComponent() {
+  const [queryClient] = useState(() => new QueryClient());
+  const location = useLocation();
+  const [consentLoaded, setConsentLoaded] = useState(false);
+  const [hasMarketingConsent, setHasMarketingConsent] = useState(false);
+  const [showConsentBanner, setShowConsentBanner] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = window.localStorage.getItem(CONSENT_KEY);
+    setHasMarketingConsent(stored === "accepted");
+    setShowConsentBanner(stored === null);
+    setConsentLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hasMarketingConsent) return;
+    initMetaPixel();
+  }, [hasMarketingConsent]);
+
+  useEffect(() => {
+    if (!hasMarketingConsent) return;
+    trackMetaPageView();
+  }, [hasMarketingConsent, location.pathname, location.searchStr]);
+
+  const acceptCookies = () => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(CONSENT_KEY, "accepted");
+    }
+    setHasMarketingConsent(true);
+    setShowConsentBanner(false);
+    initMetaPixel();
+    trackMetaPageView();
+  };
+
+  const declineCookies = () => {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(CONSENT_KEY, "declined");
+    }
+    setHasMarketingConsent(false);
+    setShowConsentBanner(false);
+  };
+
+  return (
+    <RootShell>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <WishlistProvider>
+            <CartProvider>
+              <LangBootstrap />
+              <Header />
+              <main className="min-h-screen bg-ink overflow-x-hidden">
+                <Outlet />
+              </main>
+              <Footer />
+              <WhatsAppFloat />
+              <CartDrawer />
+              {consentLoaded && showConsentBanner && (
+                <CookieConsentBanner
+                  onAccept={acceptCookies}
+                  onDecline={declineCookies}
+                />
+              )}
+            </CartProvider>
+          </WishlistProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </RootShell>
+  );
+}
+
+function RootShell({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
         {children}
         <Scripts />
       </body>
     </html>
   );
 }
+<<<<<<< HEAD
 
 function RootComponent() {
   const [queryClient] = useState(() => new QueryClient());
@@ -90,3 +207,5 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+=======
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)

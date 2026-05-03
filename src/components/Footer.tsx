@@ -3,7 +3,13 @@ import { useTranslation } from "react-i18next";
 
 export function Footer() {
   const { t } = useTranslation();
+<<<<<<< HEAD
   const waMessage = encodeURIComponent("Bonjour MEN OF GRACE — j'ai une question.");
+=======
+  const waMessage = encodeURIComponent(
+    "Bonjour MEN OF GRACE — j'ai une question.",
+  );
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   const waHref = `https://wa.me/22500000000?text=${waMessage}`;
 
   return (
@@ -11,7 +17,13 @@ export function Footer() {
       <div className="mx-auto max-w-[1600px] px-4 sm:px-6 md:px-8 lg:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 md:gap-12 lg:gap-12 mb-12 sm:mb-20">
           <div className="lg:col-span-5">
+<<<<<<< HEAD
             <div className="font-serif text-xl sm:text-2xl tracking-[0.3em] mb-5 sm:mb-6">MEN OF GRACE</div>
+=======
+            <div className="font-serif text-xl sm:text-2xl tracking-[0.3em] mb-5 sm:mb-6">
+              MEN OF GRACE
+            </div>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
             <p className="text-bone/60 max-w-sm font-light leading-relaxed text-sm sm:text-base">
               {t("home.heroTagline")}
             </p>
@@ -20,34 +32,103 @@ export function Footer() {
           <div className="lg:col-span-3">
             <div className="eyebrow mb-5 sm:mb-6">{t("footer.house")}</div>
             <ul className="space-y-3 text-bone/80">
+<<<<<<< HEAD
               <li><Link to="/collection" className="hover:text-bone">{t("nav.collection")}</Link></li>
               <li><Link to="/account" className="hover:text-bone">Account</Link></li>
               <li><Link to="/wishlist" className="hover:text-bone">{t("nav.wishlist")}</Link></li>
+=======
+              <li>
+                <Link to="/collection" className="hover:text-bone">
+                  {t("nav.collection")}
+                </Link>
+              </li>
+              <li>
+                <Link to="/account" className="hover:text-bone">
+                  Account
+                </Link>
+              </li>
+              <li>
+                <Link to="/wishlist" className="hover:text-bone">
+                  {t("nav.wishlist")}
+                </Link>
+              </li>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
             </ul>
           </div>
 
           <div className="lg:col-span-2">
             <div className="eyebrow mb-5 sm:mb-6">Legal</div>
             <ul className="space-y-3 text-bone/80 text-sm font-light">
+<<<<<<< HEAD
               <li><a href="#" className="hover:text-bone">Privacy</a></li>
               <li><a href="#" className="hover:text-bone">Terms</a></li>
               <li><a href="#" className="hover:text-bone">Shipping &amp; Returns</a></li>
+=======
+              <li>
+                <Link to="/privacy" className="hover:text-bone">
+                  Privacy
+                </Link>
+              </li>
+              <li>
+                <Link to="/cookies" className="hover:text-bone">
+                  Cookies
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="hover:text-bone">
+                  Terms
+                </Link>
+              </li>
+              <li>
+                <Link to="/shipping-returns" className="hover:text-bone">
+                  Shipping &amp; Returns
+                </Link>
+              </li>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
             </ul>
           </div>
 
           <div className="lg:col-span-2">
             <div className="eyebrow mb-5 sm:mb-6">{t("footer.contact")}</div>
             <div className="flex flex-col gap-3 eyebrow text-bone/70">
+<<<<<<< HEAD
               <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-bone">Instagram</a>
               <a href={waHref} target="_blank" rel="noreferrer" className="hover:text-bone">Speak with us</a>
               <a href="mailto:hello@menofgrace.com" className="hover:text-bone">Email</a>
+=======
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-bone"
+              >
+                Instagram
+              </a>
+              <a
+                href={waHref}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-bone"
+              >
+                Speak with us
+              </a>
+              <a href="mailto:hello@menofgrace.com" className="hover:text-bone">
+                Email
+              </a>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
             </div>
           </div>
         </div>
 
         <div className="hairline mb-6 sm:mb-8" />
         <div className="flex flex-col md:flex-row justify-between gap-3 sm:gap-4 eyebrow text-bone/50">
+<<<<<<< HEAD
           <span>© {new Date().getFullYear()} MEN OF GRACE · {t("footer.rights")}</span>
+=======
+          <span>
+            © {new Date().getFullYear()} MEN OF GRACE · {t("footer.rights")}
+          </span>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
           <span>Shipped within 5 business days · Free local alterations</span>
         </div>
       </div>

@@ -1,4 +1,16 @@
+<<<<<<< HEAD
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+=======
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 const STORAGE_KEY = "mog:wishlist";
 
@@ -23,7 +35,12 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
+<<<<<<< HEAD
         if (Array.isArray(parsed)) setIds(parsed.filter((x) => typeof x === "string"));
+=======
+        if (Array.isArray(parsed))
+          setIds(parsed.filter((x) => typeof x === "string"));
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       }
     } catch {
       // ignore
@@ -46,7 +63,12 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       if (e.key !== STORAGE_KEY || !e.newValue) return;
       try {
         const parsed = JSON.parse(e.newValue);
+<<<<<<< HEAD
         if (Array.isArray(parsed)) setIds(parsed.filter((x) => typeof x === "string"));
+=======
+        if (Array.isArray(parsed))
+          setIds(parsed.filter((x) => typeof x === "string"));
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       } catch {
         // ignore
       }
@@ -57,7 +79,13 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   const has = useCallback((id: string) => ids.includes(id), [ids]);
   const toggle = useCallback((id: string) => {
+<<<<<<< HEAD
     setIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [id, ...prev]));
+=======
+    setIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [id, ...prev],
+    );
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   }, []);
   const remove = useCallback((id: string) => {
     setIds((prev) => prev.filter((x) => x !== id));
@@ -69,7 +97,15 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     [ids, has, toggle, remove, clear, ready],
   );
 
+<<<<<<< HEAD
   return <WishlistContext.Provider value={value}>{children}</WishlistContext.Provider>;
+=======
+  return (
+    <WishlistContext.Provider value={value}>
+      {children}
+    </WishlistContext.Provider>
+  );
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 }
 
 export function useWishlist() {

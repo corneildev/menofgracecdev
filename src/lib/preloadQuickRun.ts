@@ -105,7 +105,13 @@ export type QuickRunInput = {
  * snapshot the result (plus the current fetch report) to localStorage, and
  * return the snapshot for live UI display.
  */
+<<<<<<< HEAD
 export function runIphoneSafariQuickRun(input: QuickRunInput): QuickRunSnapshot {
+=======
+export function runIphoneSafariQuickRun(
+  input: QuickRunInput,
+): QuickRunSnapshot {
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   const profile = IPHONE_SAFARI_PROFILE;
 
   // iPhone Safari on 4G is NOT slow — full LCP + 2 near candidates apply.
@@ -166,14 +172,24 @@ export function runIphoneSafariQuickRun(input: QuickRunInput): QuickRunSnapshot 
   safeWrite(store);
 
   // Pretty-print to console so devs see it inline without opening localStorage.
+<<<<<<< HEAD
   // eslint-disable-next-line no-console
+=======
+
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   console.groupCollapsed(
     `%c[preload·quickrun] iPhone Safari → emitted=${snapshot.emitted}, dupes=${snapshot.duplicates}, fetched=${snapshot.fetchReport.totalTrackedUrls}`,
     "color:#0ea5e9;font-weight:bold",
   );
+<<<<<<< HEAD
   // eslint-disable-next-line no-console
   console.log("snapshot:", snapshot);
   // eslint-disable-next-line no-console
+=======
+
+  console.log("snapshot:", snapshot);
+
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   console.groupEnd();
 
   return snapshot;

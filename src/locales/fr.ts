@@ -18,7 +18,12 @@ const fr: Translations = {
     fromCfa: "À partir de {{value}} FCFA",
     onRequest: "Sur demande",
     notFoundTitle: "Page introuvable",
+<<<<<<< HEAD
     notFoundBody: "La page que vous cherchez ne fait pas partie de cette collection.",
+=======
+    notFoundBody:
+      "La page que vous cherchez ne fait pas partie de cette collection.",
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     returnHome: "Retour à l'accueil",
     language: "Langue",
   },

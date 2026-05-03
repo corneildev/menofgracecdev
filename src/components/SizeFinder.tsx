@@ -18,7 +18,15 @@ type Props = {
 const inputCls =
   "w-full bg-transparent border-b border-hairline py-3 text-bone placeholder:text-bone/30 outline-none focus:border-bone transition-colors text-sm font-light";
 
+<<<<<<< HEAD
 export function SizeFinder({ availableSizes, onPick, variant = "full" }: Props) {
+=======
+export function SizeFinder({
+  availableSizes,
+  onPick,
+  variant = "full",
+}: Props) {
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [build, setBuild] = useState<Build>("regular");
@@ -61,7 +69,13 @@ export function SizeFinder({ availableSizes, onPick, variant = "full" }: Props) 
         <div className="eyebrow text-bone/60 mb-6">— Recommendation —</div>
 
         <div className="flex items-baseline gap-6 mb-8">
+<<<<<<< HEAD
           <span className="display text-6xl md:text-7xl text-bone">IT {result.recommended}</span>
+=======
+          <span className="display text-6xl md:text-7xl text-bone">
+            IT {result.recommended}
+          </span>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
           {result.alternate && (
             <span className="font-serif italic text-bone/60 text-lg">
               or IT {result.alternate}
@@ -84,8 +98,13 @@ export function SizeFinder({ availableSizes, onPick, variant = "full" }: Props) 
         <div className="hairline w-12 my-8" />
 
         <p className="text-bone/60 font-light text-sm leading-relaxed mb-8">
+<<<<<<< HEAD
           This is editorial guidance, not a measurement. For a piece composed
           to your exact body, we recommend a fitting at the next trunk show.
+=======
+          This is editorial guidance, not a measurement. For a piece composed to
+          your exact body, we recommend a fitting at the next trunk show.
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
         </p>
 
         <div className="flex flex-wrap gap-4">
@@ -131,7 +150,13 @@ export function SizeFinder({ availableSizes, onPick, variant = "full" }: Props) 
       <form onSubmit={submit} className="space-y-8">
         <div className="grid grid-cols-2 gap-6">
           <div>
+<<<<<<< HEAD
             <label className="eyebrow text-bone/50 block mb-2">Height (cm)</label>
+=======
+            <label className="eyebrow text-bone/50 block mb-2">
+              Height (cm)
+            </label>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
             <input
               required
               inputMode="numeric"
@@ -142,7 +167,13 @@ export function SizeFinder({ availableSizes, onPick, variant = "full" }: Props) 
             />
           </div>
           <div>
+<<<<<<< HEAD
             <label className="eyebrow text-bone/50 block mb-2">Weight (kg)</label>
+=======
+            <label className="eyebrow text-bone/50 block mb-2">
+              Weight (kg)
+            </label>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
             <input
               required
               inputMode="numeric"
@@ -170,7 +201,13 @@ export function SizeFinder({ availableSizes, onPick, variant = "full" }: Props) 
                       : "border-hairline hover:border-bone/60"
                   }`}
                 >
+<<<<<<< HEAD
                   <div className="font-serif text-lg text-bone mb-1">{b.label}</div>
+=======
+                  <div className="font-serif text-lg text-bone mb-1">
+                    {b.label}
+                  </div>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
                   <div className="text-bone/55 font-light text-xs leading-relaxed">
                     {b.description}
                   </div>

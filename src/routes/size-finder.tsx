@@ -5,9 +5,22 @@ export const Route = createFileRoute("/size-finder")({
   head: () => ({
     meta: [
       { title: "Size Finder — MEN OF GRACE" },
+<<<<<<< HEAD
       { name: "description", content: "A guided size recommendation for the MEN OF GRACE ready-to-wear collection. Three questions, one Italian size." },
       { property: "og:title", content: "Size Finder — MEN OF GRACE" },
       { property: "og:description", content: "Three questions. A guide, not a guarantee." },
+=======
+      {
+        name: "description",
+        content:
+          "A guided size recommendation for the MEN OF GRACE ready-to-wear collection. Three questions, one Italian size.",
+      },
+      { property: "og:title", content: "Size Finder — MEN OF GRACE" },
+      {
+        property: "og:description",
+        content: "Three questions. A guide, not a guarantee.",
+      },
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     ],
   }),
   component: SizeFinderPage,
@@ -25,7 +38,13 @@ function SizeFinderPage() {
           <div className="hairline w-16 mx-auto my-10" />
           <p className="font-serif italic text-xl md:text-2xl text-bone/85 leading-relaxed max-w-2xl mx-auto">
             Three questions. <br className="hidden md:block" />
+<<<<<<< HEAD
             <span className="text-bone/70">An honest recommendation, not a measurement.</span>
+=======
+            <span className="text-bone/70">
+              An honest recommendation, not a measurement.
+            </span>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
           </p>
         </div>
       </section>
@@ -33,9 +52,15 @@ function SizeFinderPage() {
       <section className="px-6 md:px-12 pb-24">
         <div className="max-w-3xl mx-auto space-y-6 text-bone/75 font-light leading-relaxed text-base">
           <p>
+<<<<<<< HEAD
             Our ready-to-wear is cut in Italian sizing, from IT 46 to IT 56.
             The Size Finder estimates which of those sizes is most likely to
             sit on your shoulders — based on height, weight and build.
+=======
+            Our ready-to-wear is cut in Italian sizing, from IT 46 to IT 56. The
+            Size Finder estimates which of those sizes is most likely to sit on
+            your shoulders — based on height, weight and build.
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
           </p>
           <p>
             For a piece composed to your exact body, the maison still recommends

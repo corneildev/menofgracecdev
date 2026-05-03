@@ -83,8 +83,29 @@ export function resolvePreloadCandidates(
 }
 
 export type PreloadDecision =
+<<<<<<< HEAD
   | { decision: "emit"; item: SimilarItem; idx: number; href: string; srcSet?: string; dedupKey: string; priority: "high" | "low" }
   | { decision: "duplicate"; item: SimilarItem; idx: number; href: string; srcSet?: string; dedupKey: string; priority: "high" | "low" };
+=======
+  | {
+      decision: "emit";
+      item: SimilarItem;
+      idx: number;
+      href: string;
+      srcSet?: string;
+      dedupKey: string;
+      priority: "high" | "low";
+    }
+  | {
+      decision: "duplicate";
+      item: SimilarItem;
+      idx: number;
+      href: string;
+      srcSet?: string;
+      dedupKey: string;
+      priority: "high" | "low";
+    };
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 /**
  * Filter resolved preloads against the warmed-set, mutating both the set and
@@ -106,13 +127,40 @@ export function filterDuplicates(
     const { dedupKey, item, idx, href, srcSet, priority } = r;
     if (warmed.has(dedupKey)) {
       stats.duplicates += 1;
+<<<<<<< HEAD
       onDecision?.({ decision: "duplicate", item, idx, href, srcSet, dedupKey, priority });
+=======
+      onDecision?.({
+        decision: "duplicate",
+        item,
+        idx,
+        href,
+        srcSet,
+        dedupKey,
+        priority,
+      });
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       return false;
     }
     warmed.add(dedupKey);
     stats.emitted += 1;
+<<<<<<< HEAD
     onDecision?.({ decision: "emit", item, idx, href, srcSet, dedupKey, priority });
     return true;
   });
 }
 
+=======
+    onDecision?.({
+      decision: "emit",
+      item,
+      idx,
+      href,
+      srcSet,
+      dedupKey,
+      priority,
+    });
+    return true;
+  });
+}
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)

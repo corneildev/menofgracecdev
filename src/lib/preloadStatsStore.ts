@@ -172,7 +172,15 @@ export function recordEmit(
     s.emitted += 1;
     if (!s.emittedHrefs.includes(detail.href)) s.emittedHrefs.push(detail.href);
     if (!s.emittedEntries) s.emittedEntries = [];
+<<<<<<< HEAD
     if (!s.emittedEntries.some((e) => e.href === detail.href && e.srcSet === detail.srcSet)) {
+=======
+    if (
+      !s.emittedEntries.some(
+        (e) => e.href === detail.href && e.srcSet === detail.srcSet,
+      )
+    ) {
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       s.emittedEntries.push({ href: detail.href, srcSet: detail.srcSet });
     }
     s.events.push({ at: new Date().toISOString(), kind: "emit", detail });
@@ -212,7 +220,16 @@ export function recordReset(sessionId: string, reason: string) {
 export function recordThresholdFailure(
   sessionId: string,
   detail: {
+<<<<<<< HEAD
     breaches: { metric: string; threshold: number; observed: number; message: string }[];
+=======
+    breaches: {
+      metric: string;
+      threshold: number;
+      observed: number;
+      message: string;
+    }[];
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     thresholds: { duplicateFetches: number; unfetchedPreloads: number };
     observed: { duplicateFetches: number; unfetchedPreloads: number };
   },

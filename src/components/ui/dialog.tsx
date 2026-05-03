@@ -53,6 +53,7 @@ const DialogContent = React.forwardRef<
 ));
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
+<<<<<<< HEAD
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("flex flex-col space-y-1.5 text-center sm:text-left", className)} {...props} />
 );
@@ -61,6 +62,31 @@ DialogHeader.displayName = "DialogHeader";
 const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn("flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2", className)}
+=======
+const DialogHeader = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "flex flex-col space-y-1.5 text-center sm:text-left",
+      className,
+    )}
+    {...props}
+  />
+);
+DialogHeader.displayName = "DialogHeader";
+
+const DialogFooter = ({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+      className,
+    )}
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     {...props}
   />
 );
@@ -72,7 +98,14 @@ const DialogTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
+<<<<<<< HEAD
     className={cn("text-lg font-semibold leading-none tracking-tight", className)}
+=======
+    className={cn(
+      "text-lg font-semibold leading-none tracking-tight",
+      className,
+    )}
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
     {...props}
   />
 ));

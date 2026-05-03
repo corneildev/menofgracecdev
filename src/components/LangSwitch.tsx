@@ -35,7 +35,15 @@ export function LangSwitch({ className = "", onChange }: LangSwitchProps) {
   };
 
   return (
+<<<<<<< HEAD
     <div className={`flex items-center gap-2 eyebrow ${className}`} role="group" aria-label="Language">
+=======
+    <div
+      className={`flex items-center gap-2 eyebrow ${className}`}
+      role="group"
+      aria-label="Language"
+    >
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
       {SUPPORTED_LANGS.map((lng, idx) => (
         <span key={lng} className="flex items-center gap-2">
           <button
@@ -51,7 +59,13 @@ export function LangSwitch({ className = "", onChange }: LangSwitchProps) {
             {lng}
           </button>
           {idx < SUPPORTED_LANGS.length - 1 && (
+<<<<<<< HEAD
             <span className="text-bone/30" aria-hidden="true">|</span>
+=======
+            <span className="text-bone/30" aria-hidden="true">
+              |
+            </span>
+>>>>>>> 9091cf2 (Initial commit of graceful-threads)
           )}
         </span>
       ))}
