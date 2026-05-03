@@ -10,7 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as UpdatePasswordRouteImport } from './routes/update-password'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SizeFinderRouteImport } from './routes/size-finder'
+import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as CookiesRouteImport } from './routes/cookies'
 import { Route as CollectionRouteImport } from './routes/collection'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
@@ -32,9 +38,39 @@ const WishlistRoute = WishlistRouteImport.update({
   path: '/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UpdatePasswordRoute = UpdatePasswordRouteImport.update({
+  id: '/update-password',
+  path: '/update-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SizeFinderRoute = SizeFinderRouteImport.update({
   id: '/size-finder',
   path: '/size-finder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShippingReturnsRoute = ShippingReturnsRouteImport.update({
+  id: '/shipping-returns',
+  path: '/shipping-returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CookiesRoute = CookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionRoute = CollectionRouteImport.update({
@@ -123,7 +159,13 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRouteWithChildren
+  '/cookies': typeof CookiesRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/privacy': typeof PrivacyRoute
+  '/shipping-returns': typeof ShippingReturnsRoute
   '/size-finder': typeof SizeFinderRoute
+  '/terms': typeof TermsRoute
+  '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection/$productId': typeof CollectionProductIdRoute
@@ -142,7 +184,13 @@ export interface FileRoutesByTo {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRouteWithChildren
+  '/cookies': typeof CookiesRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/privacy': typeof PrivacyRoute
+  '/shipping-returns': typeof ShippingReturnsRoute
   '/size-finder': typeof SizeFinderRoute
+  '/terms': typeof TermsRoute
+  '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection/$productId': typeof CollectionProductIdRoute
@@ -162,7 +210,13 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/collection': typeof CollectionRouteWithChildren
+  '/cookies': typeof CookiesRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/privacy': typeof PrivacyRoute
+  '/shipping-returns': typeof ShippingReturnsRoute
   '/size-finder': typeof SizeFinderRoute
+  '/terms': typeof TermsRoute
+  '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection/$productId': typeof CollectionProductIdRoute
@@ -183,7 +237,13 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/collection'
+    | '/cookies'
+    | '/forgot-password'
+    | '/privacy'
+    | '/shipping-returns'
     | '/size-finder'
+    | '/terms'
+    | '/update-password'
     | '/wishlist'
     | '/admin/restock-alerts'
     | '/collection/$productId'
@@ -202,7 +262,13 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/collection'
+    | '/cookies'
+    | '/forgot-password'
+    | '/privacy'
+    | '/shipping-returns'
     | '/size-finder'
+    | '/terms'
+    | '/update-password'
     | '/wishlist'
     | '/admin/restock-alerts'
     | '/collection/$productId'
@@ -221,7 +287,13 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/collection'
+    | '/cookies'
+    | '/forgot-password'
+    | '/privacy'
+    | '/shipping-returns'
     | '/size-finder'
+    | '/terms'
+    | '/update-password'
     | '/wishlist'
     | '/admin/restock-alerts'
     | '/collection/$productId'
@@ -241,7 +313,13 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   CollectionRoute: typeof CollectionRouteWithChildren
+  CookiesRoute: typeof CookiesRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  PrivacyRoute: typeof PrivacyRoute
+  ShippingReturnsRoute: typeof ShippingReturnsRoute
   SizeFinderRoute: typeof SizeFinderRoute
+  TermsRoute: typeof TermsRoute
+  UpdatePasswordRoute: typeof UpdatePasswordRoute
   WishlistRoute: typeof WishlistRoute
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -258,11 +336,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WishlistRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/update-password': {
+      id: '/update-password'
+      path: '/update-password'
+      fullPath: '/update-password'
+      preLoaderRoute: typeof UpdatePasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/size-finder': {
       id: '/size-finder'
       path: '/size-finder'
       fullPath: '/size-finder'
       preLoaderRoute: typeof SizeFinderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shipping-returns': {
+      id: '/shipping-returns'
+      path: '/shipping-returns'
+      fullPath: '/shipping-returns'
+      preLoaderRoute: typeof ShippingReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cookies': {
+      id: '/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof CookiesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collection': {
@@ -407,7 +527,13 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   CollectionRoute: CollectionRouteWithChildren,
+  CookiesRoute: CookiesRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  PrivacyRoute: PrivacyRoute,
+  ShippingReturnsRoute: ShippingReturnsRoute,
   SizeFinderRoute: SizeFinderRoute,
+  TermsRoute: TermsRoute,
+  UpdatePasswordRoute: UpdatePasswordRoute,
   WishlistRoute: WishlistRoute,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
