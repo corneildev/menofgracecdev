@@ -1,11 +1,6 @@
 @import "tailwindcss" source(none);
-<<<<<<< HEAD
 @source "../src";
 @import "tw-animate-css";
-=======
-@import "tw-animate-css";
-@source "../src";
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 @custom-variant dark (&:is(.dark *));
 
@@ -52,15 +47,9 @@
 :root {
   --radius: 0px;
   /* MEN OF GRACE — luxury palette */
-<<<<<<< HEAD
   --ink: oklch(0.13 0 0);              /* #0A0A0A near-black */
   --bone: oklch(0.985 0 0);            /* #FAFAFA off-white */
   --azure: oklch(0.34 0.06 250);       /* #1C3D5A deep blue */
-=======
-  --ink: oklch(0.13 0 0); /* #0A0A0A near-black */
-  --bone: oklch(0.985 0 0); /* #FAFAFA off-white */
-  --azure: oklch(0.34 0.06 250); /* #1C3D5A deep blue */
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   --hairline: oklch(1 0 0 / 12%);
 
   --background: var(--ink);
@@ -84,18 +73,6 @@
   --ring: var(--bone);
 }
 
-<<<<<<< HEAD
-=======
-:root.light {
-  --ink: oklch(0.985 0 0); /* Inverted to off-white */
-  --bone: oklch(0.13 0 0); /* Inverted to near-black */
-  --hairline: oklch(0 0 0 / 12%); /* Dark hairline */
-  --secondary: oklch(0.94 0 0);
-  --muted: oklch(0.94 0 0);
-  --muted-foreground: oklch(0.4 0 0);
-}
-
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 .dark {
   --background: var(--ink);
   --foreground: var(--bone);
@@ -125,14 +102,7 @@
     max-width: 100%;
     height: auto;
   }
-<<<<<<< HEAD
   h1, h2, h3, h4 {
-=======
-  h1,
-  h2,
-  h3,
-  h4 {
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     font-family: var(--font-serif);
     font-weight: 400;
     letter-spacing: -0.01em;
@@ -212,22 +182,10 @@
   }
   select.form-line {
     appearance: none;
-<<<<<<< HEAD
     background-image: linear-gradient(45deg, transparent 50%, var(--color-bone) 50%),
       linear-gradient(135deg, var(--color-bone) 50%, transparent 50%);
     background-position: calc(100% - 12px) 1.05rem, calc(100% - 7px) 1.05rem;
     background-size: 5px 5px, 5px 5px;
-=======
-    background-image:
-      linear-gradient(45deg, transparent 50%, var(--color-bone) 50%),
-      linear-gradient(135deg, var(--color-bone) 50%, transparent 50%);
-    background-position:
-      calc(100% - 12px) 1.05rem,
-      calc(100% - 7px) 1.05rem;
-    background-size:
-      5px 5px,
-      5px 5px;
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     background-repeat: no-repeat;
     padding-right: 1.5rem;
   }
@@ -249,7 +207,6 @@
 }
 
 @keyframes fadeUp {
-<<<<<<< HEAD
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
 }
@@ -260,30 +217,4 @@
 @keyframes shimmer {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
-=======
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 }

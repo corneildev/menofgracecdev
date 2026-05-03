@@ -35,15 +35,7 @@ function AccountPage() {
   const { user, loading, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
-<<<<<<< HEAD
   const [profile, setProfile] = useState<{ full_name: string | null; phone: string | null } | null>(null);
-=======
-  const [profile, setProfile] = useState<{
-    full_name: string | null;
-    phone: string | null;
-  } | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
@@ -51,7 +43,6 @@ function AccountPage() {
 
   useEffect(() => {
     if (!user) return;
-<<<<<<< HEAD
     supabase
       .from("orders")
       .select("id, order_number, status, total_fcfa, created_at")
@@ -64,32 +55,6 @@ function AccountPage() {
       .eq("id", user.id)
       .maybeSingle()
       .then(({ data }) => setProfile(data));
-=======
-    (async () => {
-      setLoadError(null);
-      const [
-        { data: ordersData, error: ordersErr },
-        { data: profileData, error: profileErr },
-      ] = await Promise.all([
-        supabase
-          .from("orders")
-          .select("id, order_number, status, total_fcfa, created_at")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false }),
-        supabase
-          .from("profiles")
-          .select("full_name, phone")
-          .eq("id", user.id)
-          .maybeSingle(),
-      ]);
-
-      if (ordersErr || profileErr) {
-        setLoadError("Impossible de charger votre espace pour le moment.");
-      }
-      setOrders((ordersData as Order[]) ?? []);
-      setProfile(profileData);
-    })();
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   }, [user]);
 
   if (loading || !user) return null;
@@ -100,7 +65,6 @@ function AccountPage() {
         <div className="flex justify-between items-end mb-16 border-b border-hairline pb-8">
           <div>
             <div className="eyebrow text-bone/60 mb-4">— Espace Privé —</div>
-<<<<<<< HEAD
             <h1 className="display text-4xl md:text-5xl">Bonjour{profile?.full_name ? `, ${profile.full_name}` : ""}</h1>
           </div>
           <div className="flex items-center gap-6">
@@ -108,28 +72,6 @@ function AccountPage() {
               <Link to="/admin" className="eyebrow text-bone hover:text-bone/70">Admin</Link>
             )}
             <button onClick={() => { void signOut(); navigate({ to: "/" }); }} className="eyebrow text-bone/60 hover:text-bone">
-=======
-            <h1 className="display text-4xl md:text-5xl">
-              Bonjour{profile?.full_name ? `, ${profile.full_name}` : ""}
-            </h1>
-          </div>
-          <div className="flex items-center gap-6">
-            {isAdmin && (
-              <Link
-                to="/admin"
-                className="eyebrow text-bone hover:text-bone/70"
-              >
-                Admin
-              </Link>
-            )}
-            <button
-              onClick={() => {
-                void signOut();
-                navigate({ to: "/" });
-              }}
-              className="eyebrow text-bone/60 hover:text-bone"
-            >
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
               Déconnexion
             </button>
           </div>
@@ -137,29 +79,14 @@ function AccountPage() {
 
         <section>
           <h2 className="display text-2xl mb-8">Mes commandes</h2>
-<<<<<<< HEAD
           {orders.length === 0 ? (
             <div className="border border-hairline p-12 text-center text-bone/60 font-light">
               Vous n'avez pas encore passé de commande.{" "}
               <Link to="/collection" className="text-bone underline">Découvrir la collection</Link>
-=======
-          {loadError && (
-            <div className="border border-red-500/40 bg-red-500/10 text-red-300 p-4 mb-6 text-sm">
-              {loadError}
-            </div>
-          )}
-          {orders.length === 0 ? (
-            <div className="border border-hairline p-12 text-center text-bone/60 font-light">
-              Vous n'avez pas encore passé de commande.{" "}
-              <Link to="/collection" className="text-bone underline">
-                Découvrir la collection
-              </Link>
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
             </div>
           ) : (
             <div className="border border-hairline divide-y divide-hairline">
               {orders.map((o) => (
-<<<<<<< HEAD
                 <div key={o.id} className="grid grid-cols-[1fr_auto_auto] gap-6 px-6 py-5 items-center">
                   <div>
                     <div className="font-serif text-lg text-bone">{o.order_number}</div>
@@ -167,26 +94,6 @@ function AccountPage() {
                   </div>
                   <div className="eyebrow text-bone/70 text-[10px]">{STATUS_LABEL[o.status] ?? o.status}</div>
                   <div className="text-bone/80 font-light text-sm">{formatPriceFcfa(o.total_fcfa)}</div>
-=======
-                <div
-                  key={o.id}
-                  className="grid grid-cols-[1fr_auto_auto] gap-6 px-6 py-5 items-center"
-                >
-                  <div>
-                    <div className="font-serif text-lg text-bone">
-                      {o.order_number}
-                    </div>
-                    <div className="text-bone/50 text-xs">
-                      {new Date(o.created_at).toLocaleDateString("fr-FR")}
-                    </div>
-                  </div>
-                  <div className="eyebrow text-bone/70 text-[10px]">
-                    {STATUS_LABEL[o.status] ?? o.status}
-                  </div>
-                  <div className="text-bone/80 font-light text-sm">
-                    {formatPriceFcfa(o.total_fcfa)}
-                  </div>
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
                 </div>
               ))}
             </div>

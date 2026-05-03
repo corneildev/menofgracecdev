@@ -109,15 +109,7 @@ export function generateInvoicePdf(data: InvoiceData): jsPDF {
   doc.text(addrLines, margin + colW + 40, y);
   y += 14;
   doc.text(data.customer_phone, margin, y);
-<<<<<<< HEAD
   doc.text(`${data.shipping_city}, ${data.shipping_country}`, margin + colW + 40, y + addrLines.length * 12 - 14);
-=======
-  doc.text(
-    `${data.shipping_city}, ${data.shipping_country}`,
-    margin + colW + 40,
-    y + addrLines.length * 12 - 14,
-  );
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
   // ---------- Items table ----------
   y += 60;
@@ -147,17 +139,7 @@ export function generateInvoicePdf(data: InvoiceData): jsPDF {
     doc.setTextColor(...bone);
     doc.text(it.product_name, margin, y);
 
-<<<<<<< HEAD
     const meta = [it.fit, it.lapel, it.lining, it.size ? `Size ${it.size}` : null, it.monogram ? `Monogram ${it.monogram}` : null]
-=======
-    const meta = [
-      it.fit,
-      it.lapel,
-      it.lining,
-      it.size ? `Size ${it.size}` : null,
-      it.monogram ? `Monogram ${it.monogram}` : null,
-    ]
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
       .filter(Boolean)
       .join(" · ");
     if (meta) {
@@ -171,13 +153,7 @@ export function generateInvoicePdf(data: InvoiceData): jsPDF {
     doc.setFontSize(10);
     doc.setTextColor(...bone);
     doc.text(String(it.quantity), pageW - margin - 220, y, { align: "right" });
-<<<<<<< HEAD
     doc.text(fmtFcfa(it.unit_price_fcfa), pageW - margin - 110, y, { align: "right" });
-=======
-    doc.text(fmtFcfa(it.unit_price_fcfa), pageW - margin - 110, y, {
-      align: "right",
-    });
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     doc.text(fmtFcfa(lineFcfa), pageW - margin, y, { align: "right" });
 
     y += meta ? 32 : 22;
@@ -208,20 +184,9 @@ export function generateInvoicePdf(data: InvoiceData): jsPDF {
   doc.setTextColor(...muted);
   doc.text("Delivery", totalsX, y);
   doc.setTextColor(...bone);
-<<<<<<< HEAD
   doc.text(data.delivery_fcfa > 0 ? fmtFcfa(data.delivery_fcfa) : "Offered", pageW - margin, y, {
     align: "right",
   });
-=======
-  doc.text(
-    data.delivery_fcfa > 0 ? fmtFcfa(data.delivery_fcfa) : "Offered",
-    pageW - margin,
-    y,
-    {
-      align: "right",
-    },
-  );
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   y += 22;
 
   doc.line(totalsX, y - 10, pageW - margin, y - 10);

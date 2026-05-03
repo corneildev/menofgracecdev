@@ -2,20 +2,10 @@ import { jsPDF } from "jspdf";
 import type { ProductWithImages } from "@/lib/products";
 import { CATEGORY_LABELS } from "@/lib/products";
 
-<<<<<<< HEAD
 const fmtFcfa = (n: number) => `${n.toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, " ")} FCFA`;
 const fmtUsd = (n: number) => `$${n.toLocaleString("en-US")}`;
 
 async function loadImage(src: string): Promise<{ data: string; w: number; h: number } | null> {
-=======
-const fmtFcfa = (n: number) =>
-  `${n.toLocaleString("fr-FR").replace(/\u202f|\u00a0/g, " ")} FCFA`;
-const fmtUsd = (n: number) => `$${n.toLocaleString("en-US")}`;
-
-async function loadImage(
-  src: string,
-): Promise<{ data: string; w: number; h: number } | null> {
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   try {
     const res = await fetch(src);
     const blob = await res.blob();
@@ -73,15 +63,7 @@ export async function generateWishlistPdf(items: ProductWithImages[]) {
   doc.setTextColor(...muted);
   doc.text("A Private Folio", pageW / 2, pageH / 2 + 24, { align: "center" });
 
-<<<<<<< HEAD
   const date = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-=======
-  const date = new Date().toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   doc.setFontSize(7);
   doc.text(date.toUpperCase(), pageW / 2, pageH - 70, { align: "center" });
 
@@ -237,13 +219,7 @@ export async function generateWishlistPdf(items: ProductWithImages[]) {
     doc.text(p.name, margin, y);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...bone);
-<<<<<<< HEAD
     doc.text(fmtFcfa(p.price_fcfa), pageW - margin - 160, y, { align: "right" });
-=======
-    doc.text(fmtFcfa(p.price_fcfa), pageW - margin - 160, y, {
-      align: "right",
-    });
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     doc.setTextColor(...muted);
     doc.text(fmtUsd(p.price_usd), pageW - margin, y, { align: "right" });
     totalF += p.price_fcfa;
@@ -266,16 +242,12 @@ export async function generateWishlistPdf(items: ProductWithImages[]) {
 
   doc.setFontSize(7);
   doc.setTextColor(...muted);
-<<<<<<< HEAD
   doc.text(
     "menofgrace.com",
     pageW / 2,
     pageH - 60,
     { align: "center" },
   );
-=======
-  doc.text("menofgrace.com", pageW / 2, pageH - 60, { align: "center" });
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
   doc.save("men-of-grace-wishlist.pdf");
 }

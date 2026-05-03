@@ -40,15 +40,7 @@ type Props = {
   thresholds?: PreloadThresholds;
 };
 
-<<<<<<< HEAD
 export function PreloadFetchReportPanel({ currentSessionId, intervalMs = 2000, thresholds }: Props) {
-=======
-export function PreloadFetchReportPanel({
-  currentSessionId,
-  intervalMs = 2000,
-  thresholds,
-}: Props) {
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   const [enabled] = useState(() => isPreloadDebugEnabled());
   const [report, setReport] = useState<FetchReport | null>(null);
   const [expectations, setExpectations] = useState<PreloadExpectation[]>([]);
@@ -113,16 +105,7 @@ export function PreloadFetchReportPanel({
     role: "primary" | "srcset";
   };
   const duplicateBreakdown = useMemo(() => {
-<<<<<<< HEAD
     if (!report) return [] as { dup: FetchCount; variants: DupVariant[]; distinctPreloads: number }[];
-=======
-    if (!report)
-      return [] as {
-        dup: FetchCount;
-        variants: DupVariant[];
-        distinctPreloads: number;
-      }[];
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     const byCanonical = new Map<string, DupVariant[]>();
     for (const exp of expectations) {
       const primaryCanonical = canonicaliseUrl(exp.href);
@@ -158,14 +141,9 @@ export function PreloadFetchReportPanel({
     }
     const groups = report.duplicates.map((dup) => {
       const variants = byCanonical.get(dup.url) ?? [];
-<<<<<<< HEAD
       const distinctPreloads = new Set(
         variants.map((v) => v.primaryCanonical),
       ).size;
-=======
-      const distinctPreloads = new Set(variants.map((v) => v.primaryCanonical))
-        .size;
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
       return { dup, variants, distinctPreloads };
     });
     if (dupSort === "count") {
@@ -206,13 +184,7 @@ export function PreloadFetchReportPanel({
       lastBreachKeyRef.current = "";
       return;
     }
-<<<<<<< HEAD
     const key = evaluation.breaches.map((b) => `${b.metric}:${b.observed}`).join("|");
-=======
-    const key = evaluation.breaches
-      .map((b) => `${b.metric}:${b.observed}`)
-      .join("|");
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     if (key === lastBreachKeyRef.current) return;
     lastBreachKeyRef.current = key;
     recordThresholdFailure(currentSessionId, {
@@ -223,11 +195,7 @@ export function PreloadFetchReportPanel({
         unfetchedPreloads: report?.unfetchedPreloads.length ?? 0,
       },
     });
-<<<<<<< HEAD
     // eslint-disable-next-line no-console
-=======
-
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     console.warn(
       `%c[preload·threshold-fail] ${evaluation.breaches.map((b) => b.message).join(" · ")}`,
       "color:#f59e0b;font-weight:bold",
@@ -237,13 +205,7 @@ export function PreloadFetchReportPanel({
   if (!enabled) return null;
 
   const failing = evaluation.status === "fail";
-<<<<<<< HEAD
   const headerBg = failing ? "bg-amber-500/95 text-black" : "bg-black/90 text-white";
-=======
-  const headerBg = failing
-    ? "bg-amber-500/95 text-black"
-    : "bg-black/90 text-white";
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
   return (
     <div
@@ -253,13 +215,7 @@ export function PreloadFetchReportPanel({
       role="region"
       aria-label="Preload fetch report"
     >
-<<<<<<< HEAD
       <div className={`sticky top-0 flex items-center justify-between gap-2 px-3 py-2 border-b border-white/10 ${headerBg}`}>
-=======
-      <div
-        className={`sticky top-0 flex items-center justify-between gap-2 px-3 py-2 border-b border-white/10 ${headerBg}`}
-      >
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
         <span className="font-semibold tracking-wide">
           preload · fetch report {failing ? "· ⚠ FAIL" : "· ✓ OK"}
         </span>
@@ -267,13 +223,7 @@ export function PreloadFetchReportPanel({
           type="button"
           onClick={() => setCollapsed((c) => !c)}
           className="px-2 py-0.5 border border-white/30 hover:bg-white/10"
-<<<<<<< HEAD
           aria-label={collapsed ? "Expand fetch report" : "Collapse fetch report"}
-=======
-          aria-label={
-            collapsed ? "Expand fetch report" : "Collapse fetch report"
-          }
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
         >
           {collapsed ? "▾" : "▴"}
         </button>
@@ -289,13 +239,8 @@ export function PreloadFetchReportPanel({
             <>
               <Summary report={report} matchedRows={rows.length} />
               <div className="text-[10px] opacity-70">
-<<<<<<< HEAD
                 thresholds: dup ≤ {evaluation.thresholds.duplicateFetches} · unfetched ≤{" "}
                 {evaluation.thresholds.unfetchedPreloads}
-=======
-                thresholds: dup ≤ {evaluation.thresholds.duplicateFetches} ·
-                unfetched ≤ {evaluation.thresholds.unfetchedPreloads}
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
               </div>
               {failing && (
                 <div className="border border-amber-300 bg-amber-500/10 p-2 text-amber-200">
@@ -319,13 +264,7 @@ export function PreloadFetchReportPanel({
                       <select
                         value={dupSort}
                         onChange={(e) =>
-<<<<<<< HEAD
                           setDupSort(e.target.value as "count" | "preloads" | "url")
-=======
-                          setDupSort(
-                            e.target.value as "count" | "preloads" | "url",
-                          )
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
                         }
                         className="bg-black/60 border border-white/20 px-1 py-0.5 text-[10px] outline-none focus:border-amber-300"
                         aria-label="Sort duplicate groups"
@@ -346,7 +285,6 @@ export function PreloadFetchReportPanel({
                     emitted; <code>can:</code> is its canonical form.
                   </p>
                   <ul className="space-y-2 break-all">
-<<<<<<< HEAD
                     {duplicateBreakdown.map(({ dup, variants, distinctPreloads }) => (
                       <li
                         key={dup.url}
@@ -414,100 +352,19 @@ export function PreloadFetchReportPanel({
                         )}
                       </li>
                     ))}
-=======
-                    {duplicateBreakdown.map(
-                      ({ dup, variants, distinctPreloads }) => (
-                        <li
-                          key={dup.url}
-                          className="border-t border-white/10 pt-2 first:border-t-0 first:pt-0"
-                        >
-                          <div>
-                            <span className="text-amber-300">×{dup.count}</span>{" "}
-                            {dup.wasPreloaded && (
-                              <span className="text-emerald-300">
-                                [preloaded]{" "}
-                              </span>
-                            )}
-                            {distinctPreloads > 1 && (
-                              <span className="text-amber-300">
-                                [⚠ {distinctPreloads} preloads collapsed]{" "}
-                              </span>
-                            )}
-                            {dup.url}
-                          </div>
-                          <div className="opacity-60 pl-4 text-[10px]">
-                            startTimes: {dup.startTimes.join(", ")}ms
-                          </div>
-                          {variants.length > 0 ? (
-                            <details className="mt-1 pl-3">
-                              <summary className="cursor-pointer opacity-80 text-[10px]">
-                                {variants.length} preload variant
-                                {variants.length === 1 ? "" : "s"} mapped here
-                                {distinctPreloads > 1
-                                  ? ` (from ${distinctPreloads} distinct preloads)`
-                                  : ""}
-                              </summary>
-                              <ul className="mt-1 space-y-1 opacity-90">
-                                {variants.map((v, i) => (
-                                  <li
-                                    key={`${v.primaryCanonical}::${v.variantRaw}::${i}`}
-                                    className="border-l border-white/10 pl-2"
-                                  >
-                                    <div className="text-[10px] opacity-70">
-                                      ↳ {v.role}
-                                      {v.role === "srcset"
-                                        ? " variant of"
-                                        : " of preload"}{" "}
-                                      {v.primaryCanonical}
-                                    </div>
-                                    <div className="text-[10px]">
-                                      <span className="opacity-60">raw: </span>
-                                      {v.variantRaw}
-                                    </div>
-                                    {v.variantRaw !== v.variantCanonical && (
-                                      <div className="text-[10px]">
-                                        <span className="opacity-60">
-                                          can:{" "}
-                                        </span>
-                                        <span className="text-amber-300">
-                                          {v.variantCanonical}
-                                        </span>
-                                      </div>
-                                    )}
-                                  </li>
-                                ))}
-                              </ul>
-                            </details>
-                          ) : (
-                            <div className="opacity-60 pl-4 text-[10px] mt-1">
-                              no matching preload variant — this duplicate is an
-                              organic image fetch (e.g. a non-preloaded{" "}
-                              <code>&lt;img&gt;</code>).
-                            </div>
-                          )}
-                        </li>
-                      ),
-                    )}
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
                   </ul>
                 </div>
               )}
               {report.unfetchedPreloads.length > 0 && (
                 <div className="border border-sky-400/40 p-2 space-y-2">
                   <div className="text-sky-300">
-<<<<<<< HEAD
                     ⓘ {report.unfetchedPreloads.length} preload(s) not yet fetched
-=======
-                    ⓘ {report.unfetchedPreloads.length} preload(s) not yet
-                    fetched
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
                   </div>
                   <p className="opacity-80 text-[10px] leading-relaxed">
                     A preload is flagged unfetched when none of the URLs it
                     advertised in <code>imagesrcset</code> appeared in the
                     Resource Timing buffer. Most often this means the{" "}
                     <code>&lt;picture&gt;</code> element picked a different
-<<<<<<< HEAD
                     srcset variant (different width/DPR) than the preload
                     listed — same image, different file. The "likely
                     mismatched fetches" below are observed image requests
@@ -516,19 +373,6 @@ export function PreloadFetchReportPanel({
                   <ul className="space-y-2 break-all">
                     {report.unfetchedDiagnostics.map((d) => (
                       <li key={d.primary} className="border-t border-white/10 pt-2">
-=======
-                    srcset variant (different width/DPR) than the preload listed
-                    — same image, different file. The "likely mismatched
-                    fetches" below are observed image requests whose filename
-                    stem matches but whose variant doesn't.
-                  </p>
-                  <ul className="space-y-2 break-all">
-                    {report.unfetchedDiagnostics.map((d) => (
-                      <li
-                        key={d.primary}
-                        className="border-t border-white/10 pt-2"
-                      >
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
                         <div className="opacity-90">· {d.primary}</div>
                         <details className="mt-1">
                           <summary className="cursor-pointer opacity-70 text-[10px]">
@@ -619,20 +463,9 @@ function Summary({
   matchedRows: number;
 }) {
   const total = report.countsByUrl.size;
-<<<<<<< HEAD
   const fetched = [...report.countsByUrl.values()].reduce((n, r) => n + r.count, 0);
   const obs = getSessionResourceObserverStatus();
   const obsAge = obs.startedAt ? Math.round((Date.now() - obs.startedAt) / 1000) : 0;
-=======
-  const fetched = [...report.countsByUrl.values()].reduce(
-    (n, r) => n + r.count,
-    0,
-  );
-  const obs = getSessionResourceObserverStatus();
-  const obsAge = obs.startedAt
-    ? Math.round((Date.now() - obs.startedAt) / 1000)
-    : 0;
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-3 gap-2">
@@ -673,23 +506,12 @@ function Stat({
     tone === "good"
       ? "text-emerald-300"
       : tone === "warn"
-<<<<<<< HEAD
       ? "text-amber-300"
       : "text-white";
   return (
     <div className="border border-white/10 p-1.5 text-center">
       <div className={`text-base ${color}`}>{value}</div>
       <div className="opacity-60 text-[10px] uppercase tracking-wider">{label}</div>
-=======
-        ? "text-amber-300"
-        : "text-white";
-  return (
-    <div className="border border-white/10 p-1.5 text-center">
-      <div className={`text-base ${color}`}>{value}</div>
-      <div className="opacity-60 text-[10px] uppercase tracking-wider">
-        {label}
-      </div>
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     </div>
   );
 }

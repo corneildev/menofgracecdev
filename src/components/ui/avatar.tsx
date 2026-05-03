@@ -11,14 +11,7 @@ const Avatar = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AvatarPrimitive.Root
     ref={ref}
-<<<<<<< HEAD
     className={cn("relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full", className)}
-=======
-    className={cn(
-      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
-      className,
-    )}
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     {...props}
   />
 ));

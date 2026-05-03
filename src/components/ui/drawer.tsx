@@ -7,14 +7,7 @@ const Drawer = ({
   shouldScaleBackground = true,
   ...props
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
-<<<<<<< HEAD
   <DrawerPrimitive.Root shouldScaleBackground={shouldScaleBackground} {...props} />
-=======
-  <DrawerPrimitive.Root
-    shouldScaleBackground={shouldScaleBackground}
-    {...props}
-  />
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 );
 Drawer.displayName = "Drawer";
 
@@ -57,7 +50,6 @@ const DrawerContent = React.forwardRef<
 ));
 DrawerContent.displayName = "DrawerContent";
 
-<<<<<<< HEAD
 const DrawerHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("grid gap-1.5 p-4 text-center sm:text-left", className)} {...props} />
 );
@@ -65,27 +57,6 @@ DrawerHeader.displayName = "DrawerHeader";
 
 const DrawerFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("mt-auto flex flex-col gap-2 p-4", className)} {...props} />
-=======
-const DrawerHeader = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn("grid gap-1.5 p-4 text-center sm:text-left", className)}
-    {...props}
-  />
-);
-DrawerHeader.displayName = "DrawerHeader";
-
-const DrawerFooter = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn("mt-auto flex flex-col gap-2 p-4", className)}
-    {...props}
-  />
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 );
 DrawerFooter.displayName = "DrawerFooter";
 
@@ -95,14 +66,7 @@ const DrawerTitle = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DrawerPrimitive.Title
     ref={ref}
-<<<<<<< HEAD
     className={cn("text-lg font-semibold leading-none tracking-tight", className)}
-=======
-    className={cn(
-      "text-lg font-semibold leading-none tracking-tight",
-      className,
-    )}
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     {...props}
   />
 ));

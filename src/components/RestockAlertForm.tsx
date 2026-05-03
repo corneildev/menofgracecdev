@@ -4,17 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const schema = z
   .object({
-<<<<<<< HEAD
     email: z.string().trim().email("Adresse email invalide.").max(255).optional().or(z.literal("")),
-=======
-    email: z
-      .string()
-      .trim()
-      .email("Adresse email invalide.")
-      .max(255)
-      .optional()
-      .or(z.literal("")),
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     whatsapp: z
       .string()
       .trim()
@@ -22,21 +12,10 @@ const schema = z
       .optional()
       .or(z.literal("")),
   })
-<<<<<<< HEAD
   .refine((d) => (d.email && d.email.length > 0) || (d.whatsapp && d.whatsapp.length > 0), {
     message: "Renseignez un email ou un numéro WhatsApp.",
     path: ["email"],
   });
-=======
-  .refine(
-    (d) =>
-      (d.email && d.email.length > 0) || (d.whatsapp && d.whatsapp.length > 0),
-    {
-      message: "Renseignez un email ou un numéro WhatsApp.",
-      path: ["email"],
-    },
-  );
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 type Props = {
   productSlug: string;
@@ -46,20 +25,13 @@ type Props = {
   expectedRestockDate?: string | Date | null;
 };
 
-<<<<<<< HEAD
 function formatExpected(value: string | Date | null | undefined): string | null {
-=======
-function formatExpected(
-  value: string | Date | null | undefined,
-): string | null {
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   if (!value) return null;
   const d = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(d.getTime())) {
     // Fall back to raw string if it's not a parseable date.
     return typeof value === "string" ? value : null;
   }
-<<<<<<< HEAD
   return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
 }
 
@@ -68,27 +40,6 @@ export function RestockAlertForm({ productSlug, productName, size, expectedResto
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-=======
-  return d.toLocaleDateString("fr-FR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-export function RestockAlertForm({
-  productSlug,
-  productName,
-  size,
-  expectedRestockDate,
-}: Props) {
-  const expectedLabel = formatExpected(expectedRestockDate);
-  const [email, setEmail] = useState("");
-  const [whatsapp, setWhatsapp] = useState("");
-  const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -102,7 +53,6 @@ export function RestockAlertForm({
     }
 
     setStatus("loading");
-<<<<<<< HEAD
     const { error: insertError } = await supabase.from("restock_alerts").insert({
       product_slug: productSlug,
       product_name: productName,
@@ -110,17 +60,6 @@ export function RestockAlertForm({
       email: parsed.data.email ? parsed.data.email : null,
       whatsapp: parsed.data.whatsapp ? parsed.data.whatsapp : null,
     });
-=======
-    const { error: insertError } = await supabase
-      .from("restock_alerts")
-      .insert({
-        product_slug: productSlug,
-        product_name: productName,
-        size: size ?? null,
-        email: parsed.data.email ? parsed.data.email : null,
-        whatsapp: parsed.data.whatsapp ? parsed.data.whatsapp : null,
-      });
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
     if (insertError) {
       setStatus("error");
@@ -148,29 +87,14 @@ export function RestockAlertForm({
   }
 
   return (
-<<<<<<< HEAD
     <form onSubmit={handleSubmit} className="mt-4 border border-hairline p-4 space-y-3">
       <div className="eyebrow text-bone/60 text-[10px]">— Alerte retour en stock —</div>
-=======
-    <form
-      onSubmit={handleSubmit}
-      className="mt-4 border border-hairline p-4 space-y-3"
-    >
-      <div className="eyebrow text-bone/60 text-[10px]">
-        — Alerte retour en stock —
-      </div>
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
       <p className="text-xs text-bone/60 font-light leading-relaxed">
         Laissez votre email ou WhatsApp pour être prévenu en priorité.
       </p>
       {expectedLabel && (
         <p className="text-[11px] text-bone/70 font-light italic border-l border-hairline pl-3">
-<<<<<<< HEAD
           Retour en stock estimé · <span className="text-bone">{expectedLabel}</span>
-=======
-          Retour en stock estimé ·{" "}
-          <span className="text-bone">{expectedLabel}</span>
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
         </p>
       )}
       <input
@@ -191,15 +115,7 @@ export function RestockAlertForm({
         maxLength={30}
         className="w-full bg-transparent border-b border-hairline py-2 text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-bone transition-colors"
       />
-<<<<<<< HEAD
       {error && <p role="alert" className="text-xs text-red-400/90">{error}</p>}
-=======
-      {error && (
-        <p role="alert" className="text-xs text-red-400/90">
-          {error}
-        </p>
-      )}
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
       <button
         type="submit"
         disabled={status === "loading"}

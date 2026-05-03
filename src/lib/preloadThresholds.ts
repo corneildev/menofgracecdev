@@ -34,11 +34,7 @@ export const DEFAULT_THRESHOLDS: PreloadThresholds = {
 
 export function loadThresholds(): PreloadThresholds {
   if (typeof window === "undefined") return DEFAULT_THRESHOLDS;
-<<<<<<< HEAD
   let next: PreloadThresholds = { ...DEFAULT_THRESHOLDS };
-=======
-  const next: PreloadThresholds = { ...DEFAULT_THRESHOLDS };
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored) {

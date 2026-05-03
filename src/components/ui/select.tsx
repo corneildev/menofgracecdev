@@ -38,14 +38,7 @@ const SelectScrollUpButton = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollUpButton
     ref={ref}
-<<<<<<< HEAD
     className={cn("flex cursor-default items-center justify-center py-1", className)}
-=======
-    className={cn(
-      "flex cursor-default items-center justify-center py-1",
-      className,
-    )}
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     {...props}
   >
     <ChevronUp className="h-4 w-4" />
@@ -59,25 +52,13 @@ const SelectScrollDownButton = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.ScrollDownButton
     ref={ref}
-<<<<<<< HEAD
     className={cn("flex cursor-default items-center justify-center py-1", className)}
-=======
-    className={cn(
-      "flex cursor-default items-center justify-center py-1",
-      className,
-    )}
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     {...props}
   >
     <ChevronDown className="h-4 w-4" />
   </SelectPrimitive.ScrollDownButton>
 ));
-<<<<<<< HEAD
 SelectScrollDownButton.displayName = SelectPrimitive.ScrollDownButton.displayName;
-=======
-SelectScrollDownButton.displayName =
-  SelectPrimitive.ScrollDownButton.displayName;
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 const SelectContent = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.Content>,

@@ -6,15 +6,7 @@ type Props = {
   variant?: "overlay" | "inline";
 };
 
-<<<<<<< HEAD
 export function WishlistButton({ productId, className = "", variant = "overlay" }: Props) {
-=======
-export function WishlistButton({
-  productId,
-  className = "",
-  variant = "overlay",
-}: Props) {
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   const { has, toggle, ready } = useWishlist();
   const active = ready && has(productId);
 

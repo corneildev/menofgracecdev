@@ -30,23 +30,9 @@ const candidates = [
   { idx: 2, priority: "low" as const },
 ];
 
-<<<<<<< HEAD
 const resolveOpts = { avifOk: true, webpOk: true, getImageSources: stubSources };
 
 const newStats = (): PreloadStats => ({ emitted: 0, duplicates: 0, evaluations: 0 });
-=======
-const resolveOpts = {
-  avifOk: true,
-  webpOk: true,
-  getImageSources: stubSources,
-};
-
-const newStats = (): PreloadStats => ({
-  emitted: 0,
-  duplicates: 0,
-  evaluations: 0,
-});
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 describe("preload dedup gate", () => {
   it("emits each candidate exactly once on the first render", () => {
