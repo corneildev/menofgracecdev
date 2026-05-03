@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // @lovable.dev/vite-tanstack-config already includes the following — do NOT add them manually
 // or the app will break with duplicate plugins:
 //   - tanstackStart, viteReact, tailwindcss, tsConfigPaths, cloudflare (build-only),
@@ -8,15 +7,3 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig();
-=======
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
-import tailwindcss from "@tailwindcss/vite";
-import tsconfigPaths from "vite-tsconfig-paths";
-
-export default defineConfig({
-  plugins: [
-    tailwindcss(),
-    tsconfigPaths(),
-  ],
-});
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
