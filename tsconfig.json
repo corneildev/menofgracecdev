@@ -1,14 +1,5 @@
 {
-<<<<<<< HEAD
   "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "eslint.config.js"],
-=======
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "vite.config.ts",
-    "eslint.config.js"
-  ],
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",
