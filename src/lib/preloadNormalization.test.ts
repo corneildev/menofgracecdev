@@ -53,21 +53,12 @@ describe("canonicaliseUrl", () => {
 
   it("preserves non-cache-bust params (w, q, fm, fit, …) — sorted", () => {
     // Params are kept but reordered alphabetically for canonical form.
-<<<<<<< HEAD
     expect(canonicaliseUrl("https://cdn.example.com/img/a.jpg?w=800&q=80")).toBe(
       "https://cdn.example.com/img/a.jpg?q=80&w=800",
     );
     expect(canonicaliseUrl("https://cdn.example.com/img/a.jpg?fit=crop&fm=webp")).toBe(
       "https://cdn.example.com/img/a.jpg?fit=crop&fm=webp",
     );
-=======
-    expect(
-      canonicaliseUrl("https://cdn.example.com/img/a.jpg?w=800&q=80"),
-    ).toBe("https://cdn.example.com/img/a.jpg?q=80&w=800");
-    expect(
-      canonicaliseUrl("https://cdn.example.com/img/a.jpg?fit=crop&fm=webp"),
-    ).toBe("https://cdn.example.com/img/a.jpg?fit=crop&fm=webp");
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   });
 
   it("sorts query params alphabetically for canonical order", () => {

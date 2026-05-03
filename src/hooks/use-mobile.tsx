@@ -3,13 +3,7 @@ import * as React from "react";
 const MOBILE_BREAKPOINT = 768;
 
 export function useIsMobile() {
-<<<<<<< HEAD
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined);
-=======
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
-    undefined,
-  );
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
   React.useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);

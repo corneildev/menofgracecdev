@@ -37,12 +37,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
     <ChevronRight className="ml-auto" />
   </DropdownMenuPrimitive.SubTrigger>
 ));
-<<<<<<< HEAD
 DropdownMenuSubTrigger.displayName = DropdownMenuPrimitive.SubTrigger.displayName;
-=======
-DropdownMenuSubTrigger.displayName =
-  DropdownMenuPrimitive.SubTrigger.displayName;
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 const DropdownMenuSubContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.SubContent>,
@@ -57,12 +52,7 @@ const DropdownMenuSubContent = React.forwardRef<
     {...props}
   />
 ));
-<<<<<<< HEAD
 DropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayName;
-=======
-DropdownMenuSubContent.displayName =
-  DropdownMenuPrimitive.SubContent.displayName;
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 const DropdownMenuContent = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.Content>,
@@ -122,12 +112,7 @@ const DropdownMenuCheckboxItem = React.forwardRef<
     {children}
   </DropdownMenuPrimitive.CheckboxItem>
 ));
-<<<<<<< HEAD
 DropdownMenuCheckboxItem.displayName = DropdownMenuPrimitive.CheckboxItem.displayName;
-=======
-DropdownMenuCheckboxItem.displayName =
-  DropdownMenuPrimitive.CheckboxItem.displayName;
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 const DropdownMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuPrimitive.RadioItem>,
@@ -159,15 +144,7 @@ const DropdownMenuLabel = React.forwardRef<
 >(({ className, inset, ...props }, ref) => (
   <DropdownMenuPrimitive.Label
     ref={ref}
-<<<<<<< HEAD
     className={cn("px-2 py-1.5 text-sm font-semibold", inset && "pl-8", className)}
-=======
-    className={cn(
-      "px-2 py-1.5 text-sm font-semibold",
-      inset && "pl-8",
-      className,
-    )}
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     {...props}
   />
 ));
@@ -185,21 +162,9 @@ const DropdownMenuSeparator = React.forwardRef<
 ));
 DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName;
 
-<<<<<<< HEAD
 const DropdownMenuShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
   return (
     <span className={cn("ml-auto text-xs tracking-widest opacity-60", className)} {...props} />
-=======
-const DropdownMenuShortcut = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLSpanElement>) => {
-  return (
-    <span
-      className={cn("ml-auto text-xs tracking-widest opacity-60", className)}
-      {...props}
-    />
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   );
 };
 DropdownMenuShortcut.displayName = "DropdownMenuShortcut";

@@ -108,12 +108,7 @@ const ContextMenuCheckboxItem = React.forwardRef<
     {children}
   </ContextMenuPrimitive.CheckboxItem>
 ));
-<<<<<<< HEAD
 ContextMenuCheckboxItem.displayName = ContextMenuPrimitive.CheckboxItem.displayName;
-=======
-ContextMenuCheckboxItem.displayName =
-  ContextMenuPrimitive.CheckboxItem.displayName;
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 const ContextMenuRadioItem = React.forwardRef<
   React.ElementRef<typeof ContextMenuPrimitive.RadioItem>,
@@ -145,15 +140,7 @@ const ContextMenuLabel = React.forwardRef<
 >(({ className, inset, ...props }, ref) => (
   <ContextMenuPrimitive.Label
     ref={ref}
-<<<<<<< HEAD
     className={cn("px-2 py-1.5 text-sm font-semibold text-foreground", inset && "pl-8", className)}
-=======
-    className={cn(
-      "px-2 py-1.5 text-sm font-semibold text-foreground",
-      inset && "pl-8",
-      className,
-    )}
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     {...props}
   />
 ));
@@ -171,23 +158,10 @@ const ContextMenuSeparator = React.forwardRef<
 ));
 ContextMenuSeparator.displayName = ContextMenuPrimitive.Separator.displayName;
 
-<<<<<<< HEAD
 const ContextMenuShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => {
   return (
     <span
       className={cn("ml-auto text-xs tracking-widest text-muted-foreground", className)}
-=======
-const ContextMenuShortcut = ({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLSpanElement>) => {
-  return (
-    <span
-      className={cn(
-        "ml-auto text-xs tracking-widest text-muted-foreground",
-        className,
-      )}
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
       {...props}
     />
   );

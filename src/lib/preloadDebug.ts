@@ -63,24 +63,14 @@ export type DebugRenderInput = {
 
 export function logRenderStart(input: DebugRenderInput) {
   if (!isPreloadDebugEnabled()) return;
-<<<<<<< HEAD
   // eslint-disable-next-line no-console
-=======
-
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   console.groupCollapsed(
     `%c[preload] render for product ${input.productId} — warmed=${input.warmed.size}`,
     "color:#6366f1;font-weight:bold",
   );
-<<<<<<< HEAD
   // eslint-disable-next-line no-console
   console.log("warmed dedup keys:", Array.from(input.warmed));
   // eslint-disable-next-line no-console
-=======
-
-  console.log("warmed dedup keys:", Array.from(input.warmed));
-
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   console.log("network:", {
     slow: input.slowNetwork,
     effectiveType: input.effectiveType,
@@ -90,19 +80,10 @@ export function logRenderStart(input: DebugRenderInput) {
   for (const c of input.candidates) {
     let reason: string;
     if (!c.hasImage) reason = "skip · no image";
-<<<<<<< HEAD
     else if (!c.inWindow) reason = "skip · outside preload window (carousel not near)";
     else if (c.networkGated) reason = "skip · network gate (idx 1-2 disabled on slow conn)";
     else reason = "candidate · awaiting dedup";
     // eslint-disable-next-line no-console
-=======
-    else if (!c.inWindow)
-      reason = "skip · outside preload window (carousel not near)";
-    else if (c.networkGated)
-      reason = "skip · network gate (idx 1-2 disabled on slow conn)";
-    else reason = "candidate · awaiting dedup";
-
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     console.log(
       `  idx=${c.idx} id=${c.productId} ${c.productName ? `(${c.productName})` : ""} → ${reason}`,
     );
@@ -119,11 +100,7 @@ export function logDecision(d: {
   if (!isPreloadDebugEnabled()) return;
   const tag = d.decision === "emit" ? "✅ EMIT " : "♻️ DUPE ";
   const color = d.decision === "emit" ? "#16a34a" : "#a16207";
-<<<<<<< HEAD
   // eslint-disable-next-line no-console
-=======
-
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   console.log(
     `%c  ${tag} idx=${d.idx} id=${d.productId} priority=${d.priority} → ${d.href}`,
     `color:${color}`,
@@ -132,10 +109,6 @@ export function logDecision(d: {
 
 export function logRenderEnd() {
   if (!isPreloadDebugEnabled()) return;
-<<<<<<< HEAD
   // eslint-disable-next-line no-console
-=======
-
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   console.groupEnd();
 }

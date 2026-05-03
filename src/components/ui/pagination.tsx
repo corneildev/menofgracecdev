@@ -14,7 +14,6 @@ const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
 );
 Pagination.displayName = "Pagination";
 
-<<<<<<< HEAD
 const PaginationContent = React.forwardRef<HTMLUListElement, React.ComponentProps<"ul">>(
   ({ className, ...props }, ref) => (
     <ul ref={ref} className={cn("flex flex-row items-center gap-1", className)} {...props} />
@@ -25,26 +24,6 @@ PaginationContent.displayName = "PaginationContent";
 const PaginationItem = React.forwardRef<HTMLLIElement, React.ComponentProps<"li">>(
   ({ className, ...props }, ref) => <li ref={ref} className={cn("", className)} {...props} />,
 );
-=======
-const PaginationContent = React.forwardRef<
-  HTMLUListElement,
-  React.ComponentProps<"ul">
->(({ className, ...props }, ref) => (
-  <ul
-    ref={ref}
-    className={cn("flex flex-row items-center gap-1", className)}
-    {...props}
-  />
-));
-PaginationContent.displayName = "PaginationContent";
-
-const PaginationItem = React.forwardRef<
-  HTMLLIElement,
-  React.ComponentProps<"li">
->(({ className, ...props }, ref) => (
-  <li ref={ref} className={cn("", className)} {...props} />
-));
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 PaginationItem.displayName = "PaginationItem";
 
 type PaginationLinkProps = {
@@ -52,16 +31,7 @@ type PaginationLinkProps = {
 } & Pick<ButtonProps, "size"> &
   React.ComponentProps<"a">;
 
-<<<<<<< HEAD
 const PaginationLink = ({ className, isActive, size = "icon", ...props }: PaginationLinkProps) => (
-=======
-const PaginationLink = ({
-  className,
-  isActive,
-  size = "icon",
-  ...props
-}: PaginationLinkProps) => (
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   <a
     aria-current={isActive ? "page" : undefined}
     className={cn(
@@ -92,14 +62,7 @@ const PaginationPrevious = ({
 );
 PaginationPrevious.displayName = "PaginationPrevious";
 
-<<<<<<< HEAD
 const PaginationNext = ({ className, ...props }: React.ComponentProps<typeof PaginationLink>) => (
-=======
-const PaginationNext = ({
-  className,
-  ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   <PaginationLink
     aria-label="Go to next page"
     size="default"
@@ -112,14 +75,7 @@ const PaginationNext = ({
 );
 PaginationNext.displayName = "PaginationNext";
 
-<<<<<<< HEAD
 const PaginationEllipsis = ({ className, ...props }: React.ComponentProps<"span">) => (
-=======
-const PaginationEllipsis = ({
-  className,
-  ...props
-}: React.ComponentProps<"span">) => (
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   <span
     aria-hidden
     className={cn("flex h-9 w-9 items-center justify-center", className)}

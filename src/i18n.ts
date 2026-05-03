@@ -8,7 +8,6 @@ export const SUPPORTED_LANGS = ["en", "fr"] as const;
 export type Lang = (typeof SUPPORTED_LANGS)[number];
 const STORAGE_KEY = "mog_lang";
 
-<<<<<<< HEAD
 void i18n
   .use(initReactI18next)
   .init({
@@ -22,19 +21,6 @@ void i18n
     interpolation: { escapeValue: false },
     react: { useSuspense: false },
   });
-=======
-void i18n.use(initReactI18next).init({
-  resources: {
-    en: { translation: en },
-    fr: { translation: fr },
-  },
-  lng: "en", // fixed initial language for SSR/CSR first paint to avoid hydration mismatch
-  fallbackLng: "en",
-  supportedLngs: SUPPORTED_LANGS as unknown as string[],
-  interpolation: { escapeValue: false },
-  react: { useSuspense: false },
-});
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
 // After hydration, persist language changes to localStorage.
 // IMPORTANT: We do NOT auto-switch the language here on load — that would race

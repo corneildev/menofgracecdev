@@ -16,13 +16,7 @@ const Checkbox = React.forwardRef<
     )}
     {...props}
   >
-<<<<<<< HEAD
     <CheckboxPrimitive.Indicator className={cn("grid place-content-center text-current")}>
-=======
-    <CheckboxPrimitive.Indicator
-      className={cn("grid place-content-center text-current")}
-    >
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
       <Check className="h-4 w-4" />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>

@@ -34,34 +34,11 @@ export type MobileProfile = {
 };
 
 export const MOBILE_PROFILES: MobileProfile[] = [
-<<<<<<< HEAD
   { id: "slow-2g", label: "Slow 2G (Lagos rural)", effectiveType: "slow-2g", saveData: false },
   { id: "2g-savedata", label: "2G + Save-Data", effectiveType: "2g", saveData: true },
   { id: "3g", label: "Regular 3G", effectiveType: "3g", saveData: false },
   { id: "4g", label: "Fast 4G", effectiveType: "4g", saveData: false },
   { id: "4g-savedata", label: "4G + Save-Data (data saver)", effectiveType: "4g", saveData: true },
-=======
-  {
-    id: "slow-2g",
-    label: "Slow 2G (Lagos rural)",
-    effectiveType: "slow-2g",
-    saveData: false,
-  },
-  {
-    id: "2g-savedata",
-    label: "2G + Save-Data",
-    effectiveType: "2g",
-    saveData: true,
-  },
-  { id: "3g", label: "Regular 3G", effectiveType: "3g", saveData: false },
-  { id: "4g", label: "Fast 4G", effectiveType: "4g", saveData: false },
-  {
-    id: "4g-savedata",
-    label: "4G + Save-Data (data saver)",
-    effectiveType: "4g",
-    saveData: true,
-  },
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 ];
 
 export type TestRunInput = {
@@ -83,13 +60,7 @@ export type ProfileResult = {
 };
 
 function isSlow(p: MobileProfile) {
-<<<<<<< HEAD
   return p.saveData || p.effectiveType === "2g" || p.effectiveType === "slow-2g";
-=======
-  return (
-    p.saveData || p.effectiveType === "2g" || p.effectiveType === "slow-2g"
-  );
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 }
 
 /**
@@ -112,12 +83,7 @@ export function runProfileTests(input: TestRunInput): ProfileResult[] {
     const maxPossible =
       (input.similarInStock[0]?.image ? 1 : 0) +
       (input.carouselNear
-<<<<<<< HEAD
         ? (input.similarInStock[1]?.image ? 1 : 0) + (input.similarInStock[2]?.image ? 1 : 0)
-=======
-        ? (input.similarInStock[1]?.image ? 1 : 0) +
-          (input.similarInStock[2]?.image ? 1 : 0)
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
         : 0);
     const skippedByNetwork = Math.max(0, maxPossible - raw.length);
 
@@ -148,19 +114,12 @@ export function runProfileTests(input: TestRunInput): ProfileResult[] {
  * profile. Used by the floating dev button.
  */
 export function logProfileResults(results: ProfileResult[]) {
-<<<<<<< HEAD
   // eslint-disable-next-line no-console
-=======
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   console.groupCollapsed(
     "%c[preload·test] mobile profile sweep",
     "color:#0ea5e9;font-weight:bold",
   );
-<<<<<<< HEAD
   // eslint-disable-next-line no-console
-=======
-
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   console.table(
     results.map((r) => ({
       profile: r.profile.label,
@@ -173,16 +132,12 @@ export function logProfileResults(results: ProfileResult[]) {
     })),
   );
   for (const r of results) {
-<<<<<<< HEAD
     // eslint-disable-next-line no-console
-=======
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     console.groupCollapsed(
       `%c${r.profile.label} → ${r.emitted} emitted, ${r.skippedByNetwork} gated, ${r.duplicates} deduped`,
       `color:${r.slowNetwork ? "#a16207" : "#16a34a"}`,
     );
     for (const href of r.emittedHrefs) {
-<<<<<<< HEAD
       // eslint-disable-next-line no-console
       console.log("  ✅ EMIT", href);
     }
@@ -190,14 +145,6 @@ export function logProfileResults(results: ProfileResult[]) {
     console.groupEnd();
   }
   // eslint-disable-next-line no-console
-=======
-      console.log("  ✅ EMIT", href);
-    }
-
-    console.groupEnd();
-  }
-
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   console.groupEnd();
 }
 
@@ -205,13 +152,7 @@ export function isPreloadTestEnabled(): boolean {
   if (!import.meta.env.DEV) return false;
   if (typeof window === "undefined") return false;
   try {
-<<<<<<< HEAD
     return new URLSearchParams(window.location.search).get("preloadTest") === "1";
-=======
-    return (
-      new URLSearchParams(window.location.search).get("preloadTest") === "1"
-    );
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   } catch {
     return false;
   }

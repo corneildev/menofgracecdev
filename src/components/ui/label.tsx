@@ -12,20 +12,9 @@ const labelVariants = cva(
 
 const Label = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
-<<<<<<< HEAD
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> & VariantProps<typeof labelVariants>
 >(({ className, ...props }, ref) => (
   <LabelPrimitive.Root ref={ref} className={cn(labelVariants(), className)} {...props} />
-=======
-  React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &
-    VariantProps<typeof labelVariants>
->(({ className, ...props }, ref) => (
-  <LabelPrimitive.Root
-    ref={ref}
-    className={cn(labelVariants(), className)}
-    {...props}
-  />
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 ));
 Label.displayName = LabelPrimitive.Root.displayName;
 

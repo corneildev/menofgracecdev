@@ -58,12 +58,7 @@ const en = {
     executiveEyebrow: "— I · Executive —",
     executiveTitle: "Executive",
     executiveTitleItalic: "Sartoria",
-<<<<<<< HEAD
     executiveBody: "For men who lead. Cut for the boardroom, the runway of business.",
-=======
-    executiveBody:
-      "For men who lead. Cut for the boardroom, the runway of business.",
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     bespokeEyebrow: "— II · Bespoke —",
     bespokeTitle: "The",
     bespokeTitleItalic: "Bespoke",
@@ -125,12 +120,7 @@ const en = {
     heroEyebrow: "— The House —",
     heroTitle: "Two houses,",
     heroTitleItalic: "one vision.",
-<<<<<<< HEAD
     heroTagline: "We do not own these ateliers. We chose them — Biella for the bespoke commission, Foshan for the made-to-measure.",
-=======
-    heroTagline:
-      "We do not own these ateliers. We chose them — Biella for the bespoke commission, Foshan for the made-to-measure.",
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   },
   collection: {
     title: "The Collection",

@@ -64,11 +64,7 @@ export function PreloadQuickRunPanel() {
   const selected =
     (selectedRunId && history.find((s) => s.runId === selectedRunId)) ||
     ordered[0] ||
-<<<<<<< HEAD
      null;
-=======
-    null;
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
   return (
     <div
@@ -113,13 +109,7 @@ export function PreloadQuickRunPanel() {
             type="button"
             onClick={() => setCollapsed((c) => !c)}
             className="px-2 py-0.5 border border-white/30 hover:bg-white/10"
-<<<<<<< HEAD
             aria-label={collapsed ? "Expand quick-run panel" : "Collapse quick-run panel"}
-=======
-            aria-label={
-              collapsed ? "Expand quick-run panel" : "Collapse quick-run panel"
-            }
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
           >
             {collapsed ? "▾" : "▴"}
           </button>
@@ -130,12 +120,7 @@ export function PreloadQuickRunPanel() {
         <div className="p-3 space-y-3">
           {history.length === 0 ? (
             <div className="opacity-70">
-<<<<<<< HEAD
               No snapshot yet — click <span className="text-sky-300">⚡ iPhone Safari quick-run</span>.
-=======
-              No snapshot yet — click{" "}
-              <span className="text-sky-300">⚡ iPhone Safari quick-run</span>.
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
             </div>
           ) : (
             <>
@@ -177,21 +162,10 @@ export function PreloadQuickRunPanel() {
                             }`}
                           >
                             <div className="flex items-center justify-between gap-2">
-<<<<<<< HEAD
                               <span className="opacity-90 truncate">{s.productId}</span>
                               <span
                                 className={
                                   s.duplicates > 0 ? "text-amber-300" : "text-emerald-300"
-=======
-                              <span className="opacity-90 truncate">
-                                {s.productId}
-                              </span>
-                              <span
-                                className={
-                                  s.duplicates > 0
-                                    ? "text-amber-300"
-                                    : "text-emerald-300"
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
                                 }
                               >
                                 {s.emitted}/{s.duplicates}
@@ -244,13 +218,7 @@ function SnapshotView({ snapshot }: { snapshot: QuickRunSnapshot }) {
 
       {emits.length > 0 && (
         <section>
-<<<<<<< HEAD
           <div className="text-emerald-300 mb-1">✅ emitted ({emits.length})</div>
-=======
-          <div className="text-emerald-300 mb-1">
-            ✅ emitted ({emits.length})
-          </div>
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
           <ul className="space-y-1 break-all">
             {emits.map((d, i) => (
               <li key={`emit-${i}`}>
@@ -266,13 +234,7 @@ function SnapshotView({ snapshot }: { snapshot: QuickRunSnapshot }) {
 
       {dupes.length > 0 && (
         <section>
-<<<<<<< HEAD
           <div className="text-amber-300 mb-1">♻️ duplicates ({dupes.length})</div>
-=======
-          <div className="text-amber-300 mb-1">
-            ♻️ duplicates ({dupes.length})
-          </div>
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
           <ul className="space-y-1 break-all">
             {dupes.map((d, i) => (
               <li key={`dupe-${i}`}>
@@ -364,14 +326,7 @@ function TrendChart({ history }: { history: QuickRunSnapshot[] }) {
 
   const toPath = (series: number[]) =>
     series
-<<<<<<< HEAD
       .map((v, i) => `${i === 0 ? "M" : "L"}${xFor(i).toFixed(1)},${yFor(v).toFixed(1)}`)
-=======
-      .map(
-        (v, i) =>
-          `${i === 0 ? "M" : "L"}${xFor(i).toFixed(1)},${yFor(v).toFixed(1)}`,
-      )
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
       .join(" ");
 
   const totalDupes = dupSeries.reduce((a, b) => a + b, 0);
@@ -383,13 +338,7 @@ function TrendChart({ history }: { history: QuickRunSnapshot[] }) {
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-[10px] opacity-70">
-<<<<<<< HEAD
         <span className="uppercase tracking-wider">trend · {history.length} runs</span>
-=======
-        <span className="uppercase tracking-wider">
-          trend · {history.length} runs
-        </span>
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
         <span>peak {maxY}</span>
       </div>
       <svg
@@ -509,23 +458,12 @@ function Stat({
     tone === "good"
       ? "text-emerald-300"
       : tone === "warn"
-<<<<<<< HEAD
       ? "text-amber-300"
       : "text-white";
   return (
     <div className="border border-white/10 p-1.5 text-center">
       <div className={`text-base ${color}`}>{value}</div>
       <div className="opacity-60 text-[10px] uppercase tracking-wider">{label}</div>
-=======
-        ? "text-amber-300"
-        : "text-white";
-  return (
-    <div className="border border-white/10 p-1.5 text-center">
-      <div className={`text-base ${color}`}>{value}</div>
-      <div className="opacity-60 text-[10px] uppercase tracking-wider">
-        {label}
-      </div>
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     </div>
   );
 }
@@ -546,37 +484,17 @@ function NormalizationDebug({ snapshot }: { snapshot: QuickRunSnapshot }) {
   // recorded. Snapshot decisions don't include srcSet today (only `recordEmit`
   // in preloadStatsStore does) — that's fine; the primary hrefs are still
   // exactly what the dedup gate emitted.
-<<<<<<< HEAD
   const emittedRows: { raw: string; canonical: string; role: "primary" | "variant" }[] =
     snapshot.emittedHrefs.map((href) => ({
       raw: href,
       canonical: canonicaliseUrl(href),
       role: "primary",
     }));
-=======
-  const emittedRows: {
-    raw: string;
-    canonical: string;
-    role: "primary" | "variant";
-  }[] = snapshot.emittedHrefs.map((href) => ({
-    raw: href,
-    canonical: canonicaliseUrl(href),
-    role: "primary",
-  }));
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   // If any decision carries a srcSet (future-proofing), expand its variants.
   for (const d of snapshot.decisions) {
     const srcSet = (d as { srcSet?: string }).srcSet;
     for (const v of parseSrcSetUrls(srcSet)) {
-<<<<<<< HEAD
       emittedRows.push({ raw: v, canonical: canonicaliseUrl(v), role: "variant" });
-=======
-      emittedRows.push({
-        raw: v,
-        canonical: canonicaliseUrl(v),
-        role: "variant",
-      });
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     }
   }
 
@@ -584,23 +502,13 @@ function NormalizationDebug({ snapshot }: { snapshot: QuickRunSnapshot }) {
 
   // Live fetch entries from the browser, normalized so we can see what the
   // matcher is comparing against. Filter to image-ish URLs only.
-<<<<<<< HEAD
   const fetchedRows: { raw: string; canonical: string; matched: boolean }[] = [];
-=======
-  const fetchedRows: { raw: string; canonical: string; matched: boolean }[] =
-    [];
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   if (typeof performance !== "undefined") {
     const entries = performance.getEntriesByType?.("resource") ?? [];
     for (const e of entries) {
       const r = e as PerformanceResourceTiming;
       if (r.initiatorType !== "img" && r.initiatorType !== "link") continue;
-<<<<<<< HEAD
       if (!/\.(?:png|jpe?g|webp|avif|gif|svg)(?:\?|$|#)/i.test(r.name)) continue;
-=======
-      if (!/\.(?:png|jpe?g|webp|avif|gif|svg)(?:\?|$|#)/i.test(r.name))
-        continue;
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
       const canonical = canonicaliseUrl(r.name);
       fetchedRows.push({
         raw: r.name,
@@ -613,12 +521,7 @@ function NormalizationDebug({ snapshot }: { snapshot: QuickRunSnapshot }) {
   return (
     <details className="border-t border-white/10 pt-2">
       <summary className="cursor-pointer opacity-80">
-<<<<<<< HEAD
         normalization debug ({emittedRows.length} emitted · {fetchedRows.length} fetched)
-=======
-        normalization debug ({emittedRows.length} emitted · {fetchedRows.length}{" "}
-        fetched)
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
       </summary>
       <div className="mt-2 space-y-3">
         <DebugList
@@ -661,13 +564,7 @@ function DebugList({
   const titleClass = tone === "sky" ? "text-sky-300" : "text-emerald-300";
   return (
     <section>
-<<<<<<< HEAD
       <div className={`${titleClass} mb-1 uppercase tracking-wider text-[10px]`}>
-=======
-      <div
-        className={`${titleClass} mb-1 uppercase tracking-wider text-[10px]`}
-      >
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
         {title} ({rows.length})
       </div>
       {rows.length === 0 ? (
@@ -690,13 +587,8 @@ function DebugList({
                       r.matched === false
                         ? "text-amber-300"
                         : r.matched
-<<<<<<< HEAD
                         ? "text-emerald-300"
                         : "opacity-70"
-=======
-                          ? "text-emerald-300"
-                          : "opacity-70"
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
                     }
                   >
                     {r.tag}

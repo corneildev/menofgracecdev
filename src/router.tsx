@@ -1,17 +1,7 @@
 import { createRouter, useRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
 
-<<<<<<< HEAD
 function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-=======
-function DefaultErrorComponent({
-  error,
-  reset,
-}: {
-  error: Error;
-  reset: () => void;
-}) {
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
   const router = useRouter();
 
   return (
@@ -33,13 +23,7 @@ function DefaultErrorComponent({
             />
           </svg>
         </div>
-<<<<<<< HEAD
         <h1 className="text-2xl font-bold tracking-tight text-foreground">Something went wrong</h1>
-=======
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Something went wrong
-        </h1>
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
         <p className="mt-2 text-sm text-muted-foreground">
           An unexpected error occurred. Please try again.
         </p>

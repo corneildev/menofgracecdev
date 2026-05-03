@@ -175,29 +175,15 @@ export function buildFetchReport(
     .sort((a, b) => b.count - a.count);
 
   // A preload is "unfetched" only if NONE of its srcset variants showed up.
-<<<<<<< HEAD
   const unfetchedPreloads = [...primaries].filter((p) => !fulfilledPrimaries.has(p));
-=======
-  const unfetchedPreloads = [...primaries].filter(
-    (p) => !fulfilledPrimaries.has(p),
-  );
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
   // For each unfetched preload, hunt for "near miss" observed fetches: same
   // filename stem (path's last segment, minus extension) but a different
   // canonical URL. That's the classic srcset-variant mismatch — the preload
   // declared `image-800w.jpg` but the <picture> picked `image-1200w.jpg`.
-<<<<<<< HEAD
   const unfetchedDiagnostics: UnfetchedPreloadDiagnostic[] = unfetchedPreloads.map(
     (primary) => {
       const expected = [...(expectedVariantsByPrimary.get(primary) ?? [primary])];
-=======
-  const unfetchedDiagnostics: UnfetchedPreloadDiagnostic[] =
-    unfetchedPreloads.map((primary) => {
-      const expected = [
-        ...(expectedVariantsByPrimary.get(primary) ?? [primary]),
-      ];
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
       const expectedSet = new Set(expected);
       const expectedStems = new Set(expected.map(filenameStem).filter(Boolean));
       const expectedDirs = new Set(expected.map(pathDir).filter(Boolean));
@@ -224,12 +210,8 @@ export function buildFetchReport(
         expectedVariants: expected,
         likelyMismatchedFetches: dedupeByUrl(likely).slice(0, 5),
       };
-<<<<<<< HEAD
     },
   );
-=======
-    });
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
 
   return {
     supported: true,
@@ -351,13 +333,7 @@ const CACHE_BUST_PARAMS = new Set([
 export function canonicaliseUrl(url: string): string {
   try {
     const base =
-<<<<<<< HEAD
       typeof window !== "undefined" ? window.location.href : "http://localhost/";
-=======
-      typeof window !== "undefined"
-        ? window.location.href
-        : "http://localhost/";
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     const u = new URL(url, base);
     u.hash = "";
     u.protocol = u.protocol.toLowerCase();
@@ -409,14 +385,7 @@ let sessionObserver: PerformanceObserver | null = null;
 let sessionObserverStartedAt = 0;
 
 export function ensureSessionResourceObserver(): { active: boolean } {
-<<<<<<< HEAD
   if (typeof window === "undefined" || typeof PerformanceObserver === "undefined") {
-=======
-  if (
-    typeof window === "undefined" ||
-    typeof PerformanceObserver === "undefined"
-  ) {
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
     return { active: false };
   }
   if (sessionObserver) return { active: true };
@@ -434,12 +403,7 @@ export function ensureSessionResourceObserver(): { active: boolean } {
         ) {
           continue;
         }
-<<<<<<< HEAD
         if (!/\.(?:png|jpe?g|webp|avif|gif|svg)(?:\?|$|#)/i.test(r.name)) continue;
-=======
-        if (!/\.(?:png|jpe?g|webp|avif|gif|svg)(?:\?|$|#)/i.test(r.name))
-          continue;
->>>>>>> 9091cf2 (Initial commit of graceful-threads)
         sessionEntries.push(r);
       }
     });
