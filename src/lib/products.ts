@@ -19,6 +19,7 @@ export const CATEGORY_LABELS: Record<ProductCategory, string> = {
   shirts: "Shirts",
   trousers: "Trousers",
   belts: "Belts",
+  shoes: "Chaussures",
   accessories: "Accessories",
   bespoke: "Bespoke Collection",
 };
@@ -31,6 +32,7 @@ export const ALL_CATEGORIES: ProductCategory[] = [
   "shirts",
   "trousers",
   "belts",
+  "shoes",
   "accessories",
   "bespoke",
 ];
