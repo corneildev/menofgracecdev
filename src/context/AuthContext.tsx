@@ -77,8 +77,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const resetPassword = async (email: string) => {
+    const redirectTo = typeof window !== "undefined" ? `${window.location.origin}/update-password` : undefined;
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+    return { error: error?.message ?? null };
+  };
+
+  const updatePassword = async (password: string) => {
+    const { error } = await supabase.auth.updateUser({ password });
+    return { error: error?.message ?? null };
+  };
+
   const value = useMemo<AuthContextValue>(
-    () => ({ user, session, isAdmin, loading, signIn, signUp, signOut }),
+    () => ({ user, session, isAdmin, loading, signIn, signUp, signOut, resetPassword, updatePassword }),
     [user, session, isAdmin, loading],
   );
 
