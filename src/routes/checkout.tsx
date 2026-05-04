@@ -187,6 +187,7 @@ function CheckoutPage() {
         p_customer,
         p_payment: form.payment,
         p_idempotency_key: idempotencyKeyRef.current,
+        p_promo_code: promoApplied?.code ?? null,
       });
 
       if (rpcErr) throw rpcErr;
