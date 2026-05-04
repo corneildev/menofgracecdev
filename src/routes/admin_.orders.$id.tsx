@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { generateInvoicePdf, type InvoiceData } from "@/lib/invoicePdf";
 
-export const Route = createFileRoute("/admin/orders/$id")({
+export const Route = createFileRoute("/admin_/orders/$id")({
   head: () => ({
     meta: [
       { title: "Commande — Admin" },
@@ -107,15 +107,16 @@ function OrderDetailPage() {
     setBusy(false);
   }
 
-  async function updateField(patch: Partial<Order>) {
+  async function updateField(patch: Record<string, unknown>) {
     if (!order) return;
     setSaving(true);
     setMsg(null);
-    const { error } = await supabase.from("orders").update(patch).eq("id", order.id);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await supabase.from("orders").update(patch as any).eq("id", order.id);
     if (error) {
       setMsg(`Erreur: ${error.message}`);
     } else {
-      setOrder({ ...order, ...patch });
+      setOrder({ ...order, ...patch } as Order);
       setMsg("Sauvegardé");
       setTimeout(() => setMsg(null), 1800);
     }
