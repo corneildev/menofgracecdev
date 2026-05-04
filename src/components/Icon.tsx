@@ -25,8 +25,25 @@ import {
   faLocationDot,
   faClock,
   faGlobe,
+  faBolt,
+  faFire,
+  faGift,
+  faLock,
+  faCreditCard,
+  faEye,
+  faTag,
+  faCheck,
+  faQuoteLeft,
+  faShareNodes,
+  faCircleQuestion,
+  faAward,
+  faGem,
+  faHandshake,
+  faPercent,
+  faUsers,
+  faThumbsUp,
 } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
+import { faHeart as faHeartRegular, faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import { faWhatsapp, faInstagram, faFacebookF, faTiktok } from "@fortawesome/free-brands-svg-icons";
 
 const ICONS = {
