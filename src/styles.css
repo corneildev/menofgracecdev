@@ -78,29 +78,34 @@
   --foreground: var(--bone);
 }
 
-/* Mode clair (toggle .light sur <html>) */
+/* Mode clair (toggle .light sur <html>)
+ * On redéfinit --ink (foreground) et --bone (background) pour préserver
+ * tout le code existant qui utilise text-bone / bg-ink / border-bone, etc.
+ */
 .light {
-  --ink: oklch(0.13 0 0);              /* texte principal: noir profond */
-  --bone: oklch(0.985 0 0);            /* surfaces sombres rares */
-  --hairline: oklch(0 0 0 / 12%);
+  --ink: oklch(0.985 0.005 80);        /* "ink" → ivoire = surface principale */
+  --bone: oklch(0.13 0 0);             /* "bone" → noir = texte/foreground */
+  --hairline: oklch(0 0 0 / 14%);
 
-  --background: oklch(0.985 0.005 80);  /* ivoire chaud */
-  --foreground: oklch(0.13 0 0);
-  --card: oklch(0.985 0.005 80);
-  --card-foreground: oklch(0.13 0 0);
-  --popover: oklch(0.985 0.005 80);
-  --popover-foreground: oklch(0.13 0 0);
-  --primary: oklch(0.13 0 0);
-  --primary-foreground: oklch(0.985 0.005 80);
+  --background: var(--ink);            /* ivoire */
+  --foreground: var(--bone);           /* noir */
+  --card: var(--ink);
+  --card-foreground: var(--bone);
+  --popover: var(--ink);
+  --popover-foreground: var(--bone);
+  --primary: var(--bone);
+  --primary-foreground: var(--ink);
   --secondary: oklch(0.94 0.005 80);
-  --secondary-foreground: oklch(0.13 0 0);
+  --secondary-foreground: var(--bone);
   --muted: oklch(0.94 0.005 80);
   --muted-foreground: oklch(0.45 0 0);
   --accent: var(--azure);
-  --accent-foreground: oklch(0.985 0.005 80);
+  --accent-foreground: var(--ink);
+  --destructive: oklch(0.55 0.2 25);
+  --destructive-foreground: var(--ink);
   --border: var(--hairline);
   --input: var(--hairline);
-  --ring: oklch(0.13 0 0);
+  --ring: var(--bone);
 }
 
 @layer base {
