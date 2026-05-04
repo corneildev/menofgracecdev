@@ -320,12 +320,12 @@ function ProductView({ product }: { product: ProductWithImages }) {
                         type="button"
                         className="eyebrow text-[10px] text-bone/70 underline underline-offset-[6px] decoration-hairline hover:text-bone hover:decoration-bone transition-colors"
                       >
-                        Find my size →
+                        Trouver ma taille →
                       </button>
                     </DialogTrigger>
                     <DialogContent className="bg-ink border-hairline text-bone max-w-xl">
                       <DialogHeader>
-                        <DialogTitle className="font-serif text-2xl text-bone">Size Finder</DialogTitle>
+                        <DialogTitle className="font-serif text-2xl text-bone">Trouver ma taille</DialogTitle>
                       </DialogHeader>
                       <div className="pt-2">
                         <SizeFinder
