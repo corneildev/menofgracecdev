@@ -9,13 +9,16 @@ import {
   formatPriceEur,
   CATEGORY_LABELS,
   type ProductWithImages,
+  type ProductVariantRow,
 } from "@/lib/products";
 import { useWishlist } from "@/context/WishlistContext";
 import { useCart } from "@/context/CartContext";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SizeFinder } from "@/components/SizeFinder";
 import { RestockAlertForm } from "@/components/RestockAlertForm";
+import { ProductMediaGallery } from "@/components/ProductMediaGallery";
 import { trackProductEvent } from "@/lib/analytics";
 
 export const Route = createFileRoute("/collection/$productId")({
@@ -27,7 +30,7 @@ export const Route = createFileRoute("/collection/$productId")({
   head: ({ loaderData }) => {
     const p = loaderData?.product;
     const title = p ? `${p.name} — MEN OF GRACE` : "Collection — MEN OF GRACE";
-    const desc = p?.description ?? "Tailored menswear, ready to ship.";
+    const desc = p?.short_description ?? p?.description ?? "Tailored menswear, ready to ship.";
     const img = p?.primaryImage;
     return {
       meta: [
@@ -61,45 +64,95 @@ function ProductDetail() {
   return <ProductView product={product} />;
 }
 
+// Helper: derive available sizes/colors either from variants (preferred) or legacy arrays.
+function deriveOptions(p: ProductWithImages) {
+  if (p.variants && p.variants.length > 0) {
+    const sizes = Array.from(new Set(p.variants.map((v) => v.size).filter((s): s is string => !!s)));
+    const colors = Array.from(new Set(p.variants.map((v) => v.color).filter((s): s is string => !!s)));
+    return { sizes, colors, hasVariants: true };
+  }
+  return { sizes: p.sizes, colors: p.colors, hasVariants: false };
+}
+
+function findVariant(variants: ProductVariantRow[], size: string | null, color: string | null) {
+  return variants.find((v) => (v.size ?? null) === size && (v.color ?? null) === color) ?? null;
+}
+
 function ProductView({ product }: { product: ProductWithImages }) {
   const { has, toggle, ready } = useWishlist();
   const { add: addToCart } = useCart();
   const saved = ready && has(product.id);
-  const [activeImage, setActiveImage] = useState(product.primaryImage);
+
+  const { sizes, colors, hasVariants } = useMemo(() => deriveOptions(product), [product]);
+
   const [size, setSize] = useState<string | null>(null);
+  const [color, setColor] = useState<string | null>(colors[0] ?? null);
   const [fit, setFit] = useState<string>(product.fits[0] ?? "");
   const [lapel, setLapel] = useState<string>(product.lapels[0] ?? "");
   const [lining, setLining] = useState<string>(product.linings[0] ?? "");
   const [monogram, setMonogram] = useState("");
   const [sizeError, setSizeError] = useState<string | null>(null);
 
-  // Reset selections when navigating to a new product.
+  // Reset selections on product change.
   useEffect(() => {
-    setActiveImage(product.primaryImage);
     setSize(null);
+    setColor(colors[0] ?? null);
     setFit(product.fits[0] ?? "");
     setLapel(product.lapels[0] ?? "");
     setLining(product.linings[0] ?? "");
     setMonogram("");
     setSizeError(null);
-  }, [product.id, product.primaryImage, product.fits, product.lapels, product.linings]);
+  }, [product.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const actuallySoldOut =
-    product.sizes.length > 0 &&
-    product.sizes.every((s) => product.sold_out_sizes?.includes(s));
+  // Currently selected variant (when variants exist).
+  const selectedVariant = useMemo(() => {
+    if (!hasVariants) return null;
+    return findVariant(product.variants, size, color);
+  }, [hasVariants, product.variants, size, color]);
+
+  // Variant-aware sold-out logic.
+  const isSizeSoldOut = (s: string): boolean => {
+    if (hasVariants) {
+      const candidates = product.variants.filter((v) => v.size === s && (color ? v.color === color : true));
+      if (candidates.length === 0) return true;
+      return candidates.every((v) => !v.is_available || v.stock <= 0);
+    }
+    return product.sold_out_sizes?.includes(s) ?? false;
+  };
+
+  const actuallySoldOut = sizes.length > 0 && sizes.every((s) => isSizeSoldOut(s));
 
   // Auto-switch if the currently selected size becomes sold out.
   useEffect(() => {
     if (!size) return;
-    if (!product.sold_out_sizes?.includes(size)) return;
-    const nextAvailable = product.sizes.find((s) => !product.sold_out_sizes?.includes(s)) ?? null;
+    if (!isSizeSoldOut(size)) return;
+    const nextAvailable = sizes.find((s) => !isSizeSoldOut(s)) ?? null;
     setSize(nextAvailable);
     if (nextAvailable) {
       setSizeError(`Taille ${size} épuisée — taille ${nextAvailable} sélectionnée.`);
     }
-  }, [product.sold_out_sizes, product.sizes, size]);
+  }, [color]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Related products from Supabase (shared cache key with collection page).
+  // Variant-image filtering: use variant_id of selected color's first matching variant
+  const filterVariantId = useMemo(() => {
+    if (!hasVariants || !color) return null;
+    const v = product.variants.find((x) => x.color === color);
+    return v?.id ?? null;
+  }, [hasVariants, color, product.variants]);
+
+  // Effective price (variant override > product)
+  const effectivePrice = useMemo(() => {
+    if (selectedVariant?.price_fcfa) {
+      return {
+        fcfa: selectedVariant.price_fcfa,
+        usd: selectedVariant.price_usd ?? product.price_usd,
+        eur: selectedVariant.price_eur ?? product.price_eur,
+      };
+    }
+    return { fcfa: product.price_fcfa, usd: product.price_usd, eur: product.price_eur };
+  }, [selectedVariant, product]);
+
+  // Related products
   const { data: allProducts = [] } = useQuery({
     queryKey: ["products", "published"],
     queryFn: listPublishedProducts,
@@ -108,10 +161,6 @@ function ProductView({ product }: { product: ProductWithImages }) {
   const relatedProducts = useMemo(() => {
     return allProducts
       .filter((p) => p.id !== product.id)
-      .filter((p) => {
-        if (!p.sizes || p.sizes.length === 0) return true;
-        return p.sizes.some((s) => !p.sold_out_sizes?.includes(s));
-      })
       .sort((a, b) => {
         const aSame = a.category === product.category ? 0 : 1;
         const bSame = b.category === product.category ? 0 : 1;
@@ -122,16 +171,15 @@ function ProductView({ product }: { product: ProductWithImages }) {
   }, [allProducts, product.id, product.category, product.price_fcfa]);
 
   const handleAddToCart = () => {
-    if (product.sizes.length > 0 && !size) {
+    if (sizes.length > 0 && !size) {
       setSizeError("Veuillez sélectionner une taille.");
-      // Scroll size selector into view so user sees the prompt
       if (typeof document !== "undefined") {
         document.getElementById("size-picker")?.scrollIntoView({ behavior: "smooth", block: "center" });
       }
       return;
     }
-    if (size && product.sold_out_sizes?.includes(size)) {
-      setSizeError(`La taille ${size} est épuisée. Veuillez en choisir une autre.`);
+    if (size && isSizeSoldOut(size)) {
+      setSizeError(`La taille ${size} est épuisée.`);
       return;
     }
     setSizeError(null);
@@ -139,10 +187,10 @@ function ProductView({ product }: { product: ProductWithImages }) {
       productId: product.id,
       name: product.name,
       image: product.primaryImage,
-      fcfa: product.price_fcfa,
-      usd: product.price_usd,
+      fcfa: effectivePrice.fcfa,
+      usd: effectivePrice.usd,
       size,
-      availableSizes: product.sizes,
+      availableSizes: sizes,
       fit,
       lapel,
       lining,
@@ -163,56 +211,55 @@ function ProductView({ product }: { product: ProductWithImages }) {
 
       {/* Gallery + Buy panel */}
       <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 sm:gap-12 lg:gap-20">
-        {/* Gallery */}
-        <div>
-          <div className="aspect-[4/5] bg-secondary overflow-hidden mb-4 fade-in-slow">
-            <img
-              src={activeImage}
-              alt={product.name}
-              className="h-full w-full object-cover transition-opacity duration-700"
-            />
-          </div>
-          {product.gallery.length > 1 && (
-            <div className="grid grid-cols-3 gap-4">
-              {product.gallery.map((src, i) => (
-                <button
-                  key={`${src}-${i}`}
-                  onClick={() => setActiveImage(src)}
-                  className={`aspect-[4/5] bg-secondary overflow-hidden border transition-colors ${
-                    activeImage === src ? "border-bone" : "border-transparent hover:border-hairline"
-                  }`}
-                  aria-label={`View image ${i + 1}`}
-                >
-                  <img src={src} alt="" className="h-full w-full object-cover" />
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <ProductMediaGallery
+          images={product.images}
+          videos={product.videos}
+          alt={product.name}
+          filterVariantId={filterVariantId}
+        />
 
         {/* Buy panel */}
         <div className="lg:sticky lg:top-32 self-start">
           <div className="eyebrow text-bone/60 mb-4">{CATEGORY_LABELS[product.category]}</div>
           <h1 className="display text-3xl sm:text-4xl md:text-5xl mb-6 break-words">{product.name}</h1>
-          {product.story && (
-            <p className="text-bone/70 font-light leading-relaxed mb-8">{product.story}</p>
+          {product.short_description && (
+            <p className="text-bone/70 font-light leading-relaxed mb-6">{product.short_description}</p>
           )}
 
           <div className="border-y border-hairline py-6 mb-10">
-            <div className="text-bone text-lg font-light">{formatPriceFcfa(product.price_fcfa)}</div>
+            <div className="text-bone text-lg font-light">{formatPriceFcfa(effectivePrice.fcfa)}</div>
             <div className="text-bone/50 text-sm font-light mt-1">
-              {formatPriceUsd(product.price_usd)} · {formatPriceEur(product.price_eur)}
+              {formatPriceUsd(effectivePrice.usd)} · {formatPriceEur(effectivePrice.eur)}
             </div>
+            {selectedVariant && (
+              <div className="eyebrow text-bone/40 text-[10px] mt-3">
+                {selectedVariant.stock > 0 ? `${selectedVariant.stock} en stock` : "Rupture"}
+                {selectedVariant.sku ? ` · SKU ${selectedVariant.sku}` : ""}
+              </div>
+            )}
           </div>
 
+          {/* Color */}
+          {colors.length > 0 && (
+            <Section label="Couleur">
+              <div className="flex flex-wrap gap-2">
+                {colors.map((c) => (
+                  <Chip key={c} active={color === c} onClick={() => setColor(c)}>
+                    {c}
+                  </Chip>
+                ))}
+              </div>
+            </Section>
+          )}
+
           {/* Size */}
-          {product.sizes.length > 0 && (
+          {sizes.length > 0 && (
             <div id="size-picker" className="scroll-mt-24">
-              <Section label="Size">
+              <Section label="Taille">
                 <TooltipProvider delayDuration={150}>
                   <div className="flex flex-wrap gap-2">
-                    {product.sizes.map((s) => {
-                      const soldOut = product.sold_out_sizes?.includes(s) ?? false;
+                    {sizes.map((s) => {
+                      const soldOut = isSizeSoldOut(s);
                       const chip = (
                         <Chip
                           key={s}
@@ -271,7 +318,7 @@ function ProductView({ product }: { product: ProductWithImages }) {
                       </DialogHeader>
                       <div className="pt-2">
                         <SizeFinder
-                          availableSizes={product.sizes.filter((s) => !product.sold_out_sizes?.includes(s))}
+                          availableSizes={sizes.filter((s) => !isSizeSoldOut(s))}
                           onPick={(s) => {
                             setSize(s);
                             setSizeError(null);
@@ -305,7 +352,7 @@ function ProductView({ product }: { product: ProductWithImages }) {
 
           {/* Fit */}
           {product.fits.length > 0 && (
-            <Section label="Fit">
+            <Section label="Coupe">
               <div className="flex flex-wrap gap-2">
                 {product.fits.map((f) => (
                   <Chip key={f} active={fit === f} onClick={() => setFit(f)}>{f}</Chip>
@@ -316,7 +363,7 @@ function ProductView({ product }: { product: ProductWithImages }) {
 
           {/* Lapel */}
           {product.lapels.length > 0 && (
-            <Section label="Lapel">
+            <Section label="Revers">
               <div className="flex flex-wrap gap-2">
                 {product.lapels.map((l) => (
                   <Chip key={l} active={lapel === l} onClick={() => setLapel(l)}>{l}</Chip>
@@ -327,7 +374,7 @@ function ProductView({ product }: { product: ProductWithImages }) {
 
           {/* Lining */}
           {product.linings.length > 0 && (
-            <Section label="Lining">
+            <Section label="Doublure">
               <div className="flex flex-wrap gap-2">
                 {product.linings.map((l) => (
                   <Chip key={l} active={lining === l} onClick={() => setLining(l)}>{l}</Chip>
@@ -338,11 +385,11 @@ function ProductView({ product }: { product: ProductWithImages }) {
 
           {/* Monogram */}
           {product.monogram && (
-            <Section label="Monogram (optional)">
+            <Section label="Monogramme (optionnel)">
               <input
                 value={monogram}
                 onChange={(e) => setMonogram(e.target.value.slice(0, 4).toUpperCase())}
-                placeholder="3 initials"
+                placeholder="3 initiales"
                 maxLength={4}
                 className="w-full bg-transparent border-b border-hairline py-3 text-bone tracking-[0.3em] focus:outline-none focus:border-bone transition-colors"
               />
@@ -351,11 +398,6 @@ function ProductView({ product }: { product: ProductWithImages }) {
 
           {/* CTA */}
           <div className="mt-10 flex flex-col gap-3">
-            {sizeError && (
-              <p role="alert" className="text-xs text-red-400/90 tracking-wider">
-                {sizeError}
-              </p>
-            )}
             <button
               type="button"
               onClick={handleAddToCart}
@@ -374,56 +416,88 @@ function ProductView({ product }: { product: ProductWithImages }) {
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.4">
                 <path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 3.1c0 5.6-7.5 10.2-7.5 10.2Z" />
               </svg>
-              {saved ? "Saved" : "Save to Wishlist"}
+              {saved ? "Sauvegardé" : "Ajouter à la Wishlist"}
             </button>
           </div>
 
           <p className="eyebrow text-bone/40 mt-8 leading-relaxed">
-            Shipped within 5 business days · Free local alterations
+            Expédié sous 5 jours ouvrés · Retouches locales offertes
           </p>
         </div>
       </div>
 
-      {/* Fabric & Details */}
-      {(product.fabric_composition || product.fabric_weight || product.fabric_mill || product.fabric_notes || product.details.length > 0) && (
-        <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto mt-20 sm:mt-32 grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-16">
-          {(product.fabric_composition || product.fabric_weight || product.fabric_mill || product.fabric_notes) && (
-            <div>
-              <div className="eyebrow text-bone/60 mb-6">— The Cloth —</div>
-              <h2 className="display text-2xl sm:text-3xl md:text-4xl mb-6 sm:mb-8">Fabric</h2>
-              <dl className="space-y-5">
-                {product.fabric_composition && <Row k="Composition" v={product.fabric_composition} />}
-                {product.fabric_weight && <Row k="Weight" v={product.fabric_weight} />}
-                {product.fabric_mill && <Row k="Mill" v={product.fabric_mill} />}
-              </dl>
-              {product.fabric_notes && (
-                <p className="text-bone/60 font-light leading-relaxed mt-8">{product.fabric_notes}</p>
-              )}
+      {/* Tabs: Description / Tissu / Construction / Livraison */}
+      <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1100px] mx-auto mt-20 sm:mt-32">
+        <Tabs defaultValue="description">
+          <TabsList className="bg-transparent border-b border-hairline w-full justify-start gap-6 rounded-none h-auto p-0">
+            <TabsTrigger value="description" className="data-[state=active]:bg-transparent data-[state=active]:text-bone data-[state=active]:border-b data-[state=active]:border-bone rounded-none px-0 pb-3 eyebrow text-bone/50">
+              Description
+            </TabsTrigger>
+            {(product.fabric_composition || product.fabric_weight || product.fabric_mill || product.fabric_notes) && (
+              <TabsTrigger value="fabric" className="data-[state=active]:bg-transparent data-[state=active]:text-bone data-[state=active]:border-b data-[state=active]:border-bone rounded-none px-0 pb-3 eyebrow text-bone/50">
+                Tissu
+              </TabsTrigger>
+            )}
+            {product.details.length > 0 && (
+              <TabsTrigger value="details" className="data-[state=active]:bg-transparent data-[state=active]:text-bone data-[state=active]:border-b data-[state=active]:border-bone rounded-none px-0 pb-3 eyebrow text-bone/50">
+                Construction
+              </TabsTrigger>
+            )}
+            <TabsTrigger value="shipping" className="data-[state=active]:bg-transparent data-[state=active]:text-bone data-[state=active]:border-b data-[state=active]:border-bone rounded-none px-0 pb-3 eyebrow text-bone/50">
+              Livraison
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="description" className="pt-10">
+            {product.description && (
+              <p className="text-bone/70 font-light leading-relaxed whitespace-pre-line">{product.description}</p>
+            )}
+            {product.story && (
+              <div className="mt-10 pt-10 border-t border-hairline">
+                <div className="eyebrow text-bone/60 mb-4">— Histoire —</div>
+                <p className="text-bone/70 font-light leading-relaxed whitespace-pre-line italic">{product.story}</p>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="fabric" className="pt-10">
+            <dl className="space-y-5 max-w-2xl">
+              {product.fabric_composition && <Row k="Composition" v={product.fabric_composition} />}
+              {product.fabric_weight && <Row k="Poids" v={product.fabric_weight} />}
+              {product.fabric_mill && <Row k="Manufacture" v={product.fabric_mill} />}
+            </dl>
+            {product.fabric_notes && (
+              <p className="text-bone/60 font-light leading-relaxed mt-8">{product.fabric_notes}</p>
+            )}
+          </TabsContent>
+
+          <TabsContent value="details" className="pt-10">
+            <ul className="space-y-4 max-w-2xl">
+              {product.details.map((d) => (
+                <li key={d} className="flex gap-4 text-bone/70 font-light leading-relaxed border-b border-hairline pb-4">
+                  <span className="eyebrow text-bone/40 mt-1">·</span>
+                  <span>{d}</span>
+                </li>
+              ))}
+            </ul>
+          </TabsContent>
+
+          <TabsContent value="shipping" className="pt-10">
+            <div className="space-y-4 text-bone/70 font-light leading-relaxed max-w-2xl">
+              <p>Expédition sous 5 jours ouvrés depuis Abidjan.</p>
+              <p>Retouches locales gratuites pour assurer un tombé parfait.</p>
+              <p>Retours acceptés sous 14 jours, sauf pour les pièces personnalisées (monogramme, bespoke).</p>
             </div>
-          )}
-          {product.details.length > 0 && (
-            <div>
-              <div className="eyebrow text-bone/60 mb-6">— Construction —</div>
-              <h2 className="display text-2xl sm:text-3xl md:text-4xl mb-6 sm:mb-8">Hand-finished details</h2>
-              <ul className="space-y-4">
-                {product.details.map((d) => (
-                  <li key={d} className="flex gap-4 text-bone/70 font-light leading-relaxed border-b border-hairline pb-4">
-                    <span className="eyebrow text-bone/40 mt-1">·</span>
-                    <span>{d}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
+          </TabsContent>
+        </Tabs>
+      </div>
 
       {/* Related products */}
       {relatedProducts.length > 0 && (
         <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto mt-20 sm:mt-32">
           <div className="border-t border-hairline pt-12 mb-10">
-            <div className="eyebrow text-bone/60 mb-4">— You may also like —</div>
-            <h2 className="display text-2xl sm:text-3xl md:text-4xl">Pieces from the collection</h2>
+            <div className="eyebrow text-bone/60 mb-4">— Vous aimerez aussi —</div>
+            <h2 className="display text-2xl sm:text-3xl md:text-4xl">Pièces de la collection</h2>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {relatedProducts.map((p) => (
