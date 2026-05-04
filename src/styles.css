@@ -78,20 +78,45 @@
   --foreground: var(--bone);
 }
 
+/* Mode clair (toggle .light sur <html>) */
+.light {
+  --ink: oklch(0.13 0 0);              /* texte principal: noir profond */
+  --bone: oklch(0.985 0 0);            /* surfaces sombres rares */
+  --hairline: oklch(0 0 0 / 12%);
+
+  --background: oklch(0.985 0.005 80);  /* ivoire chaud */
+  --foreground: oklch(0.13 0 0);
+  --card: oklch(0.985 0.005 80);
+  --card-foreground: oklch(0.13 0 0);
+  --popover: oklch(0.985 0.005 80);
+  --popover-foreground: oklch(0.13 0 0);
+  --primary: oklch(0.13 0 0);
+  --primary-foreground: oklch(0.985 0.005 80);
+  --secondary: oklch(0.94 0.005 80);
+  --secondary-foreground: oklch(0.13 0 0);
+  --muted: oklch(0.94 0.005 80);
+  --muted-foreground: oklch(0.45 0 0);
+  --accent: var(--azure);
+  --accent-foreground: oklch(0.985 0.005 80);
+  --border: var(--hairline);
+  --input: var(--hairline);
+  --ring: oklch(0.13 0 0);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
   }
   html {
-    background-color: var(--color-ink);
-    color: var(--color-bone);
+    background-color: var(--background);
+    color: var(--foreground);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
   }
   body {
-    background-color: var(--color-ink);
-    color: var(--color-bone);
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: var(--font-sans);
     font-weight: 300;
     letter-spacing: 0.01em;
