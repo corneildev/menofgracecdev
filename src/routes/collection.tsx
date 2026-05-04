@@ -146,8 +146,8 @@ function Collection() {
                 )}
                 <div className="flex items-center justify-between border-t border-hairline pt-4">
                   <div className="text-bone/80 text-sm font-light">{formatPrice(p, currency)}</div>
-                  <Link to="/collection/$productId" params={{ productId: p.slug }} className="eyebrow text-bone hover:text-bone/60">
-                    Discover
+                  <Link to="/collection/$productId" params={{ productId: p.slug }} className="eyebrow text-foreground hover:text-foreground/60">
+                    Découvrir
                   </Link>
                 </div>
               </article>
