@@ -75,8 +75,70 @@ function CheckoutPage() {
   const update = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
+  // Promo code state
+  const [promoInput, setPromoInput] = useState("");
+  const [promoApplied, setPromoApplied] = useState<{
+    code: string;
+    discount_type: "percent" | "fixed";
+    discount_value: number;
+    min_cart_fcfa: number;
+  } | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [promoBusy, setPromoBusy] = useState(false);
+
+  const discountFcfa = useMemo(() => {
+    if (!promoApplied) return 0;
+    if (totalFcfa < promoApplied.min_cart_fcfa) return 0;
+    if (promoApplied.discount_type === "percent") {
+      return Math.floor((totalFcfa * promoApplied.discount_value) / 100);
+    }
+    return Math.min(promoApplied.discount_value, totalFcfa);
+  }, [promoApplied, totalFcfa]);
+
+  async function applyPromo() {
+    setPromoError(null);
+    const code = promoInput.trim();
+    if (!code) return;
+    setPromoBusy(true);
+    try {
+      const { data, error } = await supabase
+        .from("promo_codes")
+        .select("code, discount_type, discount_value, min_cart_fcfa, starts_at, ends_at, max_uses, uses_count, is_active")
+        .ilike("code", code)
+        .maybeSingle();
+      if (error || !data || !data.is_active) {
+        setPromoError("Code invalide");
+        setPromoApplied(null);
+        return;
+      }
+      const now = Date.now();
+      if (data.starts_at && now < new Date(data.starts_at).getTime()) {
+        setPromoError("Code non encore actif"); setPromoApplied(null); return;
+      }
+      if (data.ends_at && now > new Date(data.ends_at).getTime()) {
+        setPromoError("Code expiré"); setPromoApplied(null); return;
+      }
+      if (data.max_uses != null && data.uses_count >= data.max_uses) {
+        setPromoError("Code épuisé"); setPromoApplied(null); return;
+      }
+      if (totalFcfa < data.min_cart_fcfa) {
+        setPromoError(`Panier minimum ${data.min_cart_fcfa.toLocaleString("fr-FR")} FCFA`);
+        setPromoApplied(null);
+        return;
+      }
+      setPromoApplied({
+        code: data.code,
+        discount_type: data.discount_type as "percent" | "fixed",
+        discount_value: data.discount_value,
+        min_cart_fcfa: data.min_cart_fcfa,
+      });
+    } finally {
+      setPromoBusy(false);
+    }
+  }
+
   const deliveryFcfa = useMemo(() => 0, []);
-  const finalTotal = totalFcfa + deliveryFcfa;
+  const finalTotal = Math.max(totalFcfa - discountFcfa + deliveryFcfa, 0);
 
   const canStep1 =
     form.fullName.trim().length >= 2 &&
@@ -125,6 +187,7 @@ function CheckoutPage() {
         p_customer,
         p_payment: form.payment,
         p_idempotency_key: idempotencyKeyRef.current,
+        p_promo_code: promoApplied?.code ?? null,
       });
 
       if (rpcErr) throw rpcErr;
@@ -382,7 +445,43 @@ function CheckoutPage() {
             <div className="space-y-2 border-t border-hairline pt-4 text-sm">
               <Row label="Sous-total" value={formatFcfa(totalFcfa)} />
               <Row label="Livraison" value="Offerte" muted />
+              {promoApplied && discountFcfa > 0 && (
+                <div className="flex justify-between items-center text-emerald-300/80">
+                  <span className="text-xs">Code {promoApplied.code}</span>
+                  <span>−{formatFcfa(discountFcfa)}</span>
+                </div>
+              )}
             </div>
+            <div className="border-t border-hairline mt-4 pt-4">
+              <div className="eyebrow text-bone/50 text-[10px] mb-2">Code promo</div>
+              {promoApplied ? (
+                <div className="flex items-center justify-between gap-2 border border-emerald-500/40 px-3 py-2">
+                  <span className="text-emerald-300/90 text-xs eyebrow">{promoApplied.code} appliqué</span>
+                  <button
+                    type="button"
+                    onClick={() => { setPromoApplied(null); setPromoInput(""); setPromoError(null); }}
+                    className="text-bone/60 hover:text-bone text-xs"
+                  >Retirer</button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    value={promoInput}
+                    onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                    placeholder="CODE"
+                    className="flex-1 bg-transparent border border-hairline px-3 py-2 text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-bone/40"
+                  />
+                  <button
+                    type="button"
+                    onClick={applyPromo}
+                    disabled={promoBusy || !promoInput.trim()}
+                    className="luxury-btn text-xs px-4"
+                  >Appliquer</button>
+                </div>
+              )}
+              {promoError && <div className="text-red-300/80 text-xs mt-2">{promoError}</div>}
+            </div>
+
             <div className="flex justify-between items-baseline border-t border-hairline pt-4 mt-4">
               <span className="eyebrow">Total</span>
               <div className="text-right">
