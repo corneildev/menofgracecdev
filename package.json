@@ -12,7 +12,8 @@
     "format": "prettier --write .",
     "test": "vitest run src",
     "test:unit": "vitest run src",
-    "test:preload": "playwright test tests/preload-uniqueness.spec.ts"
+    "test:preload": "playwright test tests/preload-uniqueness.spec.ts",
+    "build:hostinger": "npm run build && node scripts/generate-static.mjs"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",
