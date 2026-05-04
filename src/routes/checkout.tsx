@@ -445,7 +445,43 @@ function CheckoutPage() {
             <div className="space-y-2 border-t border-hairline pt-4 text-sm">
               <Row label="Sous-total" value={formatFcfa(totalFcfa)} />
               <Row label="Livraison" value="Offerte" muted />
+              {promoApplied && discountFcfa > 0 && (
+                <div className="flex justify-between items-center text-emerald-300/80">
+                  <span className="text-xs">Code {promoApplied.code}</span>
+                  <span>−{formatFcfa(discountFcfa)}</span>
+                </div>
+              )}
             </div>
+            <div className="border-t border-hairline mt-4 pt-4">
+              <div className="eyebrow text-bone/50 text-[10px] mb-2">Code promo</div>
+              {promoApplied ? (
+                <div className="flex items-center justify-between gap-2 border border-emerald-500/40 px-3 py-2">
+                  <span className="text-emerald-300/90 text-xs eyebrow">{promoApplied.code} appliqué</span>
+                  <button
+                    type="button"
+                    onClick={() => { setPromoApplied(null); setPromoInput(""); setPromoError(null); }}
+                    className="text-bone/60 hover:text-bone text-xs"
+                  >Retirer</button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <input
+                    value={promoInput}
+                    onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                    placeholder="CODE"
+                    className="flex-1 bg-transparent border border-hairline px-3 py-2 text-sm text-bone placeholder:text-bone/30 focus:outline-none focus:border-bone/40"
+                  />
+                  <button
+                    type="button"
+                    onClick={applyPromo}
+                    disabled={promoBusy || !promoInput.trim()}
+                    className="luxury-btn text-xs px-4"
+                  >Appliquer</button>
+                </div>
+              )}
+              {promoError && <div className="text-red-300/80 text-xs mt-2">{promoError}</div>}
+            </div>
+
             <div className="flex justify-between items-baseline border-t border-hairline pt-4 mt-4">
               <span className="eyebrow">Total</span>
               <div className="text-right">
