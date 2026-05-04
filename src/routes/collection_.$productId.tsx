@@ -19,6 +19,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SizeFinder } from "@/components/SizeFinder";
 import { RestockAlertForm } from "@/components/RestockAlertForm";
 import { ProductMediaGallery } from "@/components/ProductMediaGallery";
+import { ProductReviews } from "@/components/ProductReviews";
+import {
+  LiveActivityToast,
+  ViewersCounter,
+  OfferCountdown,
+  PromoBadge,
+  StockUrgency,
+} from "@/components/ProductPromo";
+import { Icon } from "@/components/Icon";
 import { trackProductEvent } from "@/lib/analytics";
 
 export const Route = createFileRoute("/collection_/$productId")({
@@ -251,44 +260,99 @@ function ProductView({ product }: { product: ProductWithImages }) {
   };
 
   return (
-    <div className="bg-ink pt-32 sm:pt-40 pb-20 sm:pb-32 overflow-x-hidden">
+    <div className="bg-background pt-32 sm:pt-40 pb-24 sm:pb-32 overflow-x-hidden">
+      <LiveActivityToast productName={product.name} />
+
       {/* Breadcrumb */}
-      <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto mb-8 sm:mb-10">
-        <div className="eyebrow text-bone/50 flex items-center gap-3 flex-wrap">
-          <Link to="/collection" className="hover:text-bone">Collection</Link>
-          <span>/</span>
-          <span className="text-bone/80 truncate">{product.name}</span>
-        </div>
+      <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto mb-6 sm:mb-8">
+        <nav aria-label="Fil d'Ariane" className="eyebrow text-foreground/55 flex items-center gap-3 flex-wrap">
+          <Link to="/" className="hover:text-foreground transition-colors">Accueil</Link>
+          <Icon name="chevron-right" className="text-foreground/30" />
+          <Link to="/collection" className="hover:text-foreground transition-colors">Collection</Link>
+          <Icon name="chevron-right" className="text-foreground/30" />
+          <span className="text-foreground/80 truncate">{product.name}</span>
+        </nav>
       </div>
 
       {/* Gallery + Buy panel */}
       <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 sm:gap-12 lg:gap-20">
-        <ProductMediaGallery
-          images={product.images}
-          videos={product.videos}
-          alt={product.name}
-          filterVariantId={filterVariantId}
-        />
+        <div className="anim-slide-up">
+          <ProductMediaGallery
+            images={product.images}
+            videos={product.videos}
+            alt={product.name}
+            filterVariantId={filterVariantId}
+          />
+        </div>
 
         {/* Buy panel */}
-        <div className="lg:sticky lg:top-32 self-start">
-          <div className="eyebrow text-bone/60 mb-4">{CATEGORY_LABELS[product.category]}</div>
-          <h1 className="display text-3xl sm:text-4xl md:text-5xl mb-6 break-words">{product.name}</h1>
+        <div className="lg:sticky lg:top-32 self-start anim-slide-up" style={{ animationDelay: "120ms" }}>
+          {/* Top badges */}
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-[10px] uppercase tracking-[0.2em]">
+              <Icon name="gem" /> Édition limitée
+            </span>
+            {(product.stock ?? 0) > 0 && (product.stock ?? 0) <= 5 && (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-[10px] uppercase tracking-[0.2em]">
+                <Icon name="fire" /> Stock limité
+              </span>
+            )}
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-hairline text-foreground/70 text-[10px] uppercase tracking-[0.2em]">
+              <Icon name="award" /> Made in Abidjan
+            </span>
+          </div>
+
+          <div className="eyebrow text-foreground/60 mb-3">{CATEGORY_LABELS[product.category]}</div>
+          <h1 className="display text-3xl sm:text-4xl md:text-5xl mb-4 break-words">{product.name}</h1>
+
+          {/* Reviews summary inline */}
+          <button
+            type="button"
+            onClick={() => document.getElementById("reviews-heading")?.scrollIntoView({ behavior: "smooth" })}
+            className="inline-flex items-center gap-2 mb-5 text-xs text-foreground/70 hover:text-foreground transition-colors"
+          >
+            <span className="inline-flex items-center gap-0.5 text-amber-500">
+              {[1, 2, 3, 4, 5].map((i) => <Icon key={i} name="star" />)}
+            </span>
+            <span className="text-foreground font-medium">4.9</span>
+            <span className="text-foreground/50">· Voir les avis</span>
+          </button>
+
           {product.short_description && (
-            <p className="text-bone/70 font-light leading-relaxed mb-6">{product.short_description}</p>
+            <p className="text-foreground/70 font-light leading-relaxed mb-6">{product.short_description}</p>
           )}
 
-          <div className="border-y border-hairline py-6 mb-10">
-            <div className="text-bone text-lg font-light">{formatPriceFcfa(effectivePrice.fcfa)}</div>
-            <div className="text-bone/50 text-sm font-light mt-1">
+          <ViewersCounter productSlug={product.slug} />
+
+          <div className="border-y border-hairline py-6 my-6">
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <div className="text-foreground text-2xl font-light">{formatPriceFcfa(effectivePrice.fcfa)}</div>
+              <div className="text-foreground/45 text-sm font-light line-through">
+                {formatPriceFcfa(Math.round(effectivePrice.fcfa * 1.15))}
+              </div>
+              <span className="px-2 py-0.5 bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[10px] uppercase tracking-wider font-medium">
+                <Icon name="percent" /> -15%
+              </span>
+            </div>
+            <div className="text-foreground/55 text-sm font-light mt-2">
               {formatPriceUsd(effectivePrice.usd)} · {formatPriceEur(effectivePrice.eur)}
             </div>
+            <div className="text-foreground/55 text-xs font-light mt-2 flex items-center gap-1.5">
+              <Icon name="card" className="text-foreground/40" />
+              ou 3× {formatPriceFcfa(Math.round(effectivePrice.fcfa / 3))} sans frais
+            </div>
             {selectedVariant && (
-              <div className="eyebrow text-bone/40 text-[10px] mt-3">
+              <div className="eyebrow text-foreground/40 text-[10px] mt-3">
                 {selectedVariant.stock > 0 ? `${selectedVariant.stock} en stock` : "Rupture"}
                 {selectedVariant.sku ? ` · SKU ${selectedVariant.sku}` : ""}
               </div>
             )}
+          </div>
+
+          {/* Promo */}
+          <div className="mb-6 space-y-3">
+            <PromoBadge />
+            <OfferCountdown />
           </div>
 
           {/* Color */}
@@ -320,7 +384,7 @@ function ProductView({ product }: { product: ProductWithImages }) {
                           onClick={() => { if (soldOut) return; setSize(s); setSizeError(null); }}
                         >
                           <span className={soldOut ? "line-through" : ""}>{s}</span>
-                          {soldOut && <span className="ml-2 text-[9px] tracking-[0.18em] opacity-70">Sold out</span>}
+                          {soldOut && <span className="ml-2 text-[9px] tracking-[0.18em] opacity-70">Épuisé</span>}
                         </Chip>
                       );
                       if (!soldOut) return chip;
@@ -359,14 +423,14 @@ function ProductView({ product }: { product: ProductWithImages }) {
                     <DialogTrigger asChild>
                       <button
                         type="button"
-                        className="eyebrow text-[10px] text-bone/70 underline underline-offset-[6px] decoration-hairline hover:text-bone hover:decoration-bone transition-colors"
+                        className="eyebrow text-[10px] text-foreground/70 underline underline-offset-[6px] decoration-hairline hover:text-foreground hover:decoration-current transition-colors inline-flex items-center gap-2"
                       >
-                        Trouver ma taille →
+                        <Icon name="ruler" /> Trouver ma taille
                       </button>
                     </DialogTrigger>
-                    <DialogContent className="bg-ink border-hairline text-bone max-w-xl">
+                    <DialogContent className="bg-background border-hairline text-foreground max-w-xl">
                       <DialogHeader>
-                        <DialogTitle className="font-serif text-2xl text-bone">Trouver ma taille</DialogTitle>
+                        <DialogTitle className="font-serif text-2xl text-foreground">Trouver ma taille</DialogTitle>
                       </DialogHeader>
                       <div className="pt-2">
                         <SizeFinder
@@ -384,7 +448,7 @@ function ProductView({ product }: { product: ProductWithImages }) {
 
                 {actuallySoldOut && (
                   <>
-                    <p className="text-xs text-bone/60 mt-3 tracking-wider font-light">
+                    <p className="text-xs text-foreground/60 mt-3 tracking-wider font-light">
                       Toutes les tailles sont actuellement épuisées. Soyez prévenu dès que la pièce revient.
                     </p>
                     <RestockAlertForm
@@ -396,7 +460,7 @@ function ProductView({ product }: { product: ProductWithImages }) {
                   </>
                 )}
                 {sizeError && (
-                  <p role="alert" className="text-xs text-red-400/90 mt-3 tracking-wider">{sizeError}</p>
+                  <p role="alert" className="text-xs text-red-500 dark:text-red-400 mt-3 tracking-wider anim-shake">{sizeError}</p>
                 )}
               </Section>
             </div>
@@ -443,17 +507,15 @@ function ProductView({ product }: { product: ProductWithImages }) {
                 onChange={(e) => setMonogram(e.target.value.slice(0, 4).toUpperCase())}
                 placeholder="3 initiales"
                 maxLength={4}
-                className="w-full bg-transparent border-b border-hairline py-3 text-bone tracking-[0.3em] focus:outline-none focus:border-bone transition-colors"
+                className="w-full bg-transparent border-b border-hairline py-3 text-foreground tracking-[0.3em] focus:outline-none focus:border-foreground transition-colors"
               />
             </Section>
           )}
 
-          {/* Urgence : low stock signal */}
+          {/* Urgence : low stock signal sur variant */}
           {selectedVariant && selectedVariant.stock > 0 && selectedVariant.stock <= 3 && (
-            <div className="mb-6 px-4 py-3 border border-hairline bg-bone/[0.04]">
-              <p className="eyebrow text-bone/80 text-[10px]">
-                ⚡ Plus que {selectedVariant.stock} {selectedVariant.stock > 1 ? "pièces" : "pièce"} disponible{selectedVariant.stock > 1 ? "s" : ""}
-              </p>
+            <div className="mb-6">
+              <StockUrgency stock={selectedVariant.stock} />
             </div>
           )}
 
@@ -464,81 +526,98 @@ function ProductView({ product }: { product: ProductWithImages }) {
               onClick={handleAddToCart}
               disabled={actuallySoldOut}
               aria-disabled={actuallySoldOut}
-              className="luxury-btn luxury-btn-solid w-full disabled:opacity-40 disabled:cursor-not-allowed"
+              className="luxury-btn luxury-btn-solid w-full disabled:opacity-40 disabled:cursor-not-allowed group inline-flex items-center justify-center gap-3 hover:scale-[1.01] transition-transform"
             >
+              <Icon name="cart" />
               {actuallySoldOut ? "Édition épuisée" : "Ajouter au panier"}
             </button>
-            <button
-              type="button"
-              onClick={() => toggle(product.id)}
-              aria-pressed={saved}
-              className="luxury-btn w-full flex items-center justify-center gap-3"
-            >
-              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.4">
-                <path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 3.1c0 5.6-7.5 10.2-7.5 10.2Z" />
-              </svg>
-              {saved ? "Sauvegardé" : "Ajouter à la wishlist"}
-            </button>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => toggle(product.id)}
+                aria-pressed={saved}
+                className="luxury-btn flex items-center justify-center gap-2"
+              >
+                <Icon name={saved ? "heart" : "heart-o"} className={saved ? "text-red-500" : ""} />
+                {saved ? "Sauvegardé" : "Wishlist"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof navigator !== "undefined" && (navigator as any).share) {
+                    (navigator as any).share({ title: product.name, url: window.location.href }).catch(() => {});
+                  } else if (typeof navigator !== "undefined" && navigator.clipboard) {
+                    navigator.clipboard.writeText(window.location.href);
+                  }
+                }}
+                className="luxury-btn flex items-center justify-center gap-2"
+              >
+                <Icon name="share" />
+                Partager
+              </button>
+            </div>
           </div>
 
           {/* Garanties : conversion booster */}
-          <ul className="mt-10 space-y-4 text-sm text-bone/70 font-light">
-            <Reassure icon="🚚" title="Expédition sous 5 jours ouvrés" body="Depuis Abidjan vers le monde entier." />
-            <Reassure icon="✂" title="Retouches locales offertes" body="Pour un tombé parfait, sans frais." />
-            <Reassure icon="↩" title="Retours sous 14 jours" body="Échange ou remboursement intégral." />
-            <Reassure icon="🔒" title="Paiement sécurisé" body="Wave, Orange Money, virement bancaire." />
-            <Reassure icon="💬" title="Conseil privé sur WhatsApp" body="Une équipe dédiée à votre disposition." />
+          <ul className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Reassure icon="truck" title="Livraison rapide" body="Sous 5 jours ouvrés." />
+            <Reassure icon="scissors" title="Retouches offertes" body="Tombé parfait garanti." />
+            <Reassure icon="rotate-left" title="Retours 14 jours" body="Sans condition." />
+            <Reassure icon="lock" title="Paiement sécurisé" body="Wave, OM, virement." />
+            <Reassure icon="whatsapp" title="Conseil privé" body="WhatsApp dédié." />
+            <Reassure icon="shield" title="Garantie qualité" body="Satisfait ou remboursé." />
           </ul>
         </div>
       </div>
 
       {/* Sticky mobile CTA */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-ink/95 backdrop-blur-md border-t border-hairline px-4 py-3 flex items-center justify-between gap-3">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-hairline px-4 py-3 flex items-center justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <div className="text-bone/50 text-[10px] uppercase tracking-[0.2em]">{product.name}</div>
-          <div className="text-bone text-sm font-light truncate">{formatPriceFcfa(effectivePrice.fcfa)}</div>
+          <div className="text-foreground/50 text-[10px] uppercase tracking-[0.2em] truncate">{product.name}</div>
+          <div className="text-foreground text-sm font-light truncate">{formatPriceFcfa(effectivePrice.fcfa)}</div>
         </div>
         <button
           type="button"
           onClick={handleAddToCart}
           disabled={actuallySoldOut}
           aria-disabled={actuallySoldOut}
-          className="luxury-btn luxury-btn-solid !px-6 !py-3 !text-[10px] disabled:opacity-40"
+          className="luxury-btn luxury-btn-solid !px-5 !py-3 !text-[10px] disabled:opacity-40 inline-flex items-center gap-2"
         >
-          {actuallySoldOut ? "Épuisé" : "Ajouter"}
+          <Icon name="cart" />
+          {actuallySoldOut ? "Épuisé" : "Acheter"}
         </button>
       </div>
 
       {/* Tabs: Description / Tissu / Construction / Livraison */}
       <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1100px] mx-auto mt-20 sm:mt-32">
         <Tabs defaultValue="description">
-          <TabsList className="bg-transparent border-b border-hairline w-full justify-start gap-6 rounded-none h-auto p-0">
-            <TabsTrigger value="description" className="data-[state=active]:bg-transparent data-[state=active]:text-bone data-[state=active]:border-b data-[state=active]:border-bone rounded-none px-0 pb-3 eyebrow text-bone/50">
+          <TabsList className="bg-transparent border-b border-hairline w-full justify-start gap-6 rounded-none h-auto p-0 overflow-x-auto">
+            <TabsTrigger value="description" className="data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:border-b data-[state=active]:border-foreground rounded-none px-0 pb-3 eyebrow text-foreground/50">
               Description
             </TabsTrigger>
             {(product.fabric_composition || product.fabric_weight || product.fabric_mill || product.fabric_notes) && (
-              <TabsTrigger value="fabric" className="data-[state=active]:bg-transparent data-[state=active]:text-bone data-[state=active]:border-b data-[state=active]:border-bone rounded-none px-0 pb-3 eyebrow text-bone/50">
+              <TabsTrigger value="fabric" className="data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:border-b data-[state=active]:border-foreground rounded-none px-0 pb-3 eyebrow text-foreground/50">
                 Tissu
               </TabsTrigger>
             )}
             {product.details.length > 0 && (
-              <TabsTrigger value="details" className="data-[state=active]:bg-transparent data-[state=active]:text-bone data-[state=active]:border-b data-[state=active]:border-bone rounded-none px-0 pb-3 eyebrow text-bone/50">
+              <TabsTrigger value="details" className="data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:border-b data-[state=active]:border-foreground rounded-none px-0 pb-3 eyebrow text-foreground/50">
                 Construction
               </TabsTrigger>
             )}
-            <TabsTrigger value="shipping" className="data-[state=active]:bg-transparent data-[state=active]:text-bone data-[state=active]:border-b data-[state=active]:border-bone rounded-none px-0 pb-3 eyebrow text-bone/50">
+            <TabsTrigger value="shipping" className="data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:border-b data-[state=active]:border-foreground rounded-none px-0 pb-3 eyebrow text-foreground/50">
               Livraison
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="description" className="pt-10">
             {product.description && (
-              <p className="text-bone/70 font-light leading-relaxed whitespace-pre-line">{product.description}</p>
+              <p className="text-foreground/70 font-light leading-relaxed whitespace-pre-line">{product.description}</p>
             )}
             {product.story && (
               <div className="mt-10 pt-10 border-t border-hairline">
-                <div className="eyebrow text-bone/60 mb-4">— Histoire —</div>
-                <p className="text-bone/70 font-light leading-relaxed whitespace-pre-line italic">{product.story}</p>
+                <div className="eyebrow text-foreground/60 mb-4">— Histoire —</div>
+                <p className="text-foreground/70 font-light leading-relaxed whitespace-pre-line italic">{product.story}</p>
               </div>
             )}
           </TabsContent>
@@ -550,15 +629,15 @@ function ProductView({ product }: { product: ProductWithImages }) {
               {product.fabric_mill && <Row k="Manufacture" v={product.fabric_mill} />}
             </dl>
             {product.fabric_notes && (
-              <p className="text-bone/60 font-light leading-relaxed mt-8">{product.fabric_notes}</p>
+              <p className="text-foreground/60 font-light leading-relaxed mt-8">{product.fabric_notes}</p>
             )}
           </TabsContent>
 
           <TabsContent value="details" className="pt-10">
             <ul className="space-y-4 max-w-2xl">
               {product.details.map((d) => (
-                <li key={d} className="flex gap-4 text-bone/70 font-light leading-relaxed border-b border-hairline pb-4">
-                  <span className="eyebrow text-bone/40 mt-1">·</span>
+                <li key={d} className="flex gap-4 text-foreground/70 font-light leading-relaxed border-b border-hairline pb-4">
+                  <Icon name="check-simple" className="text-foreground/50 mt-1" />
                   <span>{d}</span>
                 </li>
               ))}
@@ -566,20 +645,25 @@ function ProductView({ product }: { product: ProductWithImages }) {
           </TabsContent>
 
           <TabsContent value="shipping" className="pt-10">
-            <div className="space-y-4 text-bone/70 font-light leading-relaxed max-w-2xl">
-              <p>Expédition sous 5 jours ouvrés depuis Abidjan.</p>
-              <p>Retouches locales gratuites pour assurer un tombé parfait.</p>
-              <p>Retours acceptés sous 14 jours, sauf pour les pièces personnalisées (monogramme, bespoke).</p>
+            <div className="space-y-4 text-foreground/70 font-light leading-relaxed max-w-2xl">
+              <p><Icon name="truck" className="mr-2 text-foreground/50" /> Expédition sous 5 jours ouvrés depuis Abidjan.</p>
+              <p><Icon name="scissors" className="mr-2 text-foreground/50" /> Retouches locales gratuites pour assurer un tombé parfait.</p>
+              <p><Icon name="rotate-left" className="mr-2 text-foreground/50" /> Retours acceptés sous 14 jours, sauf pour les pièces personnalisées.</p>
             </div>
           </TabsContent>
         </Tabs>
+      </div>
+
+      {/* Reviews */}
+      <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1100px] mx-auto mt-20 sm:mt-32">
+        <ProductReviews productSlug={product.slug} productName={product.name} />
       </div>
 
       {/* Related products */}
       {relatedProducts.length > 0 && (
         <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto mt-20 sm:mt-32">
           <div className="border-t border-hairline pt-12 mb-10">
-            <div className="eyebrow text-bone/60 mb-4">— Vous aimerez aussi —</div>
+            <div className="eyebrow text-foreground/60 mb-4">— Vous aimerez aussi —</div>
             <h2 className="display text-2xl sm:text-3xl md:text-4xl">Pièces de la collection</h2>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
@@ -598,11 +682,11 @@ function ProductView({ product }: { product: ProductWithImages }) {
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </div>
-                <div className="eyebrow text-bone/50 text-[10px] mb-2">{CATEGORY_LABELS[p.category]}</div>
-                <h3 className="font-serif text-bone text-lg mb-1 group-hover:text-bone/80 transition-colors">
+                <div className="eyebrow text-foreground/55 text-[10px] mb-2">{CATEGORY_LABELS[p.category]}</div>
+                <h3 className="font-serif text-foreground text-lg mb-1 group-hover:text-foreground/80 transition-colors">
                   {p.name}
                 </h3>
-                <div className="text-bone/60 font-light text-sm">{formatPriceFcfa(p.price_fcfa)}</div>
+                <div className="text-foreground/60 font-light text-sm">{formatPriceFcfa(p.price_fcfa)}</div>
               </Link>
             ))}
           </div>
@@ -615,7 +699,7 @@ function ProductView({ product }: { product: ProductWithImages }) {
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mb-8">
-      <div className="eyebrow text-bone/60 mb-3">{label}</div>
+      <div className="eyebrow text-foreground/60 mb-3">{label}</div>
       {children}
     </div>
   );
@@ -637,12 +721,12 @@ function Chip({
       onClick={onClick}
       disabled={disabled}
       aria-disabled={disabled}
-      className={`px-4 py-2 text-xs tracking-[0.2em] uppercase border transition-colors ${
+      className={`px-4 py-2 text-xs tracking-[0.2em] uppercase border transition-all duration-200 ${
         disabled
-          ? "border-hairline text-bone/30 cursor-not-allowed"
+          ? "border-hairline text-foreground/30 cursor-not-allowed"
           : active
-            ? "border-bone bg-bone text-ink"
-            : "border-hairline text-bone/70 hover:border-bone hover:text-bone"
+            ? "border-foreground bg-foreground text-background scale-[1.02]"
+            : "border-hairline text-foreground/70 hover:border-foreground hover:text-foreground hover:scale-[1.02]"
       }`}
     >
       {children}
@@ -653,19 +737,21 @@ function Chip({
 function Row({ k, v }: { k: string; v: string }) {
   return (
     <div className="flex justify-between border-b border-hairline pb-3">
-      <dt className="eyebrow text-bone/50 text-[10px]">{k}</dt>
-      <dd className="text-bone/80 text-sm font-light text-right">{v}</dd>
+      <dt className="eyebrow text-foreground/50 text-[10px]">{k}</dt>
+      <dd className="text-foreground/80 text-sm font-light text-right">{v}</dd>
     </div>
   );
 }
 
-function Reassure({ icon, title, body }: { icon: string; title: string; body: string }) {
+function Reassure({ icon, title, body }: { icon: import("@/components/Icon").IconName; title: string; body: string }) {
   return (
-    <li className="flex items-start gap-4 border-b border-hairline pb-4">
-      <span className="text-base leading-none mt-0.5 select-none" aria-hidden>{icon}</span>
-      <div className="flex-1">
-        <div className="text-bone text-sm font-light">{title}</div>
-        <div className="text-bone/55 text-xs font-light mt-1">{body}</div>
+    <li className="flex items-start gap-3 border border-hairline p-3 hover:border-foreground/40 transition-colors group">
+      <span className="text-foreground/70 group-hover:text-foreground transition-colors mt-0.5">
+        <Icon name={icon} />
+      </span>
+      <div className="flex-1 min-w-0">
+        <div className="text-foreground text-xs font-medium">{title}</div>
+        <div className="text-foreground/55 text-[11px] font-light mt-0.5">{body}</div>
       </div>
     </li>
   );
