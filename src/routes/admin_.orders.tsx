@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin_/orders")({
   head: () => ({
@@ -50,6 +51,11 @@ function fmtFcfa(n: number) {
   return `${n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")} FCFA`;
 }
 
+function csvEscape(v: unknown) {
+  const s = v == null ? "" : String(v);
+  return /[",\n;]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
 function AdminOrdersPage() {
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
@@ -58,6 +64,8 @@ function AdminOrdersPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [paymentFilter, setPaymentFilter] = useState<string>("all");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [actionBusy, setActionBusy] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -103,6 +111,82 @@ function AdminOrdersPage() {
     };
   }, [filtered]);
 
+  const allFilteredSelected = filtered.length > 0 && filtered.every((o) => selected.has(o.id));
+  const selectedCount = selected.size;
+
+  function toggleAll() {
+    if (allFilteredSelected) {
+      const next = new Set(selected);
+      filtered.forEach((o) => next.delete(o.id));
+      setSelected(next);
+    } else {
+      const next = new Set(selected);
+      filtered.forEach((o) => next.add(o.id));
+      setSelected(next);
+    }
+  }
+
+  function toggleOne(id: string) {
+    const next = new Set(selected);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelected(next);
+  }
+
+  async function bulkUpdate(patch: Partial<Pick<OrderRow, "status" | "payment_status">>, label: string, opts?: { confirm?: string }) {
+    if (selectedCount === 0) {
+      toast.error("Sélectionnez au moins une commande");
+      return;
+    }
+    if (opts?.confirm && !confirm(opts.confirm)) return;
+    setActionBusy(true);
+    const ids = Array.from(selected);
+    const { error } = await supabase
+      .from("orders")
+      .update(patch as never)
+      .in("id", ids);
+    setActionBusy(false);
+    if (error) {
+      toast.error(`Échec: ${error.message}`);
+      return;
+    }
+    toast.success(`${ids.length} commande(s) — ${label}`);
+    setSelected(new Set());
+    void load();
+  }
+
+  function exportCsv() {
+    const rows = selectedCount > 0 ? filtered.filter((o) => selected.has(o.id)) : filtered;
+    if (rows.length === 0) {
+      toast.error("Rien à exporter");
+      return;
+    }
+    const headers = ["order_number", "created_at", "customer", "email", "phone", "city", "country", "status", "payment_status", "payment_method", "total_fcfa"];
+    const csv = [
+      headers.join(","),
+      ...rows.map((o) => [
+        o.order_number,
+        new Date(o.created_at).toISOString(),
+        o.customer_full_name,
+        o.customer_email,
+        o.customer_phone,
+        o.shipping_city,
+        o.shipping_country,
+        STATUS_LABELS[o.status] ?? o.status,
+        PAYMENT_LABELS[o.payment_status] ?? o.payment_status,
+        o.payment_method ?? "",
+        o.total_fcfa,
+      ].map(csvEscape).join(",")),
+    ].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `commandes-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   if (loading || !user || !isAdmin) return null;
 
   return (
@@ -118,13 +202,14 @@ function AdminOrdersPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           <Stat label="Filtré" value={`${totals.count}`} />
           <Stat label="Payées" value={`${totals.paidCount}`} />
           <Stat label="Revenu (filtré)" value={fmtFcfa(totals.revenue)} />
+          <Stat label="Sélectionnées" value={`${selectedCount}`} />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-3 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto_auto] gap-3 mb-6">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -139,6 +224,55 @@ function AdminOrdersPage() {
             <option value="all">Tous paiements</option>
             {Object.entries(PAYMENT_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
+          <button
+            onClick={exportCsv}
+            className="eyebrow text-[10px] border border-hairline px-4 py-3 text-bone/80 hover:text-bone hover:border-bone/40"
+          >
+            Exporter CSV
+          </button>
+        </div>
+
+        {/* Bulk action bar */}
+        <div className={`border ${selectedCount > 0 ? "border-bone/40 bg-bone/[0.04]" : "border-hairline"} p-4 mb-6 transition-colors`}>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="eyebrow text-[10px] text-bone/60 mr-2">
+              Actions en lot {selectedCount > 0 && `(${selectedCount})`}
+            </span>
+            <BulkBtn disabled={actionBusy || !selectedCount} onClick={() => bulkUpdate({ payment_status: "paid", status: "preparing" }, "confirmées (payées + en préparation)")}>
+              ✓ Confirmer
+            </BulkBtn>
+            <BulkBtn disabled={actionBusy || !selectedCount} onClick={() => bulkUpdate({ payment_status: "paid" }, "marquées payées")}>
+              💳 Marquer payées
+            </BulkBtn>
+            <BulkBtn disabled={actionBusy || !selectedCount} onClick={() => bulkUpdate({ status: "preparing" }, "en préparation")}>
+              📦 En préparation
+            </BulkBtn>
+            <BulkBtn disabled={actionBusy || !selectedCount} onClick={() => bulkUpdate({ status: "shipped" }, "expédiées")}>
+              🚚 Expédier
+            </BulkBtn>
+            <BulkBtn disabled={actionBusy || !selectedCount} onClick={() => bulkUpdate({ status: "delivered" }, "livrées")}>
+              ✅ Livrer
+            </BulkBtn>
+            <BulkBtn
+              tone="danger"
+              disabled={actionBusy || !selectedCount}
+              onClick={() => bulkUpdate({ status: "cancelled" }, "annulées", { confirm: `Annuler ${selectedCount} commande(s) ?` })}
+            >
+              ✕ Annuler
+            </BulkBtn>
+            <BulkBtn
+              tone="danger"
+              disabled={actionBusy || !selectedCount}
+              onClick={() => bulkUpdate({ status: "refunded", payment_status: "refunded" }, "remboursées", { confirm: `Marquer ${selectedCount} commande(s) comme remboursées ?` })}
+            >
+              ↩ Rembourser
+            </BulkBtn>
+            {selectedCount > 0 && (
+              <button onClick={() => setSelected(new Set())} className="eyebrow text-[10px] text-bone/50 hover:text-bone ml-auto">
+                Désélectionner
+              </button>
+            )}
+          </div>
         </div>
 
         {busy ? (
@@ -146,33 +280,65 @@ function AdminOrdersPage() {
         ) : filtered.length === 0 ? (
           <div className="border border-hairline p-12 text-center text-bone/60 font-light">Aucune commande.</div>
         ) : (
-          <div className="border border-hairline divide-y divide-hairline overflow-x-auto">
-            {filtered.map((o) => (
-              <Link
-                key={o.id}
-                to="/admin/orders/$id"
-                params={{ id: o.id }}
-                className="grid grid-cols-[auto_1fr_auto_auto_auto] gap-6 px-5 py-4 items-center hover:bg-bone/[0.03] transition-colors"
-              >
-                <div>
-                  <div className="font-serif text-bone">{o.order_number}</div>
-                  <div className="text-bone/40 text-[10px] eyebrow mt-1">
-                    {new Date(o.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })}
+          <div className="border border-hairline overflow-x-auto">
+            <div className="grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto] gap-6 px-5 py-3 items-center bg-bone/[0.02] border-b border-hairline eyebrow text-[10px] text-bone/50">
+              <input
+                type="checkbox"
+                checked={allFilteredSelected}
+                onChange={toggleAll}
+                className="accent-bone cursor-pointer"
+                aria-label="Tout sélectionner"
+              />
+              <span>N°</span>
+              <span>Client</span>
+              <span>Paiement</span>
+              <span>Statut</span>
+              <span>Total</span>
+              <span></span>
+            </div>
+            <div className="divide-y divide-hairline">
+              {filtered.map((o) => {
+                const isSel = selected.has(o.id);
+                return (
+                  <div
+                    key={o.id}
+                    className={`grid grid-cols-[auto_auto_1fr_auto_auto_auto_auto] gap-6 px-5 py-4 items-center transition-colors ${isSel ? "bg-bone/[0.05]" : "hover:bg-bone/[0.03]"}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSel}
+                      onChange={() => toggleOne(o.id)}
+                      className="accent-bone cursor-pointer"
+                      aria-label={`Sélectionner ${o.order_number}`}
+                    />
+                    <div>
+                      <div className="font-serif text-bone">{o.order_number}</div>
+                      <div className="text-bone/40 text-[10px] eyebrow mt-1">
+                        {new Date(o.created_at).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" })}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-bone text-sm">{o.customer_full_name}</div>
+                      <div className="text-bone/50 text-xs">{o.customer_email} · {o.shipping_city}, {o.shipping_country}</div>
+                    </div>
+                    <Badge tone={o.payment_status === "paid" ? "ok" : o.payment_status === "failed" ? "bad" : "neutral"}>
+                      {PAYMENT_LABELS[o.payment_status] ?? o.payment_status}
+                    </Badge>
+                    <Badge tone={o.status === "delivered" ? "ok" : o.status === "cancelled" ? "bad" : "neutral"}>
+                      {STATUS_LABELS[o.status] ?? o.status}
+                    </Badge>
+                    <div className="text-bone/80 text-sm font-light whitespace-nowrap">{fmtFcfa(o.total_fcfa)}</div>
+                    <Link
+                      to="/admin/orders/$id"
+                      params={{ id: o.id }}
+                      className="eyebrow text-[10px] text-bone/70 hover:text-bone border border-hairline px-3 py-1.5"
+                    >
+                      Détails →
+                    </Link>
                   </div>
-                </div>
-                <div>
-                  <div className="text-bone text-sm">{o.customer_full_name}</div>
-                  <div className="text-bone/50 text-xs">{o.customer_email} · {o.shipping_city}, {o.shipping_country}</div>
-                </div>
-                <Badge tone={o.payment_status === "paid" ? "ok" : o.payment_status === "failed" ? "bad" : "neutral"}>
-                  {PAYMENT_LABELS[o.payment_status] ?? o.payment_status}
-                </Badge>
-                <Badge tone={o.status === "delivered" ? "ok" : o.status === "cancelled" ? "bad" : "neutral"}>
-                  {STATUS_LABELS[o.status] ?? o.status}
-                </Badge>
-                <div className="text-bone/80 text-sm font-light">{fmtFcfa(o.total_fcfa)}</div>
-              </Link>
-            ))}
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
@@ -195,4 +361,26 @@ function Badge({ children, tone }: { children: React.ReactNode; tone: "ok" | "ba
     tone === "bad" ? "border-red-500/40 text-red-300/90" :
     "border-hairline text-bone/60";
   return <span className={`eyebrow text-[10px] border px-2 py-1 ${cls}`}>{children}</span>;
+}
+
+function BulkBtn({
+  children,
+  onClick,
+  disabled,
+  tone = "default",
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  disabled?: boolean;
+  tone?: "default" | "danger";
+}) {
+  const base = "eyebrow text-[10px] px-3 py-2 border transition-colors disabled:opacity-30 disabled:cursor-not-allowed";
+  const cls = tone === "danger"
+    ? "border-red-500/40 text-red-300/90 hover:bg-red-500/10"
+    : "border-hairline text-bone/80 hover:text-bone hover:border-bone/40";
+  return (
+    <button onClick={onClick} disabled={disabled} className={`${base} ${cls}`}>
+      {children}
+    </button>
+  );
 }
