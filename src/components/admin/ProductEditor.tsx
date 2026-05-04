@@ -504,13 +504,13 @@ export function ProductEditor({ productId }: { productId?: string }) {
                       <img src={img.url} alt="" className="aspect-[4/5] w-full object-cover" />
                       <div className="absolute inset-x-0 top-0 bg-ink/85 px-2 py-1.5 flex justify-between items-center text-[10px]">
                         <select
-                          value={img.variant_id ?? ""}
-                          onChange={(e) => setImages((prev) => prev.map((p, k) => k === idx ? { ...p, variant_id: e.target.value || null } : p))}
+                          value={img.variant_key ?? ""}
+                          onChange={(e) => setImages((prev) => prev.map((p, k) => k === idx ? { ...p, variant_key: e.target.value || null, variant_id: null } : p))}
                           className="bg-transparent text-bone/70 text-[10px] border-0 focus:outline-none"
                         >
                           <option value="">Toutes variantes</option>
-                          {variants.map((v, i) => v.id && (
-                            <option key={v.id} value={v.id}>{v.color || "—"} / {v.size || "—"}</option>
+                          {variants.map((v) => (
+                            <option key={v.key} value={v.key}>{v.color || "—"} / {v.size || "—"}</option>
                           ))}
                         </select>
                       </div>
