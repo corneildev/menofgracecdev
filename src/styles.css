@@ -133,8 +133,8 @@
     letter-spacing: -0.01em;
   }
   ::selection {
-    background: var(--color-bone);
-    color: var(--color-ink);
+    background: var(--foreground);
+    color: var(--background);
   }
 }
 
@@ -145,7 +145,7 @@
     letter-spacing: 0.32em;
     text-transform: uppercase;
     font-weight: 400;
-    color: oklch(0.7 0 0);
+    color: color-mix(in oklab, var(--foreground) 65%, transparent);
   }
   .display {
     font-family: var(--font-serif);
@@ -165,29 +165,29 @@
     font-size: 0.7rem;
     letter-spacing: 0.32em;
     text-transform: uppercase;
-    border: 1px solid var(--color-bone);
-    color: var(--color-bone);
+    border: 1px solid var(--foreground);
+    color: var(--foreground);
     background: transparent;
     transition: all 400ms cubic-bezier(0.22, 1, 0.36, 1);
     cursor: pointer;
   }
   .luxury-btn:hover {
-    background: var(--color-bone);
-    color: var(--color-ink);
+    background: var(--foreground);
+    color: var(--background);
   }
   .luxury-btn-solid {
-    background: var(--color-bone);
-    color: var(--color-ink);
-    border: 1px solid var(--color-bone);
+    background: var(--foreground);
+    color: var(--background);
+    border: 1px solid var(--foreground);
   }
   .luxury-btn-solid:hover {
     background: transparent;
-    color: var(--color-bone);
+    color: var(--foreground);
   }
   .form-line {
     width: 100%;
     background: transparent;
-    color: var(--color-bone);
+    color: var(--foreground);
     border: 0;
     border-bottom: 1px solid var(--color-hairline);
     padding: 0.65rem 0 0.85rem;
@@ -199,16 +199,16 @@
     transition: border-color 400ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   .form-line:focus {
-    border-bottom-color: var(--color-bone);
+    border-bottom-color: var(--foreground);
   }
   .form-line::placeholder {
-    color: oklch(0.7 0 0 / 60%);
+    color: color-mix(in oklab, var(--foreground) 50%, transparent);
     font-style: italic;
   }
   select.form-line {
     appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, var(--color-bone) 50%),
-      linear-gradient(135deg, var(--color-bone) 50%, transparent 50%);
+    background-image: linear-gradient(45deg, transparent 50%, var(--foreground) 50%),
+      linear-gradient(135deg, var(--foreground) 50%, transparent 50%);
     background-position: calc(100% - 12px) 1.05rem, calc(100% - 7px) 1.05rem;
     background-size: 5px 5px, 5px 5px;
     background-repeat: no-repeat;
