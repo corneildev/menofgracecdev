@@ -19,6 +19,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SizeFinder } from "@/components/SizeFinder";
 import { RestockAlertForm } from "@/components/RestockAlertForm";
 import { ProductMediaGallery } from "@/components/ProductMediaGallery";
+import { ProductReviews } from "@/components/ProductReviews";
+import {
+  LiveActivityToast,
+  ViewersCounter,
+  OfferCountdown,
+  PromoBadge,
+  StockUrgency,
+} from "@/components/ProductPromo";
+import { Icon } from "@/components/Icon";
 import { trackProductEvent } from "@/lib/analytics";
 
 export const Route = createFileRoute("/collection_/$productId")({
