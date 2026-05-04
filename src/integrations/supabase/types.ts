@@ -322,6 +322,8 @@ export type Database = {
           customer_full_name: string
           customer_phone: string
           delivery_fcfa: number
+          discount_fcfa: number
+          discount_usd: number
           guest_email: string | null
           id: string
           idempotency_key: string | null
@@ -329,6 +331,8 @@ export type Database = {
           order_number: string
           payment_method: Database["public"]["Enums"]["payment_method"] | null
           payment_status: Database["public"]["Enums"]["payment_status"]
+          promo_code: string | null
+          promo_code_id: string | null
           shipping_address: string
           shipping_city: string
           shipping_country: string
@@ -348,6 +352,8 @@ export type Database = {
           customer_full_name: string
           customer_phone: string
           delivery_fcfa?: number
+          discount_fcfa?: number
+          discount_usd?: number
           guest_email?: string | null
           id?: string
           idempotency_key?: string | null
@@ -355,6 +361,8 @@ export type Database = {
           order_number?: string
           payment_method?: Database["public"]["Enums"]["payment_method"] | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
+          promo_code?: string | null
+          promo_code_id?: string | null
           shipping_address: string
           shipping_city: string
           shipping_country: string
@@ -374,6 +382,8 @@ export type Database = {
           customer_full_name?: string
           customer_phone?: string
           delivery_fcfa?: number
+          discount_fcfa?: number
+          discount_usd?: number
           guest_email?: string | null
           id?: string
           idempotency_key?: string | null
@@ -381,6 +391,8 @@ export type Database = {
           order_number?: string
           payment_method?: Database["public"]["Enums"]["payment_method"] | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
+          promo_code?: string | null
+          promo_code_id?: string | null
           shipping_address?: string
           shipping_city?: string
           shipping_country?: string
@@ -393,7 +405,15 @@ export type Database = {
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "orders_promo_code_id_fkey"
+            columns: ["promo_code_id"]
+            isOneToOne: false
+            referencedRelation: "promo_codes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_events: {
         Row: {
@@ -687,6 +707,54 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_codes: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          discount_type: string
+          discount_value: number
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          min_cart_fcfa: number
+          starts_at: string | null
+          updated_at: string
+          uses_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          discount_type: string
+          discount_value: number
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          min_cart_fcfa?: number
+          starts_at?: string | null
+          updated_at?: string
+          uses_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          min_cart_fcfa?: number
+          starts_at?: string | null
+          updated_at?: string
+          uses_count?: number
+        }
+        Relationships: []
+      }
       restock_alerts: {
         Row: {
           created_at: string
@@ -805,15 +873,26 @@ export type Database = {
         }
         Returns: number
       }
-      place_order: {
-        Args: {
-          p_customer: Json
-          p_idempotency_key?: string
-          p_items: Json
-          p_payment: Database["public"]["Enums"]["payment_method"]
-        }
-        Returns: Json
-      }
+      place_order:
+        | {
+            Args: {
+              p_customer: Json
+              p_idempotency_key?: string
+              p_items: Json
+              p_payment: Database["public"]["Enums"]["payment_method"]
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_customer: Json
+              p_idempotency_key?: string
+              p_items: Json
+              p_payment: Database["public"]["Enums"]["payment_method"]
+              p_promo_code?: string
+            }
+            Returns: Json
+          }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }
         Returns: {
