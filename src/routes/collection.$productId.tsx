@@ -133,12 +133,23 @@ function ProductView({ product }: { product: ProductWithImages }) {
     }
   }, [color]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Variant-image filtering: use variant_id of selected color's first matching variant
+  // Variant-image filtering: prefer exact size+color match, fallback to color-only.
   const filterVariantId = useMemo(() => {
-    if (!hasVariants || !color) return null;
-    const v = product.variants.find((x) => x.color === color);
-    return v?.id ?? null;
-  }, [hasVariants, color, product.variants]);
+    if (!hasVariants) return null;
+    if (size && color) {
+      const exact = product.variants.find((x) => x.size === size && x.color === color);
+      if (exact) return exact.id;
+    }
+    if (color) {
+      const v = product.variants.find((x) => x.color === color);
+      if (v) return v.id;
+    }
+    if (size) {
+      const v = product.variants.find((x) => x.size === size);
+      if (v) return v.id;
+    }
+    return null;
+  }, [hasVariants, size, color, product.variants]);
 
   // Effective price (variant override > product)
   const effectivePrice = useMemo(() => {

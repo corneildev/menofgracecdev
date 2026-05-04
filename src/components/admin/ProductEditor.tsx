@@ -60,10 +60,18 @@ function fromProduct(p: ProductWithImages): FormState {
   };
 }
 
-type ImageItem = { id?: string; url: string; is_primary: boolean; position: number; variant_id: string | null };
+type ImageItem = {
+  id?: string;
+  url: string;
+  is_primary: boolean;
+  position: number;
+  variant_id: string | null;          // existing DB id (if image still attached to a saved variant)
+  variant_key: string | null;         // stable local key matching VariantDraft.key
+};
 
 type VariantDraft = {
   id?: string;
+  key: string;                         // stable local key (used to link images even before save)
   size: string;
   color: string;
   sku: string;
@@ -71,6 +79,9 @@ type VariantDraft = {
   price_fcfa: number | null;
   is_available: boolean;
 };
+
+const newKey = () =>
+  (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `k_${Math.random().toString(36).slice(2)}`);
 
 type VideoDraft = {
   id?: string;
@@ -98,12 +109,21 @@ export function ProductEditor({ productId }: { productId?: string }) {
     void getProductById(productId).then((p) => {
       if (cancelled || !p) { setLoading(false); return; }
       setForm(fromProduct(p));
+      const variantKeyById = new Map<string, string>();
+      const loadedVariants = (p.variants ?? []).map((v: ProductVariantRow) => {
+        const key = newKey();
+        variantKeyById.set(v.id, key);
+        return {
+          id: v.id, key,
+          size: v.size ?? "", color: v.color ?? "", sku: v.sku ?? "",
+          stock: v.stock, price_fcfa: v.price_fcfa, is_available: v.is_available,
+        } as VariantDraft;
+      });
+      setVariants(loadedVariants);
       setImages(p.images.map((i) => ({
-        id: i.id, url: i.url, is_primary: i.is_primary, position: i.position, variant_id: i.variant_id,
-      })));
-      setVariants((p.variants ?? []).map((v: ProductVariantRow) => ({
-        id: v.id, size: v.size ?? "", color: v.color ?? "", sku: v.sku ?? "",
-        stock: v.stock, price_fcfa: v.price_fcfa, is_available: v.is_available,
+        id: i.id, url: i.url, is_primary: i.is_primary, position: i.position,
+        variant_id: i.variant_id,
+        variant_key: i.variant_id ? (variantKeyById.get(i.variant_id) ?? null) : null,
       })));
       setVideos((p.videos ?? []).map((v: ProductVideoRow) => ({
         id: v.id, url: v.url, poster_url: v.poster_url ?? "", source: v.source,
@@ -137,7 +157,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
         });
         if (upErr) throw upErr;
         const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
-        uploads.push({ url: pub.publicUrl, is_primary: false, position: 0, variant_id: null });
+        uploads.push({ url: pub.publicUrl, is_primary: false, position: 0, variant_id: null, variant_key: null });
       }
       setImages((prev) => {
         const next = [...prev, ...uploads];
@@ -184,10 +204,16 @@ export function ProductEditor({ productId }: { productId?: string }) {
     });
 
   // Variants
-  const addVariant = () => setVariants((v) => [...v, { size: "", color: "", sku: "", stock: 0, price_fcfa: null, is_available: true }]);
+  const addVariant = () => setVariants((v) => [...v, { key: newKey(), size: "", color: "", sku: "", stock: 0, price_fcfa: null, is_available: true }]);
   const updateVariant = (idx: number, patch: Partial<VariantDraft>) =>
     setVariants((vs) => vs.map((v, i) => i === idx ? { ...v, ...patch } : v));
-  const removeVariant = (idx: number) => setVariants((vs) => vs.filter((_, i) => i !== idx));
+  const removeVariant = (idx: number) => {
+    const removed = variants[idx];
+    setVariants((vs) => vs.filter((_, i) => i !== idx));
+    if (removed) {
+      setImages((prev) => prev.map((img) => img.variant_key === removed.key ? { ...img, variant_key: null, variant_id: null } : img));
+    }
+  };
 
   // Videos
   const addVideoUrl = () => setVideos((v) => [...v, { url: "", poster_url: "", source: "external" }]);
@@ -195,9 +221,53 @@ export function ProductEditor({ productId }: { productId?: string }) {
     setVideos((vs) => vs.map((v, i) => i === idx ? { ...v, ...patch } : v));
   const removeVideo = (idx: number) => setVideos((vs) => vs.filter((_, i) => i !== idx));
 
+  const validate = (): string | null => {
+    if (!form.name.trim()) return "Le nom est requis.";
+    if (form.price_fcfa <= 0 || form.price_usd <= 0 || form.price_eur <= 0) {
+      return "Les prix de base doivent être strictement supérieurs à 0.";
+    }
+    if (form.stock < 0) return "Le stock global ne peut pas être négatif.";
+
+    // Variant validation
+    const seen = new Map<string, number>();
+    for (let i = 0; i < variants.length; i++) {
+      const v = variants[i];
+      if (!v.size && !v.color) {
+        return `Variante #${i + 1} : renseignez au moins une taille ou une couleur.`;
+      }
+      const k = `${(v.size || "").trim().toLowerCase()}|${(v.color || "").trim().toLowerCase()}`;
+      if (seen.has(k)) {
+        return `Doublon de variante taille/couleur : "${v.size || "—"} / ${v.color || "—"}" (lignes ${seen.get(k)! + 1} et ${i + 1}).`;
+      }
+      seen.set(k, i);
+      if (v.stock < 0) return `Variante #${i + 1} : stock négatif interdit.`;
+      if (v.is_available && v.stock <= 0) {
+        return `Variante #${i + 1} (${v.size || "—"}/${v.color || "—"}) : marquée disponible mais stock à 0. Décochez "Dispo" ou ajustez le stock.`;
+      }
+      if (v.price_fcfa !== null) {
+        if (v.price_fcfa <= 0) return `Variante #${i + 1} : prix override invalide.`;
+        if (v.price_fcfa < Math.floor(form.price_fcfa * 0.3) || v.price_fcfa > Math.ceil(form.price_fcfa * 3)) {
+          return `Variante #${i + 1} : prix override (${v.price_fcfa}) trop éloigné du prix de base (${form.price_fcfa}). Vérifiez.`;
+        }
+      }
+    }
+
+    // Images: variant_key must reference an existing variant
+    const variantKeys = new Set(variants.map((v) => v.key));
+    for (const img of images) {
+      if (img.variant_key && !variantKeys.has(img.variant_key)) {
+        return "Une image est rattachée à une variante supprimée. Réassignez-la avant d'enregistrer.";
+      }
+    }
+
+    return null;
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+    const validationError = validate();
+    if (validationError) { setError(validationError); return; }
     setSaving(true);
     try {
       const slug = form.slug || slugify(form.name);
@@ -214,9 +284,9 @@ export function ProductEditor({ productId }: { productId?: string }) {
       }
       if (!id) throw new Error("Produit non créé");
 
-      // Replace variants (delete + insert) so we get fresh IDs to map images
+      // Replace variants (delete + insert) and map local key → new DB id
       await supabase.from("product_variants").delete().eq("product_id", id);
-      const variantIdMap = new Map<number, string>();
+      const keyToDbId = new Map<string, string>();
       if (variants.length > 0) {
         const rows = variants.map((v, idx) => ({
           product_id: id!,
@@ -230,19 +300,18 @@ export function ProductEditor({ productId }: { productId?: string }) {
         }));
         const { data: inserted, error: vErr } = await supabase.from("product_variants").insert(rows).select("id");
         if (vErr) throw vErr;
-        (inserted ?? []).forEach((row, i) => variantIdMap.set(i, row.id));
+        (inserted ?? []).forEach((row, i) => keyToDbId.set(variants[i].key, row.id));
       }
 
-      // Replace images, mapping variant_id by position match (we kept original variant_id strings; but since we re-inserted variants we lose ID continuity — for safety, drop variant_id on image re-insert if it doesn't match a new variant)
+      // Replace images, resolving variant_id from the stable variant_key
       await supabase.from("product_images").delete().eq("product_id", id);
       if (images.length > 0) {
-        const newVariantIds = new Set(Array.from(variantIdMap.values()));
         const imgRows = images.map((img, idx) => ({
           product_id: id!,
           url: img.url,
           is_primary: img.is_primary,
           position: idx,
-          variant_id: img.variant_id && newVariantIds.has(img.variant_id) ? img.variant_id : null,
+          variant_id: img.variant_key ? (keyToDbId.get(img.variant_key) ?? null) : null,
         }));
         const { error: imgErr } = await supabase.from("product_images").insert(imgRows);
         if (imgErr) throw imgErr;
@@ -435,13 +504,13 @@ export function ProductEditor({ productId }: { productId?: string }) {
                       <img src={img.url} alt="" className="aspect-[4/5] w-full object-cover" />
                       <div className="absolute inset-x-0 top-0 bg-ink/85 px-2 py-1.5 flex justify-between items-center text-[10px]">
                         <select
-                          value={img.variant_id ?? ""}
-                          onChange={(e) => setImages((prev) => prev.map((p, k) => k === idx ? { ...p, variant_id: e.target.value || null } : p))}
+                          value={img.variant_key ?? ""}
+                          onChange={(e) => setImages((prev) => prev.map((p, k) => k === idx ? { ...p, variant_key: e.target.value || null, variant_id: null } : p))}
                           className="bg-transparent text-bone/70 text-[10px] border-0 focus:outline-none"
                         >
                           <option value="">Toutes variantes</option>
-                          {variants.map((v, i) => v.id && (
-                            <option key={v.id} value={v.id}>{v.color || "—"} / {v.size || "—"}</option>
+                          {variants.map((v) => (
+                            <option key={v.key} value={v.key}>{v.color || "—"} / {v.size || "—"}</option>
                           ))}
                         </select>
                       </div>
