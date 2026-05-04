@@ -320,12 +320,12 @@ function ProductView({ product }: { product: ProductWithImages }) {
                         type="button"
                         className="eyebrow text-[10px] text-bone/70 underline underline-offset-[6px] decoration-hairline hover:text-bone hover:decoration-bone transition-colors"
                       >
-                        Find my size →
+                        Trouver ma taille →
                       </button>
                     </DialogTrigger>
                     <DialogContent className="bg-ink border-hairline text-bone max-w-xl">
                       <DialogHeader>
-                        <DialogTitle className="font-serif text-2xl text-bone">Size Finder</DialogTitle>
+                        <DialogTitle className="font-serif text-2xl text-bone">Trouver ma taille</DialogTitle>
                       </DialogHeader>
                       <div className="pt-2">
                         <SizeFinder
@@ -407,8 +407,17 @@ function ProductView({ product }: { product: ProductWithImages }) {
             </Section>
           )}
 
+          {/* Urgence : low stock signal */}
+          {selectedVariant && selectedVariant.stock > 0 && selectedVariant.stock <= 3 && (
+            <div className="mb-6 px-4 py-3 border border-hairline bg-bone/[0.04]">
+              <p className="eyebrow text-bone/80 text-[10px]">
+                ⚡ Plus que {selectedVariant.stock} {selectedVariant.stock > 1 ? "pièces" : "pièce"} disponible{selectedVariant.stock > 1 ? "s" : ""}
+              </p>
+            </div>
+          )}
+
           {/* CTA */}
-          <div className="mt-10 flex flex-col gap-3">
+          <div className="mt-6 flex flex-col gap-3">
             <button
               type="button"
               onClick={handleAddToCart}
@@ -416,7 +425,7 @@ function ProductView({ product }: { product: ProductWithImages }) {
               aria-disabled={actuallySoldOut}
               className="luxury-btn luxury-btn-solid w-full disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              {actuallySoldOut ? "Édition épuisée" : "Ajouter au Panier"}
+              {actuallySoldOut ? "Édition épuisée" : "Ajouter au panier"}
             </button>
             <button
               type="button"
@@ -427,14 +436,36 @@ function ProductView({ product }: { product: ProductWithImages }) {
               <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill={saved ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.4">
                 <path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 3.1c0 5.6-7.5 10.2-7.5 10.2Z" />
               </svg>
-              {saved ? "Sauvegardé" : "Ajouter à la Wishlist"}
+              {saved ? "Sauvegardé" : "Ajouter à la wishlist"}
             </button>
           </div>
 
-          <p className="eyebrow text-bone/40 mt-8 leading-relaxed">
-            Expédié sous 5 jours ouvrés · Retouches locales offertes
-          </p>
+          {/* Garanties : conversion booster */}
+          <ul className="mt-10 space-y-4 text-sm text-bone/70 font-light">
+            <Reassure icon="🚚" title="Expédition sous 5 jours ouvrés" body="Depuis Abidjan vers le monde entier." />
+            <Reassure icon="✂" title="Retouches locales offertes" body="Pour un tombé parfait, sans frais." />
+            <Reassure icon="↩" title="Retours sous 14 jours" body="Échange ou remboursement intégral." />
+            <Reassure icon="🔒" title="Paiement sécurisé" body="Wave, Orange Money, virement bancaire." />
+            <Reassure icon="💬" title="Conseil privé sur WhatsApp" body="Une équipe dédiée à votre disposition." />
+          </ul>
         </div>
+      </div>
+
+      {/* Sticky mobile CTA */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-ink/95 backdrop-blur-md border-t border-hairline px-4 py-3 flex items-center justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="text-bone/50 text-[10px] uppercase tracking-[0.2em]">{product.name}</div>
+          <div className="text-bone text-sm font-light truncate">{formatPriceFcfa(effectivePrice.fcfa)}</div>
+        </div>
+        <button
+          type="button"
+          onClick={handleAddToCart}
+          disabled={actuallySoldOut}
+          aria-disabled={actuallySoldOut}
+          className="luxury-btn luxury-btn-solid !px-6 !py-3 !text-[10px] disabled:opacity-40"
+        >
+          {actuallySoldOut ? "Épuisé" : "Ajouter"}
+        </button>
       </div>
 
       {/* Tabs: Description / Tissu / Construction / Livraison */}
@@ -586,3 +617,16 @@ function Row({ k, v }: { k: string; v: string }) {
     </div>
   );
 }
+
+function Reassure({ icon, title, body }: { icon: string; title: string; body: string }) {
+  return (
+    <li className="flex items-start gap-4 border-b border-hairline pb-4">
+      <span className="text-base leading-none mt-0.5 select-none" aria-hidden>{icon}</span>
+      <div className="flex-1">
+        <div className="text-bone text-sm font-light">{title}</div>
+        <div className="text-bone/55 text-xs font-light mt-1">{body}</div>
+      </div>
+    </li>
+  );
+}
+

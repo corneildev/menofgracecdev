@@ -15,8 +15,8 @@ void i18n
       en: { translation: en },
       fr: { translation: fr },
     },
-    lng: "en", // fixed initial language for SSR/CSR first paint to avoid hydration mismatch
-    fallbackLng: "en",
+    lng: "fr", // FR par défaut, restauré depuis localStorage par <LangBootstrap />
+    fallbackLng: "fr",
     supportedLngs: SUPPORTED_LANGS as unknown as string[],
     interpolation: { escapeValue: false },
     react: { useSuspense: false },

@@ -3,10 +3,13 @@ import { Sun, Moon } from "lucide-react";
 
 export function ThemeToggle() {
   const [isLight, setIsLight] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const isLightMode = document.documentElement.classList.contains("light");
-    setIsLight(isLightMode);
+    // The pre-hydration ScriptOnce in __root may already have applied .light
+    // based on localStorage. Sync our state to that authoritative truth.
+    setIsLight(document.documentElement.classList.contains("light"));
+    setMounted(true);
   }, []);
 
   const toggleTheme = () => {
@@ -14,20 +17,22 @@ export function ThemeToggle() {
     setIsLight(nextLight);
     if (nextLight) {
       document.documentElement.classList.add("light");
-      localStorage.setItem("mog:theme", "light");
+      try { localStorage.setItem("mog:theme", "light"); } catch { /* ignore */ }
     } else {
       document.documentElement.classList.remove("light");
-      localStorage.setItem("mog:theme", "dark");
+      try { localStorage.setItem("mog:theme", "dark"); } catch { /* ignore */ }
     }
   };
 
   return (
     <button
       onClick={toggleTheme}
-      aria-label="Toggle theme"
-      className="hover:text-bone/70 transition-colors flex items-center justify-center"
+      aria-label={isLight ? "Passer en mode sombre" : "Passer en mode clair"}
+      className="hover:opacity-70 transition-opacity flex items-center justify-center"
+      suppressHydrationWarning
     >
-      {isLight ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+      {/* Render the same icon during SSR/first paint to avoid hydration mismatch */}
+      {mounted && isLight ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
     </button>
   );
 }
