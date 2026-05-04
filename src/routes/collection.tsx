@@ -81,17 +81,17 @@ function Collection() {
     <div className="pt-32 sm:pt-40 pb-20 sm:pb-32 px-4 sm:px-6 md:px-8 lg:px-12 bg-ink min-h-screen overflow-x-hidden">
       <div className="max-w-[1600px] mx-auto">
         <div className="text-center mb-12 sm:mb-16">
-          <div className="eyebrow text-bone/60 mb-6">— The Collection —</div>
-          <h1 className="display text-4xl sm:text-5xl md:text-7xl lg:text-8xl mb-6">Atelier Pieces</h1>
-          <p className="text-bone/60 font-light max-w-xl mx-auto text-sm sm:text-base">
-            Each piece composed in our atelier and finished entirely by hand.
+          <div className="eyebrow text-foreground/60 mb-6">— La Collection —</div>
+          <h1 className="display text-4xl sm:text-5xl md:text-7xl lg:text-8xl mb-6">Pièces d'atelier</h1>
+          <p className="text-foreground/60 font-light max-w-xl mx-auto text-sm sm:text-base">
+            Chaque pièce composée dans notre atelier et finie entièrement à la main.
           </p>
         </div>
 
         {/* Filter bar */}
-        <div className="border-y border-hairline py-5 sm:py-6 mb-12 sm:mb-16 grid gap-5 sm:gap-6 md:grid-cols-3">
-          <FilterGroup label="Category">
-            <FilterChip active={category === "all"} onClick={() => setParam("category", "all")}>All</FilterChip>
+        <div className="border-y border-hairline py-5 sm:py-6 mb-10 sm:mb-14 grid gap-5 sm:gap-6 md:grid-cols-3">
+          <FilterGroup label="Catégorie">
+            <FilterChip active={category === "all"} onClick={() => setParam("category", "all")}>Toutes</FilterChip>
             {ALL_CATEGORIES.map((c) => (
               <FilterChip key={c} active={category === c} onClick={() => setParam("category", c)}>
                 {CATEGORY_LABELS[c as ProductCategory]}
@@ -99,27 +99,27 @@ function Collection() {
             ))}
           </FilterGroup>
 
-          <FilterGroup label="Size">
-            <FilterChip active={size === "all"} onClick={() => setParam("size", "all")}>All</FilterChip>
+          <FilterGroup label="Taille">
+            <FilterChip active={size === "all"} onClick={() => setParam("size", "all")}>Toutes</FilterChip>
             {ALL_SIZES.map((s) => (
               <FilterChip key={s} active={size === s} onClick={() => setParam("size", s)}>{s}</FilterChip>
             ))}
           </FilterGroup>
 
-          <FilterGroup label="Currency">
+          <FilterGroup label="Devise">
             {CURRENCY_VALUES.map((c) => (
               <FilterChip key={c} active={currency === c} onClick={() => setParam("currency", c)}>{c}</FilterChip>
             ))}
           </FilterGroup>
         </div>
 
-        <div className="text-bone/50 eyebrow mb-10">
-          {isLoading ? "Loading…" : `${filtered.length} piece${filtered.length === 1 ? "" : "s"}`}
+        <div className="text-foreground/50 eyebrow mb-8">
+          {isLoading ? "Chargement…" : `${filtered.length} pièce${filtered.length === 1 ? "" : "s"}`}
         </div>
 
         {!isLoading && filtered.length === 0 ? (
-          <div className="text-center text-bone/60 py-32 font-light">
-            No pieces match these filters.
+          <div className="text-center text-foreground/60 py-32 font-light">
+            Aucune pièce ne correspond à ces filtres.
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 md:gap-10 lg:gap-12">
