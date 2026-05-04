@@ -157,7 +157,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
         });
         if (upErr) throw upErr;
         const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
-        uploads.push({ url: pub.publicUrl, is_primary: false, position: 0, variant_id: null });
+        uploads.push({ url: pub.publicUrl, is_primary: false, position: 0, variant_id: null, variant_key: null });
       }
       setImages((prev) => {
         const next = [...prev, ...uploads];
@@ -204,10 +204,16 @@ export function ProductEditor({ productId }: { productId?: string }) {
     });
 
   // Variants
-  const addVariant = () => setVariants((v) => [...v, { size: "", color: "", sku: "", stock: 0, price_fcfa: null, is_available: true }]);
+  const addVariant = () => setVariants((v) => [...v, { key: newKey(), size: "", color: "", sku: "", stock: 0, price_fcfa: null, is_available: true }]);
   const updateVariant = (idx: number, patch: Partial<VariantDraft>) =>
     setVariants((vs) => vs.map((v, i) => i === idx ? { ...v, ...patch } : v));
-  const removeVariant = (idx: number) => setVariants((vs) => vs.filter((_, i) => i !== idx));
+  const removeVariant = (idx: number) => {
+    const removed = variants[idx];
+    setVariants((vs) => vs.filter((_, i) => i !== idx));
+    if (removed) {
+      setImages((prev) => prev.map((img) => img.variant_key === removed.key ? { ...img, variant_key: null, variant_id: null } : img));
+    }
+  };
 
   // Videos
   const addVideoUrl = () => setVideos((v) => [...v, { url: "", poster_url: "", source: "external" }]);
