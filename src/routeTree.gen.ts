@@ -26,9 +26,11 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionProductIdRouteImport } from './routes/collection_.$productId'
 import { Route as AdminRestockAlertsRouteImport } from './routes/admin_.restock-alerts'
+import { Route as AdminOrdersRouteImport } from './routes/admin_.orders'
 import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order.confirmation.$orderId'
 import { Route as AdminProductsNewRouteImport } from './routes/admin_.products.new'
 import { Route as AdminProductsIdRouteImport } from './routes/admin_.products.$id'
+import { Route as AdminOrdersIdRouteImport } from './routes/admin_.orders.$id'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -118,6 +120,11 @@ const AdminRestockAlertsRoute = AdminRestockAlertsRouteImport.update({
   path: '/admin/restock-alerts',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/admin_/orders',
+  path: '/admin/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrderConfirmationOrderIdRoute =
   OrderConfirmationOrderIdRouteImport.update({
     id: '/order/confirmation/$orderId',
@@ -133,6 +140,11 @@ const AdminProductsIdRoute = AdminProductsIdRouteImport.update({
   id: '/admin_/products/$id',
   path: '/admin/products/$id',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AdminOrdersRoute,
 } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
@@ -167,8 +179,10 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
+  '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection/$productId': typeof CollectionProductIdRoute
+  '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/order/confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
@@ -192,8 +206,10 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
+  '/admin/orders': typeof AdminOrdersRouteWithChildren
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection/$productId': typeof CollectionProductIdRoute
+  '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/order/confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
@@ -218,8 +234,10 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
+  '/admin_/orders': typeof AdminOrdersRouteWithChildren
   '/admin_/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection_/$productId': typeof CollectionProductIdRoute
+  '/admin_/orders/$id': typeof AdminOrdersIdRoute
   '/admin_/products/$id': typeof AdminProductsIdRoute
   '/admin_/products/new': typeof AdminProductsNewRoute
   '/order/confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
@@ -245,8 +263,10 @@ export interface FileRouteTypes {
     | '/terms'
     | '/update-password'
     | '/wishlist'
+    | '/admin/orders'
     | '/admin/restock-alerts'
     | '/collection/$productId'
+    | '/admin/orders/$id'
     | '/admin/products/$id'
     | '/admin/products/new'
     | '/order/confirmation/$orderId'
@@ -270,8 +290,10 @@ export interface FileRouteTypes {
     | '/terms'
     | '/update-password'
     | '/wishlist'
+    | '/admin/orders'
     | '/admin/restock-alerts'
     | '/collection/$productId'
+    | '/admin/orders/$id'
     | '/admin/products/$id'
     | '/admin/products/new'
     | '/order/confirmation/$orderId'
@@ -295,8 +317,10 @@ export interface FileRouteTypes {
     | '/terms'
     | '/update-password'
     | '/wishlist'
+    | '/admin_/orders'
     | '/admin_/restock-alerts'
     | '/collection_/$productId'
+    | '/admin_/orders/$id'
     | '/admin_/products/$id'
     | '/admin_/products/new'
     | '/order/confirmation/$orderId'
@@ -321,6 +345,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   UpdatePasswordRoute: typeof UpdatePasswordRoute
   WishlistRoute: typeof WishlistRoute
+  AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
   AdminRestockAlertsRoute: typeof AdminRestockAlertsRoute
   CollectionProductIdRoute: typeof CollectionProductIdRoute
   AdminProductsIdRoute: typeof AdminProductsIdRoute
@@ -452,6 +477,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRestockAlertsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/orders': {
+      id: '/admin_/orders'
+      path: '/admin/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/order/confirmation/$orderId': {
       id: '/order/confirmation/$orderId'
       path: '/order/confirmation/$orderId'
@@ -472,6 +504,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/products/$id'
       preLoaderRoute: typeof AdminProductsIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin_/orders/$id': {
+      id: '/admin_/orders/$id'
+      path: '/$id'
+      fullPath: '/admin/orders/$id'
+      preLoaderRoute: typeof AdminOrdersIdRouteImport
+      parentRoute: typeof AdminOrdersRoute
     }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
@@ -497,6 +536,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminOrdersRouteChildren {
+  AdminOrdersIdRoute: typeof AdminOrdersIdRoute
+}
+
+const AdminOrdersRouteChildren: AdminOrdersRouteChildren = {
+  AdminOrdersIdRoute: AdminOrdersIdRoute,
+}
+
+const AdminOrdersRouteWithChildren = AdminOrdersRoute._addFileChildren(
+  AdminOrdersRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
@@ -513,6 +564,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   UpdatePasswordRoute: UpdatePasswordRoute,
   WishlistRoute: WishlistRoute,
+  AdminOrdersRoute: AdminOrdersRouteWithChildren,
   AdminRestockAlertsRoute: AdminRestockAlertsRoute,
   CollectionProductIdRoute: CollectionProductIdRoute,
   AdminProductsIdRoute: AdminProductsIdRoute,
