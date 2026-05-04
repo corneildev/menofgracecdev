@@ -109,12 +109,21 @@ export function ProductEditor({ productId }: { productId?: string }) {
     void getProductById(productId).then((p) => {
       if (cancelled || !p) { setLoading(false); return; }
       setForm(fromProduct(p));
+      const variantKeyById = new Map<string, string>();
+      const loadedVariants = (p.variants ?? []).map((v: ProductVariantRow) => {
+        const key = newKey();
+        variantKeyById.set(v.id, key);
+        return {
+          id: v.id, key,
+          size: v.size ?? "", color: v.color ?? "", sku: v.sku ?? "",
+          stock: v.stock, price_fcfa: v.price_fcfa, is_available: v.is_available,
+        } as VariantDraft;
+      });
+      setVariants(loadedVariants);
       setImages(p.images.map((i) => ({
-        id: i.id, url: i.url, is_primary: i.is_primary, position: i.position, variant_id: i.variant_id,
-      })));
-      setVariants((p.variants ?? []).map((v: ProductVariantRow) => ({
-        id: v.id, size: v.size ?? "", color: v.color ?? "", sku: v.sku ?? "",
-        stock: v.stock, price_fcfa: v.price_fcfa, is_available: v.is_available,
+        id: i.id, url: i.url, is_primary: i.is_primary, position: i.position,
+        variant_id: i.variant_id,
+        variant_key: i.variant_id ? (variantKeyById.get(i.variant_id) ?? null) : null,
       })));
       setVideos((p.videos ?? []).map((v: ProductVideoRow) => ({
         id: v.id, url: v.url, poster_url: v.poster_url ?? "", source: v.source,
