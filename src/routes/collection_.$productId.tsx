@@ -66,7 +66,7 @@ export const Route = createFileRoute("/collection_/$productId")({
         name: p.name,
         description: desc,
         image: img ? [img] : undefined,
-        sku: p.sku ?? p.slug,
+        sku: p.slug,
         brand: { "@type": "Brand", name: "Men of Grace" },
         category: p.category,
         offers: {
