@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/admin/promo-codes")({
+export const Route = createFileRoute("/admin_/promo-codes")({
   head: () => ({
     meta: [
       { title: "Codes promo — Admin" },

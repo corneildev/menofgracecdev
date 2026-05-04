@@ -26,6 +26,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionProductIdRouteImport } from './routes/collection_.$productId'
 import { Route as AdminRestockAlertsRouteImport } from './routes/admin_.restock-alerts'
+import { Route as AdminPromoCodesRouteImport } from './routes/admin_.promo-codes'
 import { Route as AdminOrdersRouteImport } from './routes/admin_.orders'
 import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order.confirmation.$orderId'
 import { Route as AdminProductsNewRouteImport } from './routes/admin_.products.new'
@@ -120,6 +121,11 @@ const AdminRestockAlertsRoute = AdminRestockAlertsRouteImport.update({
   path: '/admin/restock-alerts',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminPromoCodesRoute = AdminPromoCodesRouteImport.update({
+  id: '/admin_/promo-codes',
+  path: '/admin/promo-codes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/admin_/orders',
   path: '/admin/orders',
@@ -180,6 +186,7 @@ export interface FileRoutesByFullPath {
   '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
+  '/admin/promo-codes': typeof AdminPromoCodesRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection/$productId': typeof CollectionProductIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
@@ -207,6 +214,7 @@ export interface FileRoutesByTo {
   '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
   '/admin/orders': typeof AdminOrdersRouteWithChildren
+  '/admin/promo-codes': typeof AdminPromoCodesRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection/$productId': typeof CollectionProductIdRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
@@ -235,6 +243,7 @@ export interface FileRoutesById {
   '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
   '/admin_/orders': typeof AdminOrdersRouteWithChildren
+  '/admin_/promo-codes': typeof AdminPromoCodesRoute
   '/admin_/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection_/$productId': typeof CollectionProductIdRoute
   '/admin_/orders/$id': typeof AdminOrdersIdRoute
@@ -264,6 +273,7 @@ export interface FileRouteTypes {
     | '/update-password'
     | '/wishlist'
     | '/admin/orders'
+    | '/admin/promo-codes'
     | '/admin/restock-alerts'
     | '/collection/$productId'
     | '/admin/orders/$id'
@@ -291,6 +301,7 @@ export interface FileRouteTypes {
     | '/update-password'
     | '/wishlist'
     | '/admin/orders'
+    | '/admin/promo-codes'
     | '/admin/restock-alerts'
     | '/collection/$productId'
     | '/admin/orders/$id'
@@ -318,6 +329,7 @@ export interface FileRouteTypes {
     | '/update-password'
     | '/wishlist'
     | '/admin_/orders'
+    | '/admin_/promo-codes'
     | '/admin_/restock-alerts'
     | '/collection_/$productId'
     | '/admin_/orders/$id'
@@ -346,6 +358,7 @@ export interface RootRouteChildren {
   UpdatePasswordRoute: typeof UpdatePasswordRoute
   WishlistRoute: typeof WishlistRoute
   AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
+  AdminPromoCodesRoute: typeof AdminPromoCodesRoute
   AdminRestockAlertsRoute: typeof AdminRestockAlertsRoute
   CollectionProductIdRoute: typeof CollectionProductIdRoute
   AdminProductsIdRoute: typeof AdminProductsIdRoute
@@ -477,6 +490,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRestockAlertsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin_/promo-codes': {
+      id: '/admin_/promo-codes'
+      path: '/admin/promo-codes'
+      fullPath: '/admin/promo-codes'
+      preLoaderRoute: typeof AdminPromoCodesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin_/orders': {
       id: '/admin_/orders'
       path: '/admin/orders'
@@ -565,6 +585,7 @@ const rootRouteChildren: RootRouteChildren = {
   UpdatePasswordRoute: UpdatePasswordRoute,
   WishlistRoute: WishlistRoute,
   AdminOrdersRoute: AdminOrdersRouteWithChildren,
+  AdminPromoCodesRoute: AdminPromoCodesRoute,
   AdminRestockAlertsRoute: AdminRestockAlertsRoute,
   CollectionProductIdRoute: CollectionProductIdRoute,
   AdminProductsIdRoute: AdminProductsIdRoute,
