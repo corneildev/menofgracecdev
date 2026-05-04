@@ -21,7 +21,7 @@ import { RestockAlertForm } from "@/components/RestockAlertForm";
 import { ProductMediaGallery } from "@/components/ProductMediaGallery";
 import { trackProductEvent } from "@/lib/analytics";
 
-export const Route = createFileRoute("/collection_/$productId")({
+export const Route = createFileRoute("/collection/$productId")({
   loader: async ({ params }) => {
     const product = await getProductBySlug(params.productId);
     if (!product) throw notFound();
