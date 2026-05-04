@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { listAllProducts, formatPriceFcfa, CATEGORY_LABELS, type ProductWithImages } from "@/lib/products";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/admin/products")({
+export const Route = createFileRoute("/admin_/products")({
   head: () => ({
     meta: [
       { title: "Catalogue — Admin" },
