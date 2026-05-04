@@ -27,33 +27,74 @@ export const Route = createFileRoute("/collection_/$productId")({
     if (!product) throw notFound();
     return { product };
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     const p = loaderData?.product;
-    const title = p ? `${p.name} — MEN OF GRACE` : "Collection — MEN OF GRACE";
-    const desc = p?.short_description ?? p?.description ?? "Tailored menswear, ready to ship.";
+    const title = p ? `${p.name} — Men of Grace` : "Collection — Men of Grace";
+    const desc = p?.short_description ?? p?.description ?? "Costumes sur-mesure, mariage et executive — Men of Grace.";
     const img = p?.primaryImage;
-    return {
-      meta: [
-        { title },
-        { name: "description", content: desc },
-        { property: "og:title", content: title },
-        { property: "og:description", content: desc },
-        ...(img ? [{ property: "og:image", content: img }, { name: "twitter:image", content: img }] : []),
-      ],
-    };
+    const url = `https://menofgrace.store/collection/${params.productId}`;
+    const meta = [
+      { title },
+      { name: "description", content: desc },
+      { name: "robots", content: "index, follow" },
+      { property: "og:type", content: "product" },
+      { property: "og:title", content: title },
+      { property: "og:description", content: desc },
+      { property: "og:url", content: url },
+      { property: "og:locale", content: "fr_FR" },
+      { property: "og:site_name", content: "Men of Grace" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: desc },
+      ...(img ? [
+        { property: "og:image", content: img },
+        { property: "og:image:alt", content: p?.name ?? "" },
+        { name: "twitter:image", content: img },
+      ] : []),
+      ...(p ? [
+        { property: "product:price:amount", content: String(p.price_eur ?? p.price_usd ?? 0) },
+        { property: "product:price:currency", content: p.price_eur ? "EUR" : "USD" },
+        { property: "product:availability", content: (p.stock ?? 0) > 0 ? "in stock" : "out of stock" },
+      ] : []),
+    ];
+    const links = [{ rel: "canonical", href: url }];
+    const scripts = p ? [{
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        name: p.name,
+        description: desc,
+        image: img ? [img] : undefined,
+        sku: p.slug,
+        brand: { "@type": "Brand", name: "Men of Grace" },
+        category: p.category,
+        offers: {
+          "@type": "Offer",
+          url,
+          priceCurrency: "EUR",
+          price: p.price_eur ?? Math.round((p.price_usd ?? 0) * 0.92),
+          availability: (p.stock ?? 0) > 0
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock",
+          itemCondition: "https://schema.org/NewCondition",
+        },
+      }),
+    }] : undefined;
+    return { meta, links, scripts };
   },
   notFoundComponent: () => (
-    <div className="pt-40 pb-32 px-6 text-center bg-ink min-h-screen">
+    <div className="pt-40 pb-32 px-6 text-center bg-background min-h-screen">
       <div className="eyebrow mb-6">404</div>
-      <h1 className="display text-5xl mb-6">Piece not found</h1>
-      <Link to="/collection" className="luxury-btn">Back to Collection</Link>
+      <h1 className="display text-5xl mb-6">Pièce introuvable</h1>
+      <Link to="/collection" className="luxury-btn">Retour à la collection</Link>
     </div>
   ),
   errorComponent: ({ error }) => (
-    <div className="pt-40 pb-32 px-6 text-center bg-ink min-h-screen">
-      <div className="eyebrow mb-6">Error</div>
-      <p className="text-bone/60 mb-8">{error.message}</p>
-      <Link to="/collection" className="luxury-btn">Back to Collection</Link>
+    <div className="pt-40 pb-32 px-6 text-center bg-background min-h-screen">
+      <div className="eyebrow mb-6">Erreur</div>
+      <p className="text-foreground/60 mb-8">{error.message}</p>
+      <Link to="/collection" className="luxury-btn">Retour à la collection</Link>
     </div>
   ),
   component: ProductDetail,

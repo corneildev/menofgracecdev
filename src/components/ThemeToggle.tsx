@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { Sun, Moon } from "lucide-react";
+import { Icon } from "@/components/Icon";
 
 export function ThemeToggle() {
-  const [isLight, setIsLight] = useState(false);
+  const [isLight, setIsLight] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // The pre-hydration ScriptOnce in __root may already have applied .light
-    // based on localStorage. Sync our state to that authoritative truth.
     setIsLight(document.documentElement.classList.contains("light"));
     setMounted(true);
   }, []);
@@ -28,11 +26,13 @@ export function ThemeToggle() {
     <button
       onClick={toggleTheme}
       aria-label={isLight ? "Passer en mode sombre" : "Passer en mode clair"}
-      className="hover:opacity-70 transition-opacity flex items-center justify-center"
+      className="hover:opacity-70 transition-opacity flex items-center justify-center w-7 h-7"
       suppressHydrationWarning
     >
-      {/* Render the same icon during SSR/first paint to avoid hydration mismatch */}
-      {mounted && isLight ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+      {mounted && isLight
+        ? <Icon name="moon" className="text-[14px]" />
+        : <Icon name="sun" className="text-[14px]" />}
     </button>
   );
 }
+
