@@ -24,7 +24,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CollectionProductIdRouteImport } from './routes/collection.$productId'
+import { Route as CollectionProductIdRouteImport } from './routes/collection_.$productId'
 import { Route as AdminRestockAlertsRouteImport } from './routes/admin.restock-alerts'
 import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order.confirmation.$orderId'
 import { Route as AdminProductsNewRouteImport } from './routes/admin.products.new'
@@ -109,9 +109,9 @@ const IndexRoute = IndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionProductIdRoute = CollectionProductIdRouteImport.update({
-  id: '/$productId',
-  path: '/$productId',
-  getParentRoute: () => CollectionRoute,
+  id: '/collection_/$productId',
+  path: '/collection/$productId',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRestockAlertsRoute = AdminRestockAlertsRouteImport.update({
   id: '/restock-alerts',
@@ -158,7 +158,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/collection': typeof CollectionRouteWithChildren
+  '/collection': typeof CollectionRoute
   '/cookies': typeof CookiesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/privacy': typeof PrivacyRoute
@@ -183,7 +183,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/collection': typeof CollectionRouteWithChildren
+  '/collection': typeof CollectionRoute
   '/cookies': typeof CookiesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/privacy': typeof PrivacyRoute
@@ -209,7 +209,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
-  '/collection': typeof CollectionRouteWithChildren
+  '/collection': typeof CollectionRoute
   '/cookies': typeof CookiesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/privacy': typeof PrivacyRoute
@@ -219,7 +219,7 @@ export interface FileRoutesById {
   '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
-  '/collection/$productId': typeof CollectionProductIdRoute
+  '/collection_/$productId': typeof CollectionProductIdRoute
   '/admin/products/$id': typeof AdminProductsIdRoute
   '/admin/products/new': typeof AdminProductsNewRoute
   '/order/confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
@@ -296,7 +296,7 @@ export interface FileRouteTypes {
     | '/update-password'
     | '/wishlist'
     | '/admin/restock-alerts'
-    | '/collection/$productId'
+    | '/collection_/$productId'
     | '/admin/products/$id'
     | '/admin/products/new'
     | '/order/confirmation/$orderId'
@@ -312,7 +312,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
-  CollectionRoute: typeof CollectionRouteWithChildren
+  CollectionRoute: typeof CollectionRoute
   CookiesRoute: typeof CookiesRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -321,6 +321,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   UpdatePasswordRoute: typeof UpdatePasswordRoute
   WishlistRoute: typeof WishlistRoute
+  CollectionProductIdRoute: typeof CollectionProductIdRoute
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -434,12 +435,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/collection/$productId': {
-      id: '/collection/$productId'
-      path: '/$productId'
+    '/collection_/$productId': {
+      id: '/collection_/$productId'
+      path: '/collection/$productId'
       fullPath: '/collection/$productId'
       preLoaderRoute: typeof CollectionProductIdRouteImport
-      parentRoute: typeof CollectionRoute
+      parentRoute: typeof rootRouteImport
     }
     '/admin/restock-alerts': {
       id: '/admin/restock-alerts'
@@ -507,18 +508,6 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
-interface CollectionRouteChildren {
-  CollectionProductIdRoute: typeof CollectionProductIdRoute
-}
-
-const CollectionRouteChildren: CollectionRouteChildren = {
-  CollectionProductIdRoute: CollectionProductIdRoute,
-}
-
-const CollectionRouteWithChildren = CollectionRoute._addFileChildren(
-  CollectionRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
@@ -526,7 +515,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
-  CollectionRoute: CollectionRouteWithChildren,
+  CollectionRoute: CollectionRoute,
   CookiesRoute: CookiesRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   PrivacyRoute: PrivacyRoute,
@@ -535,6 +524,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   UpdatePasswordRoute: UpdatePasswordRoute,
   WishlistRoute: WishlistRoute,
+  CollectionProductIdRoute: CollectionProductIdRoute,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
