@@ -75,8 +75,70 @@ function CheckoutPage() {
   const update = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
+  // Promo code state
+  const [promoInput, setPromoInput] = useState("");
+  const [promoApplied, setPromoApplied] = useState<{
+    code: string;
+    discount_type: "percent" | "fixed";
+    discount_value: number;
+    min_cart_fcfa: number;
+  } | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [promoBusy, setPromoBusy] = useState(false);
+
+  const discountFcfa = useMemo(() => {
+    if (!promoApplied) return 0;
+    if (totalFcfa < promoApplied.min_cart_fcfa) return 0;
+    if (promoApplied.discount_type === "percent") {
+      return Math.floor((totalFcfa * promoApplied.discount_value) / 100);
+    }
+    return Math.min(promoApplied.discount_value, totalFcfa);
+  }, [promoApplied, totalFcfa]);
+
+  async function applyPromo() {
+    setPromoError(null);
+    const code = promoInput.trim();
+    if (!code) return;
+    setPromoBusy(true);
+    try {
+      const { data, error } = await supabase
+        .from("promo_codes")
+        .select("code, discount_type, discount_value, min_cart_fcfa, starts_at, ends_at, max_uses, uses_count, is_active")
+        .ilike("code", code)
+        .maybeSingle();
+      if (error || !data || !data.is_active) {
+        setPromoError("Code invalide");
+        setPromoApplied(null);
+        return;
+      }
+      const now = Date.now();
+      if (data.starts_at && now < new Date(data.starts_at).getTime()) {
+        setPromoError("Code non encore actif"); setPromoApplied(null); return;
+      }
+      if (data.ends_at && now > new Date(data.ends_at).getTime()) {
+        setPromoError("Code expiré"); setPromoApplied(null); return;
+      }
+      if (data.max_uses != null && data.uses_count >= data.max_uses) {
+        setPromoError("Code épuisé"); setPromoApplied(null); return;
+      }
+      if (totalFcfa < data.min_cart_fcfa) {
+        setPromoError(`Panier minimum ${data.min_cart_fcfa.toLocaleString("fr-FR")} FCFA`);
+        setPromoApplied(null);
+        return;
+      }
+      setPromoApplied({
+        code: data.code,
+        discount_type: data.discount_type as "percent" | "fixed",
+        discount_value: data.discount_value,
+        min_cart_fcfa: data.min_cart_fcfa,
+      });
+    } finally {
+      setPromoBusy(false);
+    }
+  }
+
   const deliveryFcfa = useMemo(() => 0, []);
-  const finalTotal = totalFcfa + deliveryFcfa;
+  const finalTotal = Math.max(totalFcfa - discountFcfa + deliveryFcfa, 0);
 
   const canStep1 =
     form.fullName.trim().length >= 2 &&
