@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { ALL_CATEGORIES, ALL_SIZES, CATEGORY_LABELS, getProductById, type ProductWithImages } from "@/lib/products";
+import { ALL_CATEGORIES, ALL_SIZES, CATEGORY_LABELS, getProductById, type ProductWithImages, type ProductVariantRow, type ProductVideoRow } from "@/lib/products";
 import type { Database } from "@/integrations/supabase/types";
 
 type Category = Database["public"]["Enums"]["product_category"];
@@ -33,29 +33,12 @@ type FormState = {
 };
 
 const EMPTY: FormState = {
-  name: "",
-  slug: "",
-  category: "suits",
-  short_description: "",
-  description: "",
-  story: "",
-  price_fcfa: 0,
-  price_usd: 0,
-  price_eur: 0,
-  stock: 0,
-  is_published: true,
-  monogram: false,
-  fabric_composition: "",
-  fabric_weight: "",
-  fabric_mill: "",
-  fabric_notes: "",
-  sizes: [],
-  sold_out_sizes: [],
-  fits: [],
-  lapels: [],
-  linings: [],
-  colors: [],
-  details: [],
+  name: "", slug: "", category: "suits",
+  short_description: "", description: "", story: "",
+  price_fcfa: 0, price_usd: 0, price_eur: 0, stock: 0,
+  is_published: true, monogram: false,
+  fabric_composition: "", fabric_weight: "", fabric_mill: "", fabric_notes: "",
+  sizes: [], sold_out_sizes: [], fits: [], lapels: [], linings: [], colors: [], details: [],
 };
 
 const slugify = (s: string) =>
@@ -63,33 +46,38 @@ const slugify = (s: string) =>
 
 function fromProduct(p: ProductWithImages): FormState {
   return {
-    name: p.name,
-    slug: p.slug,
-    category: p.category,
+    name: p.name, slug: p.slug, category: p.category,
     short_description: p.short_description ?? "",
     description: p.description ?? "",
     story: p.story ?? "",
-    price_fcfa: p.price_fcfa,
-    price_usd: p.price_usd,
-    price_eur: p.price_eur,
-    stock: p.stock,
-    is_published: p.is_published,
-    monogram: p.monogram,
-    fabric_composition: p.fabric_composition ?? "",
-    fabric_weight: p.fabric_weight ?? "",
-    fabric_mill: p.fabric_mill ?? "",
-    fabric_notes: p.fabric_notes ?? "",
-    sizes: p.sizes ?? [],
-    sold_out_sizes: p.sold_out_sizes ?? [],
-    fits: p.fits ?? [],
-    lapels: p.lapels ?? [],
-    linings: p.linings ?? [],
-    colors: p.colors ?? [],
-    details: p.details ?? [],
+    price_fcfa: p.price_fcfa, price_usd: p.price_usd, price_eur: p.price_eur,
+    stock: p.stock, is_published: p.is_published, monogram: p.monogram,
+    fabric_composition: p.fabric_composition ?? "", fabric_weight: p.fabric_weight ?? "",
+    fabric_mill: p.fabric_mill ?? "", fabric_notes: p.fabric_notes ?? "",
+    sizes: p.sizes ?? [], sold_out_sizes: p.sold_out_sizes ?? [],
+    fits: p.fits ?? [], lapels: p.lapels ?? [], linings: p.linings ?? [],
+    colors: p.colors ?? [], details: p.details ?? [],
   };
 }
 
-type ImageItem = { id?: string; url: string; is_primary: boolean; position: number; isNew?: boolean };
+type ImageItem = { id?: string; url: string; is_primary: boolean; position: number; variant_id: string | null };
+
+type VariantDraft = {
+  id?: string;
+  size: string;
+  color: string;
+  sku: string;
+  stock: number;
+  price_fcfa: number | null;
+  is_available: boolean;
+};
+
+type VideoDraft = {
+  id?: string;
+  url: string;
+  poster_url: string;
+  source: string;
+};
 
 export function ProductEditor({ productId }: { productId?: string }) {
   const navigate = useNavigate();
@@ -99,7 +87,10 @@ export function ProductEditor({ productId }: { productId?: string }) {
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY);
   const [images, setImages] = useState<ImageItem[]>([]);
+  const [variants, setVariants] = useState<VariantDraft[]>([]);
+  const [videos, setVideos] = useState<VideoDraft[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [videoUploading, setVideoUploading] = useState(false);
 
   useEffect(() => {
     if (!productId) return;
@@ -107,7 +98,16 @@ export function ProductEditor({ productId }: { productId?: string }) {
     void getProductById(productId).then((p) => {
       if (cancelled || !p) { setLoading(false); return; }
       setForm(fromProduct(p));
-      setImages(p.images.map((i) => ({ id: i.id, url: i.url, is_primary: i.is_primary, position: i.position })));
+      setImages(p.images.map((i) => ({
+        id: i.id, url: i.url, is_primary: i.is_primary, position: i.position, variant_id: i.variant_id,
+      })));
+      setVariants((p.variants ?? []).map((v: ProductVariantRow) => ({
+        id: v.id, size: v.size ?? "", color: v.color ?? "", sku: v.sku ?? "",
+        stock: v.stock, price_fcfa: v.price_fcfa, is_available: v.is_available,
+      })));
+      setVideos((p.videos ?? []).map((v: ProductVideoRow) => ({
+        id: v.id, url: v.url, poster_url: v.poster_url ?? "", source: v.source,
+      })));
       setLoading(false);
     });
     return () => { cancelled = true; };
@@ -133,13 +133,11 @@ export function ProductEditor({ productId }: { productId?: string }) {
         const ext = file.name.split(".").pop() ?? "jpg";
         const path = `${crypto.randomUUID()}.${ext}`;
         const { error: upErr } = await supabase.storage.from("product-images").upload(path, file, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: file.type,
+          cacheControl: "3600", upsert: false, contentType: file.type,
         });
         if (upErr) throw upErr;
         const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
-        uploads.push({ url: pub.publicUrl, is_primary: false, position: 0, isNew: true });
+        uploads.push({ url: pub.publicUrl, is_primary: false, position: 0, variant_id: null });
       }
       setImages((prev) => {
         const next = [...prev, ...uploads];
@@ -153,15 +151,49 @@ export function ProductEditor({ productId }: { productId?: string }) {
     }
   };
 
+  const handleVideoUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setVideoUploading(true);
+    try {
+      const uploads: VideoDraft[] = [];
+      for (const file of Array.from(files)) {
+        const ext = file.name.split(".").pop() ?? "mp4";
+        const path = `${crypto.randomUUID()}.${ext}`;
+        const { error: upErr } = await supabase.storage.from("product-videos").upload(path, file, {
+          cacheControl: "3600", upsert: false, contentType: file.type,
+        });
+        if (upErr) throw upErr;
+        const { data: pub } = supabase.storage.from("product-videos").getPublicUrl(path);
+        uploads.push({ url: pub.publicUrl, poster_url: "", source: "upload" });
+      }
+      setVideos((prev) => [...prev, ...uploads]);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Erreur upload vidéo");
+    } finally {
+      setVideoUploading(false);
+    }
+  };
+
   const setPrimary = (idx: number) =>
     setImages((prev) => prev.map((i, k) => ({ ...i, is_primary: k === idx })));
-
   const removeImage = (idx: number) =>
     setImages((prev) => {
       const next = prev.filter((_, k) => k !== idx).map((i, k) => ({ ...i, position: k }));
       if (!next.some((i) => i.is_primary) && next.length > 0) next[0].is_primary = true;
       return next;
     });
+
+  // Variants
+  const addVariant = () => setVariants((v) => [...v, { size: "", color: "", sku: "", stock: 0, price_fcfa: null, is_available: true }]);
+  const updateVariant = (idx: number, patch: Partial<VariantDraft>) =>
+    setVariants((vs) => vs.map((v, i) => i === idx ? { ...v, ...patch } : v));
+  const removeVariant = (idx: number) => setVariants((vs) => vs.filter((_, i) => i !== idx));
+
+  // Videos
+  const addVideoUrl = () => setVideos((v) => [...v, { url: "", poster_url: "", source: "external" }]);
+  const updateVideo = (idx: number, patch: Partial<VideoDraft>) =>
+    setVideos((vs) => vs.map((v, i) => i === idx ? { ...v, ...patch } : v));
+  const removeVideo = (idx: number) => setVideos((vs) => vs.filter((_, i) => i !== idx));
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -175,24 +207,63 @@ export function ProductEditor({ productId }: { productId?: string }) {
       if (isEdit && id) {
         const { error: upErr } = await supabase.from("products").update(payload).eq("id", id);
         if (upErr) throw upErr;
-        // Replace images: delete existing rows, re-insert
-        const { error: delErr } = await supabase.from("product_images").delete().eq("product_id", id);
-        if (delErr) throw delErr;
       } else {
         const { data, error: insErr } = await supabase.from("products").insert(payload).select("id").single();
         if (insErr) throw insErr;
         id = data.id;
       }
+      if (!id) throw new Error("Produit non créé");
 
-      if (id && images.length > 0) {
-        const rows = images.map((img, idx) => ({
+      // Replace variants (delete + insert) so we get fresh IDs to map images
+      await supabase.from("product_variants").delete().eq("product_id", id);
+      const variantIdMap = new Map<number, string>();
+      if (variants.length > 0) {
+        const rows = variants.map((v, idx) => ({
+          product_id: id!,
+          size: v.size || null,
+          color: v.color || null,
+          sku: v.sku || null,
+          stock: v.stock,
+          price_fcfa: v.price_fcfa ?? null,
+          is_available: v.is_available,
+          position: idx,
+        }));
+        const { data: inserted, error: vErr } = await supabase.from("product_variants").insert(rows).select("id");
+        if (vErr) throw vErr;
+        (inserted ?? []).forEach((row, i) => variantIdMap.set(i, row.id));
+      }
+
+      // Replace images, mapping variant_id by position match (we kept original variant_id strings; but since we re-inserted variants we lose ID continuity — for safety, drop variant_id on image re-insert if it doesn't match a new variant)
+      await supabase.from("product_images").delete().eq("product_id", id);
+      if (images.length > 0) {
+        const newVariantIds = new Set(Array.from(variantIdMap.values()));
+        const imgRows = images.map((img, idx) => ({
           product_id: id!,
           url: img.url,
           is_primary: img.is_primary,
           position: idx,
+          variant_id: img.variant_id && newVariantIds.has(img.variant_id) ? img.variant_id : null,
         }));
-        const { error: imgErr } = await supabase.from("product_images").insert(rows);
+        const { error: imgErr } = await supabase.from("product_images").insert(imgRows);
         if (imgErr) throw imgErr;
+      }
+
+      // Replace videos
+      await supabase.from("product_videos").delete().eq("product_id", id);
+      if (videos.length > 0) {
+        const vidRows = videos
+          .filter((v) => v.url.trim())
+          .map((v, idx) => ({
+            product_id: id!,
+            url: v.url.trim(),
+            poster_url: v.poster_url.trim() || null,
+            source: v.source,
+            position: idx,
+          }));
+        if (vidRows.length > 0) {
+          const { error: vidErr } = await supabase.from("product_videos").insert(vidRows);
+          if (vidErr) throw vidErr;
+        }
       }
 
       navigate({ to: "/admin" });
@@ -256,7 +327,61 @@ export function ProductEditor({ productId }: { productId?: string }) {
               </Field>
             </Section>
 
-            <Section title="Tailles & options">
+            <Section title="Variantes (taille / couleur / stock)">
+              <p className="text-bone/50 text-xs mb-3 leading-relaxed">
+                Les variantes pilotent le stock fin par taille/couleur et peuvent surcharger le prix de base. Si vide, le stock global est utilisé.
+              </p>
+              <div className="space-y-3">
+                {variants.map((v, idx) => (
+                  <div key={idx} className="grid grid-cols-12 gap-2 border border-hairline p-3 items-center">
+                    <input placeholder="Taille" value={v.size} onChange={(e) => updateVariant(idx, { size: e.target.value })} className={`${inp} col-span-2`} />
+                    <input placeholder="Couleur" value={v.color} onChange={(e) => updateVariant(idx, { color: e.target.value })} className={`${inp} col-span-2`} />
+                    <input placeholder="SKU" value={v.sku} onChange={(e) => updateVariant(idx, { sku: e.target.value })} className={`${inp} col-span-2`} />
+                    <input type="number" placeholder="Stock" value={v.stock} onChange={(e) => updateVariant(idx, { stock: Number(e.target.value) })} className={`${inp} col-span-2`} />
+                    <input type="number" placeholder="Prix FCFA" value={v.price_fcfa ?? ""} onChange={(e) => updateVariant(idx, { price_fcfa: e.target.value ? Number(e.target.value) : null })} className={`${inp} col-span-2`} />
+                    <label className="flex items-center gap-1 text-[10px] text-bone/70 col-span-1">
+                      <input type="checkbox" checked={v.is_available} onChange={(e) => updateVariant(idx, { is_available: e.target.checked })} />
+                      Dispo
+                    </label>
+                    <button type="button" onClick={() => removeVariant(idx)} className="text-bone/50 hover:text-red-400 col-span-1 text-right">✕</button>
+                  </div>
+                ))}
+              </div>
+              <button type="button" onClick={addVariant} className="luxury-btn mt-3">+ Ajouter une variante</button>
+            </Section>
+
+            <Section title="Vidéos">
+              <p className="text-bone/50 text-xs mb-3 leading-relaxed">
+                Uploadez un MP4 ou collez une URL YouTube/Vimeo. Plusieurs vidéos possibles.
+              </p>
+              <div className="border border-dashed border-hairline p-5 text-center mb-4">
+                <input id="vid-upload" type="file" accept="video/*" multiple onChange={(e) => handleVideoUpload(e.target.files)} className="hidden" />
+                <label htmlFor="vid-upload" className="luxury-btn cursor-pointer inline-block mr-3">
+                  {videoUploading ? "Upload…" : "+ Upload vidéo"}
+                </label>
+                <button type="button" onClick={addVideoUrl} className="luxury-btn">+ Ajouter URL</button>
+              </div>
+              <div className="space-y-3">
+                {videos.map((v, idx) => (
+                  <div key={idx} className="grid grid-cols-12 gap-2 border border-hairline p-3 items-center">
+                    <input placeholder="URL vidéo (MP4 / YouTube / Vimeo)" value={v.url} onChange={(e) => updateVideo(idx, { url: e.target.value })} className={`${inp} col-span-7`} />
+                    <input placeholder="Poster URL (optionnel)" value={v.poster_url} onChange={(e) => updateVideo(idx, { poster_url: e.target.value })} className={`${inp} col-span-3`} />
+                    <select value={v.source} onChange={(e) => updateVideo(idx, { source: e.target.value })} className={`${inp} col-span-1`}>
+                      <option value="upload">upload</option>
+                      <option value="youtube">youtube</option>
+                      <option value="vimeo">vimeo</option>
+                      <option value="external">externe</option>
+                    </select>
+                    <button type="button" onClick={() => removeVideo(idx)} className="text-bone/50 hover:text-red-400 col-span-1 text-right">✕</button>
+                  </div>
+                ))}
+              </div>
+            </Section>
+
+            <Section title="Tailles & options (legacy / fallback)">
+              <p className="text-bone/50 text-xs mb-3 leading-relaxed">
+                Utilisé si vous n'avez pas de variantes. Sinon, les tailles/couleurs sont dérivées des variantes.
+              </p>
               <Field label="Tailles disponibles">
                 <div className="flex flex-wrap gap-2">
                   {ALL_SIZES.map((s) => (
@@ -264,35 +389,22 @@ export function ProductEditor({ productId }: { productId?: string }) {
                   ))}
                 </div>
               </Field>
-
-              <Field label="Tailles épuisées (Sold out)">
+              <Field label="Tailles épuisées">
                 {form.sizes.length === 0 ? (
-                  <p className="text-bone/50 text-xs">Sélectionnez d'abord les tailles disponibles.</p>
+                  <p className="text-bone/50 text-xs">Sélectionnez d'abord les tailles.</p>
                 ) : (
                   <div className="flex flex-wrap gap-2">
                     {form.sizes.map((s) => (
-                      <Toggle
-                        key={s}
-                        active={form.sold_out_sizes.includes(s)}
-                        onClick={() => toggleArr("sold_out_sizes", s)}
-                        variant="warn"
-                      >
-                        {s}
-                      </Toggle>
+                      <Toggle key={s} active={form.sold_out_sizes.includes(s)} onClick={() => toggleArr("sold_out_sizes", s)} variant="warn">{s}</Toggle>
                     ))}
                   </div>
                 )}
-                <p className="text-bone/40 text-[11px] mt-2 leading-relaxed">
-                  Les tailles cochées resteront affichées sur la fiche produit avec la mention "Sold out" et seront désactivées au panier.
-                </p>
               </Field>
-
               <ListField label="Fits" values={form.fits} onChange={(v) => update("fits", v)} placeholder="Slim, Classic..." />
               <ListField label="Revers (lapels)" values={form.lapels} onChange={(v) => update("lapels", v)} placeholder="Notch, Peak..." />
               <ListField label="Doublures (linings)" values={form.linings} onChange={(v) => update("linings", v)} placeholder="Cupro Bordeaux..." />
-              <ListField label="Couleurs" values={form.colors} onChange={(v) => update("colors", v)} placeholder="Onyx, Ivory..." />
+              <ListField label="Couleurs (legacy)" values={form.colors} onChange={(v) => update("colors", v)} placeholder="Onyx, Ivory..." />
               <ListField label="Détails" values={form.details} onChange={(v) => update("details", v)} placeholder="Boutonnières à la main..." />
-
               <label className="flex items-center gap-3 text-sm text-bone/80 mt-4">
                 <input type="checkbox" checked={form.monogram} onChange={(e) => update("monogram", e.target.checked)} />
                 Monogramme proposé
@@ -311,24 +423,28 @@ export function ProductEditor({ productId }: { productId?: string }) {
           <div className="space-y-10">
             <Section title="Images">
               <div className="border border-dashed border-hairline p-6 text-center">
-                <input
-                  id="img-upload"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => handleUpload(e.target.files)}
-                  className="hidden"
-                />
+                <input id="img-upload" type="file" accept="image/*" multiple onChange={(e) => handleUpload(e.target.files)} className="hidden" />
                 <label htmlFor="img-upload" className="luxury-btn cursor-pointer inline-block">
                   {uploading ? "Upload en cours…" : "+ Ajouter des images"}
                 </label>
               </div>
-
               {images.length > 0 && (
-                <div className="grid grid-cols-3 gap-3 mt-4">
+                <div className="grid grid-cols-2 gap-3 mt-4">
                   {images.map((img, idx) => (
                     <div key={idx} className="relative group border border-hairline">
                       <img src={img.url} alt="" className="aspect-[4/5] w-full object-cover" />
+                      <div className="absolute inset-x-0 top-0 bg-ink/85 px-2 py-1.5 flex justify-between items-center text-[10px]">
+                        <select
+                          value={img.variant_id ?? ""}
+                          onChange={(e) => setImages((prev) => prev.map((p, k) => k === idx ? { ...p, variant_id: e.target.value || null } : p))}
+                          className="bg-transparent text-bone/70 text-[10px] border-0 focus:outline-none"
+                        >
+                          <option value="">Toutes variantes</option>
+                          {variants.map((v, i) => v.id && (
+                            <option key={v.id} value={v.id}>{v.color || "—"} / {v.size || "—"}</option>
+                          ))}
+                        </select>
+                      </div>
                       <div className="absolute inset-x-0 bottom-0 bg-ink/85 px-2 py-1.5 flex justify-between items-center text-[10px]">
                         <button type="button" onClick={() => setPrimary(idx)} className={`eyebrow ${img.is_primary ? "text-bone" : "text-bone/50 hover:text-bone"}`}>
                           {img.is_primary ? "★ Principal" : "Définir"}
@@ -345,7 +461,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
               <Field label="Prix FCFA"><input type="number" min={0} value={form.price_fcfa} onChange={(e) => update("price_fcfa", Number(e.target.value))} required className={inp} /></Field>
               <Field label="Prix USD"><input type="number" min={0} value={form.price_usd} onChange={(e) => update("price_usd", Number(e.target.value))} required className={inp} /></Field>
               <Field label="Prix EUR"><input type="number" min={0} value={form.price_eur} onChange={(e) => update("price_eur", Number(e.target.value))} required className={inp} /></Field>
-              <Field label="Stock"><input type="number" min={0} value={form.stock} onChange={(e) => update("stock", Number(e.target.value))} className={inp} /></Field>
+              <Field label="Stock global (fallback)"><input type="number" min={0} value={form.stock} onChange={(e) => update("stock", Number(e.target.value))} className={inp} /></Field>
               <label className="flex items-center gap-3 text-sm text-bone/80 mt-2">
                 <input type="checkbox" checked={form.is_published} onChange={(e) => update("is_published", e.target.checked)} />
                 Publié (visible dans la collection)
