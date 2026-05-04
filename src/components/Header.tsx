@@ -58,7 +58,7 @@ export function Header() {
             <nav className="hidden lg:flex items-center gap-7 text-[11px] tracking-[0.28em] uppercase text-foreground/85 font-light">
               <Link to="/" className="hover:text-foreground transition-colors">Accueil</Link>
               <Link to="/collection" className="hover:text-foreground transition-colors">Collection</Link>
-              <Link to="/collection" search={{ category: "wedding" }} className="hover:text-foreground transition-colors">Mariage</Link>
+              <Link to="/collection" className="hover:text-foreground transition-colors">Mariage</Link>
               <Link to="/size-finder" className="hover:text-foreground transition-colors">Sur-mesure</Link>
             </nav>
           </div>
