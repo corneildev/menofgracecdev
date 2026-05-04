@@ -13,7 +13,9 @@ import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as UpdatePasswordRouteImport } from './routes/update-password'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SizeFinderRouteImport } from './routes/size-finder'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShippingReturnsRouteImport } from './routes/shipping-returns'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as CookiesRouteImport } from './routes/cookies'
@@ -57,9 +59,19 @@ const SizeFinderRoute = SizeFinderRouteImport.update({
   path: '/size-finder',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShippingReturnsRoute = ShippingReturnsRouteImport.update({
   id: '/shipping-returns',
   path: '/shipping-returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -186,7 +198,9 @@ export interface FileRoutesByFullPath {
   '/cookies': typeof CookiesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/size-finder': typeof SizeFinderRoute
   '/terms': typeof TermsRoute
   '/update-password': typeof UpdatePasswordRoute
@@ -215,7 +229,9 @@ export interface FileRoutesByTo {
   '/cookies': typeof CookiesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/size-finder': typeof SizeFinderRoute
   '/terms': typeof TermsRoute
   '/update-password': typeof UpdatePasswordRoute
@@ -245,7 +261,9 @@ export interface FileRoutesById {
   '/cookies': typeof CookiesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/privacy': typeof PrivacyRoute
+  '/robots.txt': typeof RobotsDottxtRoute
   '/shipping-returns': typeof ShippingReturnsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/size-finder': typeof SizeFinderRoute
   '/terms': typeof TermsRoute
   '/update-password': typeof UpdatePasswordRoute
@@ -276,7 +294,9 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/forgot-password'
     | '/privacy'
+    | '/robots.txt'
     | '/shipping-returns'
+    | '/sitemap.xml'
     | '/size-finder'
     | '/terms'
     | '/update-password'
@@ -305,7 +325,9 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/forgot-password'
     | '/privacy'
+    | '/robots.txt'
     | '/shipping-returns'
+    | '/sitemap.xml'
     | '/size-finder'
     | '/terms'
     | '/update-password'
@@ -334,7 +356,9 @@ export interface FileRouteTypes {
     | '/cookies'
     | '/forgot-password'
     | '/privacy'
+    | '/robots.txt'
     | '/shipping-returns'
+    | '/sitemap.xml'
     | '/size-finder'
     | '/terms'
     | '/update-password'
@@ -364,7 +388,9 @@ export interface RootRouteChildren {
   CookiesRoute: typeof CookiesRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   PrivacyRoute: typeof PrivacyRoute
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
   ShippingReturnsRoute: typeof ShippingReturnsRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SizeFinderRoute: typeof SizeFinderRoute
   TermsRoute: typeof TermsRoute
   UpdatePasswordRoute: typeof UpdatePasswordRoute
@@ -412,11 +438,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SizeFinderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shipping-returns': {
       id: '/shipping-returns'
       path: '/shipping-returns'
       fullPath: '/shipping-returns'
       preLoaderRoute: typeof ShippingReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -599,7 +639,9 @@ const rootRouteChildren: RootRouteChildren = {
   CookiesRoute: CookiesRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   PrivacyRoute: PrivacyRoute,
+  RobotsDottxtRoute: RobotsDottxtRoute,
   ShippingReturnsRoute: ShippingReturnsRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   SizeFinderRoute: SizeFinderRoute,
   TermsRoute: TermsRoute,
   UpdatePasswordRoute: UpdatePasswordRoute,
