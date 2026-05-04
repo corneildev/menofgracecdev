@@ -1,4 +1,4 @@
-import { Outlet, createRootRoute, HeadContent, Scripts, Link } from "@tanstack/react-router";
+import { Outlet, createRootRoute, HeadContent, Scripts, ScriptOnce, Link } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 import { Header } from "@/components/Header";
@@ -11,18 +11,20 @@ import { AuthProvider } from "@/context/AuthContext";
 import { LangBootstrap } from "@/components/LangBootstrap";
 import "@/i18n";
 
+const themeBootScript = `(function(){try{var t=localStorage.getItem("mog:theme");if(t==="light"){document.documentElement.classList.add("light");}}catch(e){}})();`;
+
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-ink px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <div className="eyebrow mb-6">404</div>
-        <h1 className="display text-5xl text-bone mb-6">Page not found</h1>
-        <p className="text-bone/60 mb-10 font-light">
-          The page you seek is not part of this collection.
+        <h1 className="display text-5xl text-foreground mb-6">Page introuvable</h1>
+        <p className="text-foreground/60 mb-10 font-light">
+          La page que vous cherchez ne fait pas partie de cette collection.
         </p>
-        <Link to="/" className="luxury-btn">Return Home</Link>
+        <Link to="/" className="luxury-btn">Retour à l'accueil</Link>
       </div>
     </div>
   );
@@ -33,10 +35,10 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MEN OF GRACE — Bespoke Excellence" },
-      { name: "description", content: "A luxury menswear house specialising in bespoke suits, wedding tailoring and executive sartoria." },
-      { property: "og:title", content: "MEN OF GRACE — Bespoke Excellence" },
-      { property: "og:description", content: "Bespoke suits, wedding tailoring and executive sartoria for men who command presence." },
+      { title: "MEN OF GRACE — Maison de tailleur" },
+      { name: "description", content: "Maison de tailleur d'exception : prêt-à-porter, sur-mesure, mariage et executive. Abidjan · Paris · Lagos · Dubaï." },
+      { property: "og:title", content: "MEN OF GRACE — Maison de tailleur" },
+      { property: "og:description", content: "Costumes sur-mesure, mariage et executive sartoria pour les hommes qui imposent leur présence." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -57,11 +59,12 @@ export const Route = createRootRoute({
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="fr" suppressHydrationWarning>
       <head>
+        <ScriptOnce children={themeBootScript} />
         <HeadContent />
       </head>
-      <body className="bg-ink text-bone overflow-x-hidden">
+      <body className="bg-background text-foreground overflow-x-hidden">
         {children}
         <Scripts />
       </body>
@@ -78,7 +81,7 @@ function RootComponent() {
           <CartProvider>
             <LangBootstrap />
             <Header />
-            <main className="min-h-screen bg-ink overflow-x-hidden">
+            <main className="min-h-screen bg-background overflow-x-hidden">
               <Outlet />
             </main>
             <Footer />
