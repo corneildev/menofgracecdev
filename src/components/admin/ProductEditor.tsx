@@ -60,10 +60,18 @@ function fromProduct(p: ProductWithImages): FormState {
   };
 }
 
-type ImageItem = { id?: string; url: string; is_primary: boolean; position: number; variant_id: string | null };
+type ImageItem = {
+  id?: string;
+  url: string;
+  is_primary: boolean;
+  position: number;
+  variant_id: string | null;          // existing DB id (if image still attached to a saved variant)
+  variant_key: string | null;         // stable local key matching VariantDraft.key
+};
 
 type VariantDraft = {
   id?: string;
+  key: string;                         // stable local key (used to link images even before save)
   size: string;
   color: string;
   sku: string;
@@ -71,6 +79,9 @@ type VariantDraft = {
   price_fcfa: number | null;
   is_available: boolean;
 };
+
+const newKey = () =>
+  (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `k_${Math.random().toString(36).slice(2)}`);
 
 type VideoDraft = {
   id?: string;
