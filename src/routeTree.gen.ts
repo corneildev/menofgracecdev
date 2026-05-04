@@ -25,10 +25,10 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CollectionProductIdRouteImport } from './routes/collection_.$productId'
-import { Route as AdminRestockAlertsRouteImport } from './routes/admin.restock-alerts'
+import { Route as AdminRestockAlertsRouteImport } from './routes/admin_.restock-alerts'
 import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order.confirmation.$orderId'
-import { Route as AdminProductsNewRouteImport } from './routes/admin.products.new'
-import { Route as AdminProductsIdRouteImport } from './routes/admin.products.$id'
+import { Route as AdminProductsNewRouteImport } from './routes/admin_.products.new'
+import { Route as AdminProductsIdRouteImport } from './routes/admin_.products.$id'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -114,9 +114,9 @@ const CollectionProductIdRoute = CollectionProductIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRestockAlertsRoute = AdminRestockAlertsRouteImport.update({
-  id: '/restock-alerts',
-  path: '/restock-alerts',
-  getParentRoute: () => AdminRoute,
+  id: '/admin_/restock-alerts',
+  path: '/admin/restock-alerts',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const OrderConfirmationOrderIdRoute =
   OrderConfirmationOrderIdRouteImport.update({
@@ -125,14 +125,14 @@ const OrderConfirmationOrderIdRoute =
     getParentRoute: () => rootRouteImport,
   } as any)
 const AdminProductsNewRoute = AdminProductsNewRouteImport.update({
-  id: '/products/new',
-  path: '/products/new',
-  getParentRoute: () => AdminRoute,
+  id: '/admin_/products/new',
+  path: '/admin/products/new',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminProductsIdRoute = AdminProductsIdRouteImport.update({
-  id: '/products/$id',
-  path: '/products/$id',
-  getParentRoute: () => AdminRoute,
+  id: '/admin_/products/$id',
+  path: '/admin/products/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
@@ -154,7 +154,7 @@ const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
@@ -179,7 +179,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
@@ -205,7 +205,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
-  '/admin': typeof AdminRouteWithChildren
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
@@ -218,10 +218,10 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
-  '/admin/restock-alerts': typeof AdminRestockAlertsRoute
+  '/admin_/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection_/$productId': typeof CollectionProductIdRoute
-  '/admin/products/$id': typeof AdminProductsIdRoute
-  '/admin/products/new': typeof AdminProductsNewRoute
+  '/admin_/products/$id': typeof AdminProductsIdRoute
+  '/admin_/products/new': typeof AdminProductsNewRoute
   '/order/confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
@@ -295,10 +295,10 @@ export interface FileRouteTypes {
     | '/terms'
     | '/update-password'
     | '/wishlist'
-    | '/admin/restock-alerts'
+    | '/admin_/restock-alerts'
     | '/collection_/$productId'
-    | '/admin/products/$id'
-    | '/admin/products/new'
+    | '/admin_/products/$id'
+    | '/admin_/products/new'
     | '/order/confirmation/$orderId'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
@@ -308,7 +308,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
-  AdminRoute: typeof AdminRouteWithChildren
+  AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
@@ -321,7 +321,10 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   UpdatePasswordRoute: typeof UpdatePasswordRoute
   WishlistRoute: typeof WishlistRoute
+  AdminRestockAlertsRoute: typeof AdminRestockAlertsRoute
   CollectionProductIdRoute: typeof CollectionProductIdRoute
+  AdminProductsIdRoute: typeof AdminProductsIdRoute
+  AdminProductsNewRoute: typeof AdminProductsNewRoute
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
@@ -442,12 +445,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollectionProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/restock-alerts': {
-      id: '/admin/restock-alerts'
-      path: '/restock-alerts'
+    '/admin_/restock-alerts': {
+      id: '/admin_/restock-alerts'
+      path: '/admin/restock-alerts'
       fullPath: '/admin/restock-alerts'
       preLoaderRoute: typeof AdminRestockAlertsRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
     }
     '/order/confirmation/$orderId': {
       id: '/order/confirmation/$orderId'
@@ -456,19 +459,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderConfirmationOrderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/products/new': {
-      id: '/admin/products/new'
-      path: '/products/new'
+    '/admin_/products/new': {
+      id: '/admin_/products/new'
+      path: '/admin/products/new'
       fullPath: '/admin/products/new'
       preLoaderRoute: typeof AdminProductsNewRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/products/$id': {
-      id: '/admin/products/$id'
-      path: '/products/$id'
+    '/admin_/products/$id': {
+      id: '/admin_/products/$id'
+      path: '/admin/products/$id'
       fullPath: '/admin/products/$id'
       preLoaderRoute: typeof AdminProductsIdRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
     }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
@@ -494,24 +497,10 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminRouteChildren {
-  AdminRestockAlertsRoute: typeof AdminRestockAlertsRoute
-  AdminProductsIdRoute: typeof AdminProductsIdRoute
-  AdminProductsNewRoute: typeof AdminProductsNewRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminRestockAlertsRoute: AdminRestockAlertsRoute,
-  AdminProductsIdRoute: AdminProductsIdRoute,
-  AdminProductsNewRoute: AdminProductsNewRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
-  AdminRoute: AdminRouteWithChildren,
+  AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
@@ -524,7 +513,10 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   UpdatePasswordRoute: UpdatePasswordRoute,
   WishlistRoute: WishlistRoute,
+  AdminRestockAlertsRoute: AdminRestockAlertsRoute,
   CollectionProductIdRoute: CollectionProductIdRoute,
+  AdminProductsIdRoute: AdminProductsIdRoute,
+  AdminProductsNewRoute: AdminProductsNewRoute,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
