@@ -617,3 +617,16 @@ function Row({ k, v }: { k: string; v: string }) {
     </div>
   );
 }
+
+function Reassure({ icon, title, body }: { icon: string; title: string; body: string }) {
+  return (
+    <li className="flex items-start gap-4 border-b border-hairline pb-4">
+      <span className="text-base leading-none mt-0.5 select-none" aria-hidden>{icon}</span>
+      <div className="flex-1">
+        <div className="text-bone text-sm font-light">{title}</div>
+        <div className="text-bone/55 text-xs font-light mt-1">{body}</div>
+      </div>
+    </li>
+  );
+}
+
