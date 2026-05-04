@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import hero from "@/assets/hero-suit.jpg";
+import executiveImg from "@/assets/executive-hero.jpg";
+import weddingImg from "@/assets/wedding.jpg";
+import atelierImg from "@/assets/executive-atelier.jpg";
 import {
   listPublishedProducts,
   formatPriceFcfa,
@@ -11,10 +14,17 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "MEN OF GRACE — Tailored Menswear" },
-      { name: "description", content: "Tailored menswear, ready to ship. Italian sizing, finished by hand. Shipped within 5 business days with free local alterations." },
-      { property: "og:title", content: "MEN OF GRACE — Tailored Menswear" },
-      { property: "og:description", content: "For men who command presence without speaking." },
+      { title: "MEN OF GRACE — Maison de tailleur" },
+      {
+        name: "description",
+        content:
+          "Costumes prêt-à-porter, sur-mesure, mariage et executive. Façonné à la main par nos ateliers partenaires de Biella et Foshan. Livraison sous 5 jours, retouches locales offertes.",
+      },
+      { property: "og:title", content: "MEN OF GRACE — Maison de tailleur" },
+      {
+        property: "og:description",
+        content: "Pour les hommes qui imposent leur présence — sans dire un mot.",
+      },
       { property: "og:image", content: hero },
       { property: "twitter:image", content: hero },
     ],
@@ -32,59 +42,125 @@ function Index() {
 
   return (
     <div className="bg-ink text-bone overflow-x-hidden">
-      {/* HERO */}
-      <section className="relative min-h-screen w-full overflow-hidden flex flex-col">
+      {/* HERO — Monumental */}
+      <section className="relative min-h-screen w-full overflow-hidden flex flex-col justify-end">
         <img
           src={hero}
-          alt="Man in a black tailored suit"
+          alt="Homme en costume sur-mesure"
           className="absolute inset-0 h-full w-full object-cover object-center"
           width={1536}
           height={1920}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-ink/30 to-ink" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-ink/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/40 via-transparent to-transparent" />
 
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6 py-24 sm:py-32">
-          <div className="eyebrow text-bone/70 mb-6 sm:mb-8 fade-in-slow">Maison de Couture</div>
-          <h1 className="display text-bone text-[14vw] sm:text-[10vw] md:text-[6rem] lg:text-[7rem] leading-[0.9] mb-4 sm:mb-6 fade-up max-w-full">
-            MEN <span className="italic font-light">of</span> GRACE
-          </h1>
-          <div className="hairline w-12 sm:w-16 my-6 sm:my-8 fade-in-slow" />
-          <p className="font-serif italic text-bone/85 text-base sm:text-lg md:text-xl lg:text-2xl mb-8 sm:mb-12 fade-up max-w-md mx-auto" style={{ animationDelay: "200ms" }}>
-            Tailored menswear, ready to ship.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 fade-up w-full sm:w-auto items-stretch sm:items-center" style={{ animationDelay: "400ms" }}>
-            <Link to="/collection" className="luxury-btn luxury-btn-solid w-full sm:w-auto">Shop the Collection</Link>
+        {/* Top eyebrow */}
+        <div className="relative z-10 absolute top-28 sm:top-32 left-0 right-0 flex justify-center">
+          <div className="eyebrow text-bone/70 fade-in-slow text-center px-4">
+            — Maison de tailleur · Fondée MMXX —
           </div>
         </div>
 
-        <div className="relative z-10 pb-6 sm:pb-8 text-center eyebrow text-bone/50 fade-in-slow">
-          Scroll
+        <div className="relative z-10 px-6 md:px-12 lg:px-16 pb-16 sm:pb-24 lg:pb-28 max-w-[1600px] mx-auto w-full">
+          <h1
+            className="display text-bone text-[14vw] sm:text-[10vw] md:text-[7.5rem] lg:text-[9rem] leading-[0.85] tracking-tight mb-8 sm:mb-12 fade-up max-w-5xl"
+          >
+            L'architecture
+            <br />
+            <span className="italic font-light">de la distinction.</span>
+          </h1>
+
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 lg:gap-16 fade-up" style={{ animationDelay: "200ms" }}>
+            <p className="font-light text-bone/75 text-base sm:text-lg max-w-md leading-relaxed">
+              Un vestiaire pensé pour les hommes qui dirigent. Composé par la maison,
+              façonné à la main par nos ateliers partenaires de <span className="italic">Biella</span> et <span className="italic">Foshan</span>.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
+              <Link to="/collection" className="luxury-btn luxury-btn-solid w-full sm:w-auto whitespace-nowrap">
+                Découvrir la collection
+              </Link>
+              <Link to="/size-finder" className="luxury-btn w-full sm:w-auto whitespace-nowrap">
+                Trouver ma taille
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="relative z-10 pb-6 sm:pb-8 text-center eyebrow text-bone/40 fade-in-slow">
+          Faire défiler
         </div>
       </section>
 
-      {/* POSITIONING */}
-      <section className="py-20 sm:py-28 md:py-40 lg:py-48 px-4 sm:px-6 md:px-8 lg:px-12">
+      {/* TICKER — Cities, on a contrasted band */}
+      <section className="bg-bone text-ink py-10 sm:py-12 border-y border-hairline">
+        <div className="max-w-[1600px] mx-auto px-6 md:px-12 flex flex-wrap items-center justify-between gap-x-10 gap-y-4 text-[10px] sm:text-xs uppercase tracking-[0.32em] sm:tracking-[0.4em] font-light">
+          <span>Abidjan · Cocody</span>
+          <span>Paris · 8ᵉ</span>
+          <span>Lagos · Ikoyi</span>
+          <span>Dubaï · DIFC</span>
+        </div>
+      </section>
+
+      {/* MANIFESTO */}
+      <section className="py-24 sm:py-32 md:py-40 px-6 md:px-12">
         <div className="max-w-5xl mx-auto text-center">
-          <div className="eyebrow text-bone/60 mb-8 sm:mb-10">— Manifesto —</div>
+          <div className="eyebrow text-bone/60 mb-8 sm:mb-10">— Manifeste —</div>
           <h2 className="display text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1] text-bone">
-            For men who command presence
+            Pour les hommes qui imposent leur présence
             <br />
-            <span className="italic text-bone/70">without speaking.</span>
+            <span className="italic text-bone/70">sans dire un mot.</span>
           </h2>
         </div>
       </section>
 
-      {/* COLLECTION */}
+      {/* TROIS PILIERS */}
+      <section className="px-6 md:px-12 pb-24 sm:pb-32">
+        <div className="max-w-[1600px] mx-auto">
+          <div className="eyebrow text-bone/60 mb-10 text-center">— Le Triptyque —</div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+            <PillarCard
+              eyebrow="I · Executive"
+              title="Executive Sartoria"
+              body="La coupe pensée pour les conseils et les grandes scènes du business."
+              image={executiveImg}
+              cta="Découvrir"
+              href="/collection"
+            />
+            <PillarCard
+              eyebrow="II · Sur-mesure"
+              title="Le Sur-mesure"
+              body="Un vêtement composé en trois essayages, autour d'un seul homme."
+              image={atelierImg}
+              cta="Prendre rendez-vous"
+              href="/size-finder"
+              elevated
+            />
+            <PillarCard
+              eyebrow="III · Mariage"
+              title="Le Mariage"
+              body="Les habits d'un jour qui ne se rejoue pas, avec la gravité qu'il mérite."
+              image={weddingImg}
+              cta="Composer mon habit"
+              href="/collection"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* COLLECTION FEATURED */}
       {featured.length > 0 && (
-        <section className="px-4 sm:px-6 md:px-8 lg:px-12 pb-20 sm:pb-28 md:pb-32">
+        <section className="px-6 md:px-12 pb-24 sm:pb-32 border-t border-hairline pt-24 sm:pt-32">
           <div className="max-w-[1600px] mx-auto">
             <div className="flex items-end justify-between mb-12 sm:mb-16 flex-wrap gap-4 sm:gap-6">
               <div>
-                <div className="eyebrow text-bone/60 mb-3 sm:mb-4">The Collection</div>
-                <h2 className="display text-3xl sm:text-4xl md:text-5xl lg:text-6xl">Spring Sartoria</h2>
+                <div className="eyebrow text-bone/60 mb-3 sm:mb-4">— La Collection —</div>
+                <h2 className="display text-3xl sm:text-4xl md:text-5xl lg:text-6xl">Pièces phares</h2>
               </div>
               <Link to="/collection" className="eyebrow text-bone hover:text-bone/60 border-b border-hairline pb-1">
-                Discover All →
+                Voir toute la collection →
               </Link>
             </div>
 
@@ -118,13 +194,16 @@ function Index() {
         </section>
       )}
 
-      {/* TRUST */}
-      <section className="py-20 sm:py-28 md:py-32 px-4 sm:px-6 md:px-8 lg:px-12 border-y border-hairline">
+      {/* TRUST / GARANTIES */}
+      <section className="py-20 sm:py-28 md:py-32 px-6 md:px-12 border-y border-hairline">
         <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 text-center">
           {[
-            ["Curated Cloth", "Loro Piana, Vitale Barberis Canonico, Drago, Scabal — chosen mill by mill."],
-            ["Italian Sizing", "Cut from IT 46 to IT 56. A guided Size Finder if you are between sizes."],
-            ["Shipped in 5 Days", "Dispatched within five business days. Free local alterations."],
+            ["Étoffes choisies", "Loro Piana, Vitale Barberis Canonico, Drago, Scabal — sélectionnées moulin par moulin."],
+            ["Tailles italiennes", "Coupé du IT 46 au IT 56. Un Size Finder guidé si vous hésitez entre deux tailles."],
+            ["Expédition 5 jours", "Envoi sous cinq jours ouvrés. Retouches locales offertes."],
+            ["Paiement sécurisé", "Wave, Orange Money, virement bancaire. Confirmation immédiate."],
+            ["Retours sous 14 jours", "Si la pièce ne vous convient pas, échange ou remboursement intégral."],
+            ["Conseil privé", "Une équipe dédiée vous accompagne par WhatsApp, à toute heure."],
           ].map(([title, body]) => (
             <div key={title}>
               <div className="hairline w-12 mx-auto mb-6 sm:mb-8" />
@@ -135,14 +214,85 @@ function Index() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 sm:py-24 px-4 sm:px-6 md:px-8 lg:px-12 text-center">
-        <div className="eyebrow text-bone/60 mb-6">— The Collection —</div>
-        <p className="font-serif text-xl sm:text-2xl md:text-3xl italic text-bone/85 mb-8 sm:mb-10 max-w-2xl mx-auto">
-          Each piece, ready to be worn.
-        </p>
-        <Link to="/collection" className="luxury-btn luxury-btn-solid">Shop the Collection</Link>
+      {/* TÉMOIGNAGE */}
+      <section className="py-24 sm:py-32 md:py-40 px-6 md:px-12 bg-ink">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="eyebrow text-bone/60 mb-10">— Ils nous font confiance —</div>
+          <blockquote className="font-serif italic text-2xl sm:text-3xl md:text-4xl leading-snug text-bone/90 mb-12">
+            « Le costume n'est pas un vêtement, c'est une décision stratégique.
+            Men of Grace l'a compris mieux que personne. »
+          </blockquote>
+          <div className="hairline w-12 mx-auto mb-6" />
+          <p className="eyebrow text-bone/70">Marcus C. — Directeur Général, Lagos</p>
+        </div>
+      </section>
+
+      {/* CTA FINAL */}
+      <section className="relative py-28 sm:py-40 px-6 md:px-12 text-center overflow-hidden border-t border-hairline">
+        <div className="relative max-w-3xl mx-auto">
+          <div className="eyebrow text-bone/60 mb-8">— Réservez votre essayage —</div>
+          <h3 className="display text-4xl sm:text-5xl md:text-6xl mb-10 leading-[1.05]">
+            Composez la pièce
+            <br />
+            <span className="italic">qui vous ressemble.</span>
+          </h3>
+          <p className="text-bone/60 max-w-xl mx-auto mb-12 font-light">
+            Places limitées chaque mois pour les essayages sur-mesure.
+            Composez votre pièce en ligne ou réservez un rendez-vous privé.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center">
+            <Link to="/collection" className="luxury-btn luxury-btn-solid">
+              Acheter maintenant
+            </Link>
+            <Link to="/size-finder" className="luxury-btn">
+              Réserver un essayage
+            </Link>
+          </div>
+        </div>
       </section>
     </div>
+  );
+}
+
+function PillarCard({
+  eyebrow,
+  title,
+  body,
+  image,
+  cta,
+  href,
+  elevated = false,
+}: {
+  eyebrow: string;
+  title: string;
+  body: string;
+  image: string;
+  cta: string;
+  href: "/collection" | "/size-finder";
+  elevated?: boolean;
+}) {
+  return (
+    <Link
+      to={href}
+      className={`group relative aspect-[4/5] overflow-hidden bg-secondary block ${elevated ? "md:-mt-12 md:mb-12" : ""}`}
+    >
+      <img
+        src={image}
+        alt={title}
+        loading="lazy"
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent group-hover:from-ink/95 transition-all duration-700" />
+      <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-10 lg:p-12 text-bone">
+        <div className="eyebrow text-bone/70 mb-4">{eyebrow}</div>
+        <h3 className="font-serif text-3xl sm:text-4xl mb-4">{title}</h3>
+        <p className="text-bone/75 text-sm font-light leading-relaxed mb-6 max-w-xs">
+          {body}
+        </p>
+        <span className="eyebrow text-bone border-b border-bone/40 pb-1 inline-block group-hover:border-bone transition-colors">
+          {cta} →
+        </span>
+      </div>
+    </Link>
   );
 }
