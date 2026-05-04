@@ -433,6 +433,7 @@ export type Database = {
           position: number
           product_id: string
           url: string
+          variant_id: string | null
         }
         Insert: {
           created_at?: string
@@ -441,6 +442,7 @@ export type Database = {
           position?: number
           product_id: string
           url: string
+          variant_id?: string | null
         }
         Update: {
           created_at?: string
@@ -449,10 +451,112 @@ export type Database = {
           position?: number
           product_id?: string
           url?: string
+          variant_id?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "product_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_images_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_variants: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          is_available: boolean
+          position: number
+          price_eur: number | null
+          price_fcfa: number | null
+          price_usd: number | null
+          product_id: string
+          size: string | null
+          sku: string | null
+          stock: number
+          updated_at: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_available?: boolean
+          position?: number
+          price_eur?: number | null
+          price_fcfa?: number | null
+          price_usd?: number | null
+          product_id: string
+          size?: string | null
+          sku?: string | null
+          stock?: number
+          updated_at?: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_available?: boolean
+          position?: number
+          price_eur?: number | null
+          price_fcfa?: number | null
+          price_usd?: number | null
+          product_id?: string
+          size?: string | null
+          sku?: string | null
+          stock?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_videos: {
+        Row: {
+          created_at: string
+          id: string
+          position: number
+          poster_url: string | null
+          product_id: string
+          source: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          position?: number
+          poster_url?: string | null
+          product_id: string
+          source?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          position?: number
+          poster_url?: string | null
+          product_id?: string
+          source?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_videos_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
