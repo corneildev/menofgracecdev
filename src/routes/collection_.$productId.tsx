@@ -699,7 +699,7 @@ function ProductView({ product }: { product: ProductWithImages }) {
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="mb-8">
-      <div className="eyebrow text-bone/60 mb-3">{label}</div>
+      <div className="eyebrow text-foreground/60 mb-3">{label}</div>
       {children}
     </div>
   );
@@ -721,12 +721,12 @@ function Chip({
       onClick={onClick}
       disabled={disabled}
       aria-disabled={disabled}
-      className={`px-4 py-2 text-xs tracking-[0.2em] uppercase border transition-colors ${
+      className={`px-4 py-2 text-xs tracking-[0.2em] uppercase border transition-all duration-200 ${
         disabled
-          ? "border-hairline text-bone/30 cursor-not-allowed"
+          ? "border-hairline text-foreground/30 cursor-not-allowed"
           : active
-            ? "border-bone bg-bone text-ink"
-            : "border-hairline text-bone/70 hover:border-bone hover:text-bone"
+            ? "border-foreground bg-foreground text-background scale-[1.02]"
+            : "border-hairline text-foreground/70 hover:border-foreground hover:text-foreground hover:scale-[1.02]"
       }`}
     >
       {children}
@@ -737,19 +737,21 @@ function Chip({
 function Row({ k, v }: { k: string; v: string }) {
   return (
     <div className="flex justify-between border-b border-hairline pb-3">
-      <dt className="eyebrow text-bone/50 text-[10px]">{k}</dt>
-      <dd className="text-bone/80 text-sm font-light text-right">{v}</dd>
+      <dt className="eyebrow text-foreground/50 text-[10px]">{k}</dt>
+      <dd className="text-foreground/80 text-sm font-light text-right">{v}</dd>
     </div>
   );
 }
 
-function Reassure({ icon, title, body }: { icon: string; title: string; body: string }) {
+function Reassure({ icon, title, body }: { icon: import("@/components/Icon").IconName; title: string; body: string }) {
   return (
-    <li className="flex items-start gap-4 border-b border-hairline pb-4">
-      <span className="text-base leading-none mt-0.5 select-none" aria-hidden>{icon}</span>
-      <div className="flex-1">
-        <div className="text-bone text-sm font-light">{title}</div>
-        <div className="text-bone/55 text-xs font-light mt-1">{body}</div>
+    <li className="flex items-start gap-3 border border-hairline p-3 hover:border-foreground/40 transition-colors group">
+      <span className="text-foreground/70 group-hover:text-foreground transition-colors mt-0.5">
+        <Icon name={icon} />
+      </span>
+      <div className="flex-1 min-w-0">
+        <div className="text-foreground text-xs font-medium">{title}</div>
+        <div className="text-foreground/55 text-[11px] font-light mt-0.5">{body}</div>
       </div>
     </li>
   );
