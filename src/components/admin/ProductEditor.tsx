@@ -102,6 +102,35 @@ export function ProductEditor({ productId }: { productId?: string }) {
   const [videos, setVideos] = useState<VideoDraft[]>([]);
   const [uploading, setUploading] = useState(false);
   const [videoUploading, setVideoUploading] = useState(false);
+  const [aiLoading, setAiLoading] = useState<string | null>(null);
+
+  const handleAIDescription = async () => {
+    if (!form.name) { setError("Veuillez saisir un nom de produit d'abord."); return; }
+    setAiLoading("description");
+    try {
+      const { generateAIDescription } = await import("@/lib/ai");
+      const desc = await generateAIDescription(form.name, form.category);
+      update("description", desc);
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setAiLoading(null);
+    }
+  };
+
+  const handleRetouch = async (idx: number) => {
+    const img = images[idx];
+    setAiLoading(`image-${idx}`);
+    try {
+      const { retouchImage } = await import("@/lib/ai");
+      const newUrl = await retouchImage(img.url);
+      setImages(prev => prev.map((item, i) => i === idx ? { ...item, url: newUrl } : item));
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setAiLoading(null);
+    }
+  };
 
   useEffect(() => {
     if (!productId) return;
@@ -389,7 +418,17 @@ export function ProductEditor({ productId }: { productId?: string }) {
                 <input value={form.short_description} onChange={(e) => update("short_description", e.target.value)} className={inp} />
               </Field>
               <Field label="Description">
-                <textarea value={form.description} onChange={(e) => update("description", e.target.value)} rows={3} className={inp} />
+                <div className="relative">
+                  <textarea value={form.description} onChange={(e) => update("description", e.target.value)} rows={3} className={inp} />
+                  <button
+                    type="button"
+                    onClick={handleAIDescription}
+                    disabled={aiLoading === "description"}
+                    className="absolute right-2 bottom-2 text-[10px] eyebrow bg-bone text-ink px-2 py-1 hover:bg-bone/80 disabled:opacity-50"
+                  >
+                    {aiLoading === "description" ? "IA en cours..." : "✨ Générer avec l'IA"}
+                  </button>
+                </div>
               </Field>
               <Field label="Histoire / Story">
                 <textarea value={form.story} onChange={(e) => update("story", e.target.value)} rows={3} className={inp} />
@@ -518,7 +557,17 @@ export function ProductEditor({ productId }: { productId?: string }) {
                         <button type="button" onClick={() => setPrimary(idx)} className={`eyebrow ${img.is_primary ? "text-bone" : "text-bone/50 hover:text-bone"}`}>
                           {img.is_primary ? "★ Principal" : "Définir"}
                         </button>
-                        <button type="button" onClick={() => removeImage(idx)} className="text-bone/60 hover:text-red-400">✕</button>
+                        <div className="flex gap-2 items-center">
+                          <button
+                            type="button"
+                            onClick={() => handleRetouch(idx)}
+                            disabled={aiLoading === `image-${idx}`}
+                            className="text-bone/60 hover:text-bone disabled:opacity-50"
+                          >
+                            {aiLoading === `image-${idx}` ? "⏳" : "✨ IA"}
+                          </button>
+                          <button type="button" onClick={() => removeImage(idx)} className="text-bone/60 hover:text-red-400">✕</button>
+                        </div>
                       </div>
                     </div>
                   ))}

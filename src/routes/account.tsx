@@ -94,6 +94,13 @@ function AccountPage() {
                   </div>
                   <div className="eyebrow text-bone/70 text-[10px]">{STATUS_LABEL[o.status] ?? o.status}</div>
                   <div className="text-bone/80 font-light text-sm">{formatPriceFcfa(o.total_fcfa)}</div>
+                  <Link
+                    to="/order/confirmation/$orderId"
+                    params={{ orderId: o.id }}
+                    className="eyebrow text-[10px] text-bone/70 hover:text-bone border border-hairline px-3 py-1.5 ml-4"
+                  >
+                    Détails →
+                  </Link>
                 </div>
               ))}
             </div>

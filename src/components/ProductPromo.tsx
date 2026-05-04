@@ -104,12 +104,33 @@ export function OfferCountdown() {
     d.setHours(23, 59, 59, 999);
     return d.getTime();
   });
+  const [isClient, setIsClient] = useState(false);
   const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
+    setIsClient(true);
     const i = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(i);
   }, []);
+
+  if (!isClient) {
+    return (
+      <div className="border border-amber-500/40 bg-amber-500/5 px-4 py-3 flex items-center gap-3">
+        <Icon name="bolt" className="text-amber-500 text-lg anim-pulse-soft" />
+        <div className="flex-1 min-w-0">
+          <div className="text-foreground text-xs font-medium">Offre exclusive — livraison offerte</div>
+          <div className="text-foreground/60 text-[11px] mt-0.5">Plus que quelques heures pour en profiter.</div>
+        </div>
+        <div className="flex items-center gap-1 font-mono text-sm text-foreground tabular-nums opacity-0">
+          <TimeBox v="00" l="h" />
+          <span className="text-foreground/40">:</span>
+          <TimeBox v="00" l="m" />
+          <span className="text-foreground/40">:</span>
+          <TimeBox v="00" l="s" />
+        </div>
+      </div>
+    );
+  }
 
   const ms = Math.max(0, end - now);
   const h = Math.floor(ms / 3_600_000);

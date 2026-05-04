@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -29,6 +29,10 @@ import {
 } from "@/components/ProductPromo";
 import { Icon } from "@/components/Icon";
 import { trackProductEvent } from "@/lib/analytics";
+import { useCountry } from "@/hooks/useCountry";
+import { QuickOrderForm } from "@/components/QuickOrderForm";
+import { OrderSuccessModal } from "@/components/OrderSuccessModal";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const Route = createFileRoute("/collection_/$productId")({
   loader: async ({ params }) => {
@@ -67,29 +71,58 @@ export const Route = createFileRoute("/collection_/$productId")({
       ] : []),
     ];
     const links = [{ rel: "canonical", href: url }];
-    const scripts = p ? [{
-      type: "application/ld+json",
-      children: JSON.stringify({
-        "@context": "https://schema.org/",
-        "@type": "Product",
-        name: p.name,
-        description: desc,
-        image: img ? [img] : undefined,
-        sku: p.slug,
-        brand: { "@type": "Brand", name: "Men of Grace" },
-        category: p.category,
-        offers: {
-          "@type": "Offer",
-          url,
-          priceCurrency: "EUR",
-          price: p.price_eur ?? Math.round((p.price_usd ?? 0) * 0.92),
-          availability: (p.stock ?? 0) > 0
-            ? "https://schema.org/InStock"
-            : "https://schema.org/OutOfStock",
-          itemCondition: "https://schema.org/NewCondition",
-        },
-      }),
-    }] : undefined;
+    const scripts = p ? [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org/",
+          "@type": "Product",
+          name: p.name,
+          description: desc,
+          image: img ? [img] : undefined,
+          sku: p.slug,
+          brand: { "@type": "Brand", name: "Men of Grace" },
+          category: p.category,
+          offers: {
+            "@type": "Offer",
+            url,
+            priceCurrency: "EUR",
+            price: p.price_eur ?? Math.round((p.price_usd ?? 0) * 0.92),
+            availability: (p.stock ?? 0) > 0
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+            itemCondition: "https://schema.org/NewCondition",
+          },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Accueil",
+              item: "https://menofgrace.store",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Collection",
+              item: "https://menofgrace.store/collection",
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: p.name,
+              item: url,
+            },
+          ],
+        }),
+      },
+    ] : undefined;
     return { meta, links, scripts };
   },
   notFoundComponent: () => (
@@ -114,7 +147,11 @@ function ProductDetail() {
   return <ProductView product={product} />;
 }
 
-// Helper: derive available sizes/colors either from variants (preferred) or legacy arrays.
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+};
+
 function deriveOptions(p: ProductWithImages) {
   if (p.variants && p.variants.length > 0) {
     const sizes = Array.from(new Set(p.variants.map((v) => v.size).filter((s): s is string => !!s)));
@@ -131,6 +168,7 @@ function findVariant(variants: ProductVariantRow[], size: string | null, color: 
 function ProductView({ product }: { product: ProductWithImages }) {
   const { has, toggle, ready } = useWishlist();
   const { add: addToCart } = useCart();
+  const { currency } = useCountry();
   const saved = ready && has(product.id);
 
   const { sizes, colors, hasVariants } = useMemo(() => deriveOptions(product), [product]);
@@ -143,7 +181,6 @@ function ProductView({ product }: { product: ProductWithImages }) {
   const [monogram, setMonogram] = useState("");
   const [sizeError, setSizeError] = useState<string | null>(null);
 
-  // Reset selections on product change.
   useEffect(() => {
     setSize(null);
     setColor(colors[0] ?? null);
@@ -152,15 +189,13 @@ function ProductView({ product }: { product: ProductWithImages }) {
     setLining(product.linings[0] ?? "");
     setMonogram("");
     setSizeError(null);
-  }, [product.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [product.id]);
 
-  // Currently selected variant (when variants exist).
   const selectedVariant = useMemo(() => {
     if (!hasVariants) return null;
     return findVariant(product.variants, size, color);
   }, [hasVariants, product.variants, size, color]);
 
-  // Variant-aware sold-out logic.
   const isSizeSoldOut = (s: string): boolean => {
     if (hasVariants) {
       const candidates = product.variants.filter((v) => v.size === s && (color ? v.color === color : true));
@@ -172,7 +207,6 @@ function ProductView({ product }: { product: ProductWithImages }) {
 
   const actuallySoldOut = sizes.length > 0 && sizes.every((s) => isSizeSoldOut(s));
 
-  // Auto-switch if the currently selected size becomes sold out.
   useEffect(() => {
     if (!size) return;
     if (!isSizeSoldOut(size)) return;
@@ -181,9 +215,8 @@ function ProductView({ product }: { product: ProductWithImages }) {
     if (nextAvailable) {
       setSizeError(`Taille ${size} épuisée — taille ${nextAvailable} sélectionnée.`);
     }
-  }, [color]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [color]);
 
-  // Variant-image filtering: prefer exact size+color match, fallback to color-only.
   const filterVariantId = useMemo(() => {
     if (!hasVariants) return null;
     if (size && color) {
@@ -201,7 +234,6 @@ function ProductView({ product }: { product: ProductWithImages }) {
     return null;
   }, [hasVariants, size, color, product.variants]);
 
-  // Effective price (variant override > product)
   const effectivePrice = useMemo(() => {
     if (selectedVariant?.price_fcfa) {
       return {
@@ -213,7 +245,6 @@ function ProductView({ product }: { product: ProductWithImages }) {
     return { fcfa: product.price_fcfa, usd: product.price_usd, eur: product.price_eur };
   }, [selectedVariant, product]);
 
-  // Related products
   const { data: allProducts = [] } = useQuery({
     queryKey: ["products", "published"],
     queryFn: listPublishedProducts,
@@ -259,11 +290,24 @@ function ProductView({ product }: { product: ProductWithImages }) {
     });
   };
 
+  const { isCODCountry, loading: geoLoading } = useCountry();
+  const [successData, setSuccessData] = useState<{ orderId: string; orderNumber: string } | null>(null);
+  const navigate = useNavigate();
+
+  const handleBuyNow = () => {
+    if (sizes.length > 0 && !size) {
+      setSizeError("Veuillez sélectionner une taille.");
+      document.getElementById("size-picker")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    handleAddToCart();
+    navigate({ to: "/checkout" });
+  };
+
   return (
     <div className="bg-background pt-32 sm:pt-40 pb-24 sm:pb-32 overflow-x-hidden">
       <LiveActivityToast productName={product.name} />
 
-      {/* Breadcrumb */}
       <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto mb-6 sm:mb-8">
         <nav aria-label="Fil d'Ariane" className="eyebrow text-foreground/55 flex items-center gap-3 flex-wrap">
           <Link to="/" className="hover:text-foreground transition-colors">Accueil</Link>
@@ -274,268 +318,189 @@ function ProductView({ product }: { product: ProductWithImages }) {
         </nav>
       </div>
 
-      {/* Gallery + Buy panel */}
       <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-10 sm:gap-12 lg:gap-20">
-        <div className="anim-slide-up">
+        <motion.div 
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
           <ProductMediaGallery
             images={product.images}
             videos={product.videos}
             alt={product.name}
             filterVariantId={filterVariantId}
           />
-        </div>
+        </motion.div>
 
-        {/* Buy panel */}
-        <div className="lg:sticky lg:top-32 self-start anim-slide-up" style={{ animationDelay: "120ms" }}>
-          {/* Top badges */}
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-[10px] uppercase tracking-[0.2em]">
-              <Icon name="gem" /> Édition limitée
-            </span>
-            {(product.stock ?? 0) > 0 && (product.stock ?? 0) <= 5 && (
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-[10px] uppercase tracking-[0.2em]">
-                <Icon name="fire" /> Stock limité
-              </span>
-            )}
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 border border-hairline text-foreground/70 text-[10px] uppercase tracking-[0.2em]">
-              <Icon name="award" /> Made in Abidjan
-            </span>
-          </div>
-
-          <div className="eyebrow text-foreground/60 mb-3">{CATEGORY_LABELS[product.category]}</div>
-          <h1 className="display text-3xl sm:text-4xl md:text-5xl mb-4 break-words">{product.name}</h1>
-
-          {/* Reviews summary inline */}
-          <button
-            type="button"
-            onClick={() => document.getElementById("reviews-heading")?.scrollIntoView({ behavior: "smooth" })}
-            className="inline-flex items-center gap-2 mb-5 text-xs text-foreground/70 hover:text-foreground transition-colors"
+        <motion.div 
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+          className="flex flex-col"
+        >
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: { staggerChildren: 0.1 }
+              }
+            }}
           >
-            <span className="inline-flex items-center gap-0.5 text-amber-500">
-              {[1, 2, 3, 4, 5].map((i) => <Icon key={i} name="star" />)}
-            </span>
-            <span className="text-foreground font-medium">4.9</span>
-            <span className="text-foreground/50">· Voir les avis</span>
-          </button>
-
-          {product.short_description && (
-            <p className="text-foreground/70 font-light leading-relaxed mb-6">{product.short_description}</p>
-          )}
-
-          <ViewersCounter productSlug={product.slug} />
-
-          <div className="border-y border-hairline py-6 my-6">
-            <div className="flex items-baseline gap-3 flex-wrap">
-              <div className="text-foreground text-2xl font-light">{formatPriceFcfa(effectivePrice.fcfa)}</div>
-              <div className="text-foreground/45 text-sm font-light line-through">
-                {formatPriceFcfa(Math.round(effectivePrice.fcfa * 1.15))}
-              </div>
-              <span className="px-2 py-0.5 bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[10px] uppercase tracking-wider font-medium">
-                <Icon name="percent" /> -15%
+            <motion.div variants={itemVariants} className="flex items-center justify-between mb-2">
+              <span className="eyebrow text-foreground/50 tracking-[0.2em]">{CATEGORY_LABELS[product.category]}</span>
+              <ViewersCounter productSlug={product.slug} />
+            </motion.div>
+            
+            <motion.h1 variants={itemVariants} className="display text-4xl sm:text-5xl md:text-6xl mb-4 leading-[1.1]">{product.name}</motion.h1>
+            
+            <motion.div variants={itemVariants} className="flex items-baseline gap-4 mb-8">
+              <span className="font-serif text-2xl sm:text-3xl text-foreground/90">
+                {currency === "EUR" ? formatPriceEur(effectivePrice.eur) : currency === "USD" ? formatPriceUsd(effectivePrice.usd) : formatPriceFcfa(effectivePrice.fcfa)}
               </span>
+              <PromoBadge />
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="mb-10">
+              <OfferCountdown />
+            </motion.div>
+
+            <motion.div variants={itemVariants} className="prose prose-sm prose-invert mb-10 text-foreground/70 font-light leading-relaxed max-w-none">
+              <p>{product.short_description}</p>
+            </motion.div>
+          </motion.div>
+
+          <Section label="Couleur">
+            <div className="flex flex-wrap gap-2">
+              {colors.map((c) => (
+                <Chip key={c} active={color === c} onClick={() => setColor(c)}>
+                  {c}
+                </Chip>
+              ))}
             </div>
-            <div className="text-foreground/55 text-sm font-light mt-2">
-              {formatPriceUsd(effectivePrice.usd)} · {formatPriceEur(effectivePrice.eur)}
-            </div>
-            <div className="text-foreground/55 text-xs font-light mt-2 flex items-center gap-1.5">
-              <Icon name="card" className="text-foreground/40" />
-              ou 3× {formatPriceFcfa(Math.round(effectivePrice.fcfa / 3))} sans frais
-            </div>
-            {selectedVariant && (
-              <div className="eyebrow text-foreground/40 text-[10px] mt-3">
-                {selectedVariant.stock > 0 ? `${selectedVariant.stock} en stock` : "Rupture"}
-                {selectedVariant.sku ? ` · SKU ${selectedVariant.sku}` : ""}
-              </div>
-            )}
-          </div>
+          </Section>
 
-          {/* Promo */}
-          <div className="mb-6 space-y-3">
-            <PromoBadge />
-            <OfferCountdown />
-          </div>
-
-          {/* Color */}
-          {colors.length > 0 && (
-            <Section label="Couleur">
-              <div className="flex flex-wrap gap-2">
-                {colors.map((c) => (
-                  <Chip key={c} active={color === c} onClick={() => setColor(c)}>
-                    {c}
-                  </Chip>
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {/* Size */}
-          {sizes.length > 0 && (
-            <div id="size-picker" className="scroll-mt-24">
-              <Section label="Taille">
-                <TooltipProvider delayDuration={150}>
-                  <div className="flex flex-wrap gap-2">
-                    {sizes.map((s) => {
-                      const soldOut = isSizeSoldOut(s);
-                      const chip = (
-                        <Chip
-                          key={s}
-                          active={size === s}
-                          disabled={soldOut}
-                          onClick={() => { if (soldOut) return; setSize(s); setSizeError(null); }}
-                        >
-                          <span className={soldOut ? "line-through" : ""}>{s}</span>
-                          {soldOut && <span className="ml-2 text-[9px] tracking-[0.18em] opacity-70">Épuisé</span>}
-                        </Chip>
-                      );
-                      if (!soldOut) return chip;
-                      return (
-                        <Tooltip key={s}>
-                          <TooltipTrigger asChild>
-                            <span
-                              className="inline-flex"
-                              tabIndex={0}
-                              aria-label={`Taille ${s} indisponible`}
-                              onMouseEnter={() =>
-                                trackProductEvent({
-                                  type: "sold_out_tooltip_shown",
-                                  productSlug: product.slug,
-                                  productName: product.name,
-                                  size: s,
-                                })
-                              }
-                            >
-                              {chip}
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-[220px] text-center">
-                            <p className="text-xs leading-relaxed">
-                              La taille <span className="font-medium">{s}</span> est actuellement indisponible.
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      );
-                    })}
-                  </div>
-                </TooltipProvider>
-
-                <div className="mt-4">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <button
-                        type="button"
-                        className="eyebrow text-[10px] text-foreground/70 underline underline-offset-[6px] decoration-hairline hover:text-foreground hover:decoration-current transition-colors inline-flex items-center gap-2"
+          <div id="size-picker" className="scroll-mt-24">
+            <Section label="Taille">
+              <TooltipProvider delayDuration={150}>
+                <div className="flex flex-wrap gap-2">
+                  {sizes.map((s) => {
+                    const soldOut = isSizeSoldOut(s);
+                    const chip = (
+                      <Chip
+                        key={s}
+                        active={size === s}
+                        disabled={soldOut}
+                        onClick={() => { if (soldOut) return; setSize(s); setSizeError(null); }}
                       >
-                        <Icon name="ruler" /> Trouver ma taille
-                      </button>
-                    </DialogTrigger>
-                    <DialogContent className="bg-background border-hairline text-foreground max-w-xl">
-                      <DialogHeader>
-                        <DialogTitle className="font-serif text-2xl text-foreground">Trouver ma taille</DialogTitle>
-                      </DialogHeader>
-                      <div className="pt-2">
-                        <SizeFinder
-                          availableSizes={sizes.filter((s) => !isSizeSoldOut(s))}
-                          onPick={(s) => {
-                            setSize(s);
-                            setSizeError(null);
-                          }}
-                          variant="compact"
-                        />
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                        <span className={soldOut ? "line-through" : ""}>{s}</span>
+                        {soldOut && <span className="ml-2 text-[9px] tracking-[0.18em] opacity-70">Épuisé</span>}
+                      </Chip>
+                    );
+                    if (!soldOut) return chip;
+                    return (
+                      <Tooltip key={s}>
+                        <TooltipTrigger asChild>
+                          <span
+                            className="inline-flex"
+                            tabIndex={0}
+                            aria-label={`Taille ${s} indisponible`}
+                          >
+                            {chip}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[220px] text-center">
+                          <p className="text-xs leading-relaxed">
+                            La taille <span className="font-medium">{s}</span> est actuellement indisponible.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    );
+                  })}
                 </div>
+              </TooltipProvider>
 
-                {actuallySoldOut && (
-                  <>
-                    <p className="text-xs text-foreground/60 mt-3 tracking-wider font-light">
-                      Toutes les tailles sont actuellement épuisées. Soyez prévenu dès que la pièce revient.
-                    </p>
-                    <RestockAlertForm
-                      productSlug={product.slug}
-                      productName={product.name}
-                      size={size}
-                      expectedRestockDate={new Date(Date.now() + 6 * 7 * 24 * 60 * 60 * 1000)}
-                    />
-                  </>
-                )}
-                {sizeError && (
-                  <p role="alert" className="text-xs text-red-500 dark:text-red-400 mt-3 tracking-wider anim-shake">{sizeError}</p>
-                )}
-              </Section>
-            </div>
-          )}
-
-          {/* Fit */}
-          {product.fits.length > 0 && (
-            <Section label="Coupe">
-              <div className="flex flex-wrap gap-2">
-                {product.fits.map((f) => (
-                  <Chip key={f} active={fit === f} onClick={() => setFit(f)}>{f}</Chip>
-                ))}
+              <div className="mt-4">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button
+                      type="button"
+                      className="eyebrow text-[10px] text-foreground/70 underline underline-offset-[6px] decoration-hairline hover:text-foreground hover:decoration-current transition-colors inline-flex items-center gap-2"
+                    >
+                      <Icon name="ruler" /> Trouver ma taille
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-background border-hairline text-foreground max-w-xl">
+                    <DialogHeader>
+                      <DialogTitle className="font-serif text-2xl text-foreground">Trouver ma taille</DialogTitle>
+                    </DialogHeader>
+                    <div className="pt-2">
+                      <SizeFinder
+                        availableSizes={sizes.filter((s) => !isSizeSoldOut(s))}
+                        onPick={(s) => {
+                          setSize(s);
+                          setSizeError(null);
+                        }}
+                        variant="compact"
+                      />
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
+
+              {actuallySoldOut && (
+                <>
+                  <p className="text-xs text-foreground/60 mt-3 tracking-wider font-light">
+                    Toutes les tailles sont actuellement épuisées. Soyez prévenu dès que la pièce revient.
+                  </p>
+                  <RestockAlertForm
+                    productSlug={product.slug}
+                    productName={product.name}
+                    size={size}
+                    expectedRestockDate={new Date(Date.now() + 6 * 7 * 24 * 60 * 60 * 1000)}
+                  />
+                </>
+              )}
+              {sizeError && (
+                <p role="alert" className="text-xs text-red-500 dark:text-red-400 mt-3 tracking-wider anim-shake">{sizeError}</p>
+              )}
             </Section>
-          )}
+          </div>
 
-          {/* Lapel */}
-          {product.lapels.length > 0 && (
-            <Section label="Revers">
-              <div className="flex flex-wrap gap-2">
-                {product.lapels.map((l) => (
-                  <Chip key={l} active={lapel === l} onClick={() => setLapel(l)}>{l}</Chip>
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {/* Lining */}
-          {product.linings.length > 0 && (
-            <Section label="Doublure">
-              <div className="flex flex-wrap gap-2">
-                {product.linings.map((l) => (
-                  <Chip key={l} active={lining === l} onClick={() => setLining(l)}>{l}</Chip>
-                ))}
-              </div>
-            </Section>
-          )}
-
-          {/* Monogram */}
-          {product.monogram && (
-            <Section label="Monogramme (optionnel)">
-              <input
-                value={monogram}
-                onChange={(e) => setMonogram(e.target.value.slice(0, 4).toUpperCase())}
-                placeholder="3 initiales"
-                maxLength={4}
-                className="w-full bg-transparent border-b border-hairline py-3 text-foreground tracking-[0.3em] focus:outline-none focus:border-foreground transition-colors"
-              />
-            </Section>
-          )}
-
-          {/* Urgence : low stock signal sur variant */}
-          {selectedVariant && selectedVariant.stock > 0 && selectedVariant.stock <= 3 && (
-            <div className="mb-6">
-              <StockUrgency stock={selectedVariant.stock} />
-            </div>
-          )}
-
-          {/* CTA */}
           <div className="mt-6 flex flex-col gap-3">
             <button
               type="button"
-              onClick={handleAddToCart}
+              onClick={isCODCountry ? handleAddToCart : handleBuyNow}
               disabled={actuallySoldOut}
-              aria-disabled={actuallySoldOut}
               className="luxury-btn luxury-btn-solid w-full disabled:opacity-40 disabled:cursor-not-allowed group inline-flex items-center justify-center gap-3 hover:scale-[1.01] transition-transform"
             >
-              <Icon name="cart" />
-              {actuallySoldOut ? "Édition épuisée" : "Ajouter au panier"}
+              <Icon name={isCODCountry ? "cart" : "bolt"} />
+              {actuallySoldOut ? "Édition épuisée" : isCODCountry ? "Ajouter à ma sélection" : "Acheter maintenant"}
             </button>
+
+            {isCODCountry && !actuallySoldOut && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+                <QuickOrderForm 
+                  productId={product.id}
+                  productName={product.name}
+                  productImage={product.primaryImage}
+                  priceFcfa={effectivePrice.fcfa}
+                  priceUsd={effectivePrice.usd}
+                  selectedSize={size}
+                  selectedFit={fit}
+                  selectedLapel={lapel}
+                  selectedLining={lining}
+                  selectedMonogram={monogram}
+                  onSuccess={(id, num) => setSuccessData({ orderId: id, orderNumber: num })}
+                />
+              </motion.div>
+            )}
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => toggle(product.id)}
-                aria-pressed={saved}
                 className="luxury-btn flex items-center justify-center gap-2"
               >
                 <Icon name={saved ? "heart" : "heart-o"} className={saved ? "text-red-500" : ""} />
@@ -546,8 +511,6 @@ function ProductView({ product }: { product: ProductWithImages }) {
                 onClick={() => {
                   if (typeof navigator !== "undefined" && (navigator as any).share) {
                     (navigator as any).share({ title: product.name, url: window.location.href }).catch(() => {});
-                  } else if (typeof navigator !== "undefined" && navigator.clipboard) {
-                    navigator.clipboard.writeText(window.location.href);
                   }
                 }}
                 className="luxury-btn flex items-center justify-center gap-2"
@@ -558,19 +521,151 @@ function ProductView({ product }: { product: ProductWithImages }) {
             </div>
           </div>
 
-          {/* Garanties : conversion booster */}
-          <ul className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <Reassure icon="truck" title="Livraison rapide" body="Sous 5 jours ouvrés." />
-            <Reassure icon="scissors" title="Retouches offertes" body="Tombé parfait garanti." />
-            <Reassure icon="rotate-left" title="Retours 14 jours" body="Sans condition." />
-            <Reassure icon="lock" title="Paiement sécurisé" body="Wave, OM, virement." />
-            <Reassure icon="whatsapp" title="Conseil privé" body="WhatsApp dédié." />
-            <Reassure icon="shield" title="Garantie qualité" body="Satisfait ou remboursé." />
-          </ul>
-        </div>
+          <motion.ul 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6 border-t border-hairline pt-10"
+          >
+            {[
+              ["globe", "Livraison internationale", "DHL Express sous 5 jours."],
+              ["check", "Authenticité garantie", "Tissus italiens & confection main."],
+              ["shield", "Paiement sécurisé", "Transactions 100% cryptées."],
+              ["whatsapp", "Conseil privé", "Disponibilité 7j/7 sur WhatsApp."],
+            ].map(([icon, title, body], i) => (
+              <li key={title} className="flex items-start gap-4">
+                <div className="w-10 h-10 flex items-center justify-center bg-secondary text-foreground/40 shrink-0">
+                  <Icon name={icon as any} />
+                </div>
+                <div>
+                  <div className="font-serif text-sm mb-1">{title}</div>
+                  <div className="text-[11px] text-foreground/50 font-light tracking-wide">{body}</div>
+                </div>
+              </li>
+            ))}
+          </motion.ul>
+        </motion.div>
       </div>
 
-      {/* Sticky mobile CTA */}
+      <OrderSuccessModal 
+        isOpen={!!successData} 
+        orderNumber={successData?.orderNumber ?? ""} 
+        onClose={() => setSuccessData(null)} 
+      />
+
+      <section className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto mt-24 sm:mt-32">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          <Tabs defaultValue="details" className="w-full">
+            <TabsList className="bg-transparent border-b border-hairline w-full justify-start rounded-none h-auto p-0 mb-12">
+              <TabsTrigger value="details" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent rounded-none px-0 pb-4 mr-10 eyebrow text-[10px] tracking-[0.3em]">DÉTAILS & COUPE</TabsTrigger>
+              <TabsTrigger value="composition" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent rounded-none px-0 pb-4 mr-10 eyebrow text-[10px] tracking-[0.3em]">COMPOSITION</TabsTrigger>
+              <TabsTrigger value="shipping" className="bg-transparent border-b-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent rounded-none px-0 pb-4 eyebrow text-[10px] tracking-[0.3em]">LIVRAISON & RETOURS</TabsTrigger>
+            </TabsList>
+            
+            <AnimatePresence mode="wait">
+              <TabsContent value="details">
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.4 }}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-20"
+                >
+                  <div>
+                    <h3 className="font-serif text-2xl mb-6">Le mot du tailleur</h3>
+                    <div className="text-foreground/70 font-light leading-relaxed space-y-4">
+                      {(product.description || "").split('\n\n').map((para, i) => (
+                        <p key={i}>{para}</p>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-8">
+                    <div>
+                      <h4 className="eyebrow text-[10px] mb-4 tracking-[0.2em] text-foreground/40">CARACTÉRISTIQUES</h4>
+                      <ul className="space-y-3">
+                        <li className="flex items-center gap-3 text-sm font-light">
+                          <span className="w-1.5 h-1.5 bg-foreground/20 rounded-full" />
+                          Coupe semi-entoilée traditionnelle
+                        </li>
+                        <li className="flex items-center gap-3 text-sm font-light">
+                          <span className="w-1.5 h-1.5 bg-foreground/20 rounded-full" />
+                          Épaules structurées
+                        </li>
+                        <li className="flex items-center gap-3 text-sm font-light">
+                          <span className="w-1.5 h-1.5 bg-foreground/20 rounded-full" />
+                          Boutonnières fonctionnelles
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </motion.div>
+              </TabsContent>
+            </AnimatePresence>
+          </Tabs>
+        </motion.div>
+      </section>
+
+      <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1100px] mx-auto mt-20 sm:mt-32">
+        <ProductReviews productSlug={product.slug} productName={product.name} />
+      </div>
+
+      {relatedProducts.length > 0 && (
+        <section className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto mt-32 border-t border-hairline pt-24 pb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
+              <div>
+                <div className="eyebrow text-foreground/40 mb-3 tracking-[0.3em] uppercase">— Compléter la tenue —</div>
+                <h2 className="display text-4xl sm:text-5xl">Vous aimerez aussi</h2>
+              </div>
+              <Link to="/collection" className="eyebrow hover:text-foreground/60 transition-colors border-b border-foreground/20 pb-1 tracking-[0.2em] text-[10px]">
+                VOIR TOUT →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10">
+              {relatedProducts.map((p, idx) => (
+                <motion.div
+                  key={p.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: idx * 0.1 }}
+                >
+                  <Link
+                    to="/collection/$productId"
+                    params={{ productId: p.slug }}
+                    className="group block"
+                  >
+                    <div className="aspect-[3/4] bg-secondary mb-6 overflow-hidden relative">
+                      <img
+                        src={p.primaryImage}
+                        alt={p.name}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="eyebrow text-foreground/40 mb-2 text-[9px] tracking-[0.2em] uppercase">{CATEGORY_LABELS[p.category]}</div>
+                    <div className="font-serif text-xl mb-2 group-hover:text-foreground/70 transition-colors leading-tight">{p.name}</div>
+                    <div className="text-foreground/60 text-sm font-light">{currency === "EUR" ? formatPriceEur(p.price_eur) : currency === "USD" ? formatPriceUsd(p.price_usd) : formatPriceFcfa(p.price_fcfa)}</div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </section>
+      )}
+
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-hairline px-4 py-3 flex items-center justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="text-foreground/50 text-[10px] uppercase tracking-[0.2em] truncate">{product.name}</div>
@@ -580,126 +675,20 @@ function ProductView({ product }: { product: ProductWithImages }) {
           type="button"
           onClick={handleAddToCart}
           disabled={actuallySoldOut}
-          aria-disabled={actuallySoldOut}
           className="luxury-btn luxury-btn-solid !px-5 !py-3 !text-[10px] disabled:opacity-40 inline-flex items-center gap-2"
         >
           <Icon name="cart" />
-          {actuallySoldOut ? "Épuisé" : "Acheter"}
+          {actuallySoldOut ? "Épuisé" : isCODCountry ? "Commander" : "Acheter"}
         </button>
       </div>
-
-      {/* Tabs: Description / Tissu / Construction / Livraison */}
-      <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1100px] mx-auto mt-20 sm:mt-32">
-        <Tabs defaultValue="description">
-          <TabsList className="bg-transparent border-b border-hairline w-full justify-start gap-6 rounded-none h-auto p-0 overflow-x-auto">
-            <TabsTrigger value="description" className="data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:border-b data-[state=active]:border-foreground rounded-none px-0 pb-3 eyebrow text-foreground/50">
-              Description
-            </TabsTrigger>
-            {(product.fabric_composition || product.fabric_weight || product.fabric_mill || product.fabric_notes) && (
-              <TabsTrigger value="fabric" className="data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:border-b data-[state=active]:border-foreground rounded-none px-0 pb-3 eyebrow text-foreground/50">
-                Tissu
-              </TabsTrigger>
-            )}
-            {product.details.length > 0 && (
-              <TabsTrigger value="details" className="data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:border-b data-[state=active]:border-foreground rounded-none px-0 pb-3 eyebrow text-foreground/50">
-                Construction
-              </TabsTrigger>
-            )}
-            <TabsTrigger value="shipping" className="data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:border-b data-[state=active]:border-foreground rounded-none px-0 pb-3 eyebrow text-foreground/50">
-              Livraison
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="description" className="pt-10">
-            {product.description && (
-              <p className="text-foreground/70 font-light leading-relaxed whitespace-pre-line">{product.description}</p>
-            )}
-            {product.story && (
-              <div className="mt-10 pt-10 border-t border-hairline">
-                <div className="eyebrow text-foreground/60 mb-4">— Histoire —</div>
-                <p className="text-foreground/70 font-light leading-relaxed whitespace-pre-line italic">{product.story}</p>
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="fabric" className="pt-10">
-            <dl className="space-y-5 max-w-2xl">
-              {product.fabric_composition && <Row k="Composition" v={product.fabric_composition} />}
-              {product.fabric_weight && <Row k="Poids" v={product.fabric_weight} />}
-              {product.fabric_mill && <Row k="Manufacture" v={product.fabric_mill} />}
-            </dl>
-            {product.fabric_notes && (
-              <p className="text-foreground/60 font-light leading-relaxed mt-8">{product.fabric_notes}</p>
-            )}
-          </TabsContent>
-
-          <TabsContent value="details" className="pt-10">
-            <ul className="space-y-4 max-w-2xl">
-              {product.details.map((d) => (
-                <li key={d} className="flex gap-4 text-foreground/70 font-light leading-relaxed border-b border-hairline pb-4">
-                  <Icon name="check-simple" className="text-foreground/50 mt-1" />
-                  <span>{d}</span>
-                </li>
-              ))}
-            </ul>
-          </TabsContent>
-
-          <TabsContent value="shipping" className="pt-10">
-            <div className="space-y-4 text-foreground/70 font-light leading-relaxed max-w-2xl">
-              <p><Icon name="truck" className="mr-2 text-foreground/50" /> Expédition sous 5 jours ouvrés depuis Abidjan.</p>
-              <p><Icon name="scissors" className="mr-2 text-foreground/50" /> Retouches locales gratuites pour assurer un tombé parfait.</p>
-              <p><Icon name="rotate-left" className="mr-2 text-foreground/50" /> Retours acceptés sous 14 jours, sauf pour les pièces personnalisées.</p>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-
-      {/* Reviews */}
-      <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1100px] mx-auto mt-20 sm:mt-32">
-        <ProductReviews productSlug={product.slug} productName={product.name} />
-      </div>
-
-      {/* Related products */}
-      {relatedProducts.length > 0 && (
-        <div className="px-4 sm:px-6 md:px-8 lg:px-12 max-w-[1600px] mx-auto mt-20 sm:mt-32">
-          <div className="border-t border-hairline pt-12 mb-10">
-            <div className="eyebrow text-foreground/60 mb-4">— Vous aimerez aussi —</div>
-            <h2 className="display text-2xl sm:text-3xl md:text-4xl">Pièces de la collection</h2>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            {relatedProducts.map((p) => (
-              <Link
-                key={p.id}
-                to="/collection/$productId"
-                params={{ productId: p.slug }}
-                className="group block"
-              >
-                <div className="aspect-[4/5] bg-secondary overflow-hidden mb-4">
-                  <img
-                    src={p.primaryImage}
-                    alt={p.name}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                </div>
-                <div className="eyebrow text-foreground/55 text-[10px] mb-2">{CATEGORY_LABELS[p.category]}</div>
-                <h3 className="font-serif text-foreground text-lg mb-1 group-hover:text-foreground/80 transition-colors">
-                  {p.name}
-                </h3>
-                <div className="text-foreground/60 font-light text-sm">{formatPriceFcfa(p.price_fcfa)}</div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
 
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="mb-8">
-      <div className="eyebrow text-foreground/60 mb-3">{label}</div>
+    <div className="mb-10">
+      <div className="eyebrow text-foreground/40 mb-4 tracking-[0.2em] text-[10px] uppercase">— {label} —</div>
       {children}
     </div>
   );
@@ -721,39 +710,16 @@ function Chip({
       onClick={onClick}
       disabled={disabled}
       aria-disabled={disabled}
-      className={`px-4 py-2 text-xs tracking-[0.2em] uppercase border transition-all duration-200 ${
+      className={`px-5 py-2.5 text-[10px] tracking-[0.2em] uppercase border transition-all duration-300 ${
         disabled
-          ? "border-hairline text-foreground/30 cursor-not-allowed"
+          ? "border-hairline text-foreground/20 cursor-not-allowed"
           : active
-            ? "border-foreground bg-foreground text-background scale-[1.02]"
-            : "border-hairline text-foreground/70 hover:border-foreground hover:text-foreground hover:scale-[1.02]"
+            ? "border-foreground bg-foreground text-background"
+            : "border-hairline text-foreground/60 hover:border-foreground/40 hover:text-foreground"
       }`}
     >
       {children}
     </button>
-  );
-}
-
-function Row({ k, v }: { k: string; v: string }) {
-  return (
-    <div className="flex justify-between border-b border-hairline pb-3">
-      <dt className="eyebrow text-foreground/50 text-[10px]">{k}</dt>
-      <dd className="text-foreground/80 text-sm font-light text-right">{v}</dd>
-    </div>
-  );
-}
-
-function Reassure({ icon, title, body }: { icon: import("@/components/Icon").IconName; title: string; body: string }) {
-  return (
-    <li className="flex items-start gap-3 border border-hairline p-3 hover:border-foreground/40 transition-colors group">
-      <span className="text-foreground/70 group-hover:text-foreground transition-colors mt-0.5">
-        <Icon name={icon} />
-      </span>
-      <div className="flex-1 min-w-0">
-        <div className="text-foreground text-xs font-medium">{title}</div>
-        <div className="text-foreground/55 text-[11px] font-light mt-0.5">{body}</div>
-      </div>
-    </li>
   );
 }
 

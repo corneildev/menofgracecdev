@@ -22,6 +22,7 @@ export function Footer() {
             <ul className="space-y-3 text-bone/80">
               <li><Link to="/collection" className="hover:text-bone">{t("nav.collection")}</Link></li>
               <li><Link to="/account" className="hover:text-bone">Account</Link></li>
+              <li><Link to="/track-order" className="hover:text-bone">Suivi de commande</Link></li>
               <li><Link to="/wishlist" className="hover:text-bone">{t("nav.wishlist")}</Link></li>
             </ul>
           </div>

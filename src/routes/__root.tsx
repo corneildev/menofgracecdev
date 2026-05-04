@@ -9,6 +9,7 @@ import { CartProvider } from "@/context/CartContext";
 import { CartDrawer } from "@/components/CartDrawer";
 import { AuthProvider } from "@/context/AuthContext";
 import { LangBootstrap } from "@/components/LangBootstrap";
+import { CountrySelectorModal } from "@/components/CountrySelectorModal";
 import "@/i18n";
 
 // Light par défaut. Le mode sombre n'est appliqué que si l'utilisateur l'a explicitement choisi.
@@ -61,31 +62,55 @@ export const Route = createRootRoute({
     scripts: [
       {
         type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: "Men of Grace",
-          url: "https://menofgrace.store",
-          logo: "https://menofgrace.store/og-image.jpg",
-          sameAs: [
-            "https://www.instagram.com/menofgrace",
-          ],
-          contactPoint: {
-            "@type": "ContactPoint",
-            contactType: "customer service",
-            availableLanguage: ["French", "English"],
+        children: JSON.stringify([
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Men of Grace",
+            "url": "https://menofgrace.store",
+            "logo": "https://menofgrace.store/og-image.jpg",
+            "sameAs": [
+              "https://www.instagram.com/menofgrace",
+            ],
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "contactType": "customer service",
+              "availableLanguage": ["French", "English"],
+            }
           },
-        }),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          name: "Men of Grace",
-          url: "https://menofgrace.store",
-          inLanguage: "fr-FR",
-        }),
+          {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "Men of Grace Showroom — Abidjan",
+            "image": "https://menofgrace.store/hero-suit.jpg",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Cocody",
+              "addressLocality": "Abidjan",
+              "addressCountry": "CI"
+            },
+            "url": "https://menofgrace.store"
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "Men of Grace Showroom — Cotonou",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Parakou",
+              "addressLocality": "Cotonou",
+              "addressCountry": "BJ"
+            },
+            "url": "https://menofgrace.store"
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Men of Grace",
+            "url": "https://menofgrace.store",
+            "inLanguage": "fr-FR"
+          }
+        ]),
       },
     ],
   }),
@@ -124,6 +149,7 @@ function RootComponent() {
             <Footer />
             <WhatsAppFloat />
             <CartDrawer />
+            <CountrySelectorModal />
           </CartProvider>
         </WishlistProvider>
       </AuthProvider>

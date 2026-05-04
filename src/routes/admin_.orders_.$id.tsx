@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { generateInvoicePdf, type InvoiceData } from "@/lib/invoicePdf";
 
-export const Route = createFileRoute("/admin_/orders/$id")({
+export const Route = createFileRoute("/admin_/orders_/$id")({
   head: () => ({
     meta: [
       { title: "Commande — Admin" },

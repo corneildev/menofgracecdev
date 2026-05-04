@@ -38,6 +38,29 @@ export const Route = createFileRoute("/collection")({
       { property: "og:url", content: "https://menofgrace.store/collection" },
     ],
     links: [{ rel: "canonical", href: "https://menofgrace.store/collection" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            {
+              "@type": "ListItem",
+              position: 1,
+              name: "Accueil",
+              item: "https://menofgrace.store",
+            },
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: "Collection",
+              item: "https://menofgrace.store/collection",
+            },
+          ],
+        }),
+      },
+    ],
   }),
   component: Collection,
   errorComponent: ({ error }) => {

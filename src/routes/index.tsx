@@ -13,23 +13,31 @@ import {
   CATEGORY_LABELS,
 } from "@/lib/products";
 import { getStoredCurrency } from "@/components/CurrencySwitch";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { Icon } from "@/components/Icon";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Men of Grace — Maison de tailleur" },
+      { title: "Men of Grace — Maison de tailleur d'exception & Costumes sur-mesure" },
       {
         name: "description",
         content:
-          "Costumes prêt-à-porter, sur-mesure, mariage et executive. Façonnés à la main par nos ateliers partenaires de Biella et Foshan. Livraison sous 5 jours, retouches offertes.",
+          "Découvrez l'art sartorial de Men of Grace. Costumes sur-mesure, tuxedos de mariage et tenues executive façonnés à la main. Livraison à Abidjan, Cotonou, Paris et Dubaï.",
       },
-      { property: "og:title", content: "Men of Grace — Maison de tailleur" },
+      { name: "keywords", content: "costume sur mesure, tailleur abidjan, costume mariage, sartorial, luxe homme, men of grace" },
+      { property: "og:title", content: "Men of Grace — Maison de tailleur d'exception" },
       {
         property: "og:description",
-        content: "Pour les hommes qui imposent leur présence — sans dire un mot.",
+        content: "L'excellence du sur-mesure pour les hommes qui imposent leur présence. Livraison internationale sous 5 jours.",
       },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://menofgrace.store" },
       { property: "og:image", content: hero },
-      { property: "twitter:image", content: hero },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Men of Grace — Maison de tailleur" },
+      { name: "twitter:description", content: "L'excellence du sur-mesure sartorial." },
+      { name: "twitter:image", content: hero },
     ],
   }),
   component: Index,
@@ -58,8 +66,11 @@ function Index() {
     <div className="bg-background text-foreground overflow-x-hidden">
       {/* HERO — Lifestyle éditorial */}
       <section className="relative w-full overflow-hidden">
-        <div className="relative min-h-[100svh] w-full">
-          <img
+        <div className="relative min-h-[100svh] w-full flex items-center">
+          <motion.img
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 2.5, ease: "easeOut" }}
             src={hero}
             alt="Homme en costume sur-mesure Men of Grace"
             className="absolute inset-0 h-full w-full object-cover object-center"
@@ -67,37 +78,70 @@ function Index() {
             height={1080}
           />
           {/* Lecture overlay : sombre en bas pour lisibilité, sans assombrir tout */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/0" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/0" />
 
-          {/* Big serif title sur l'image, façon Mrbuerly */}
-          <div className="absolute inset-x-0 bottom-0 px-6 md:px-12 lg:px-16 pb-16 sm:pb-24 lg:pb-28">
+          {/* Big serif title sur l'image */}
+          <div className="relative z-10 w-full px-6 md:px-12 lg:px-16 pt-32 pb-16 sm:pb-24">
             <div className="max-w-[1600px] mx-auto">
-              <div className="eyebrow text-white/80 mb-6 fade-in-slow">— Maison de tailleur · MMXX —</div>
-              <h1 className="display text-white text-[15vw] sm:text-[11vw] md:text-[8.5rem] lg:text-[10rem] leading-[0.9] tracking-tight mb-8 fade-up">
-                Élégance
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.2 }}
+                className="eyebrow text-white/80 mb-6 tracking-[0.4em]"
+              >
+                — Maison de tailleur · MMXX —
+              </motion.div>
+              <motion.h1
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.4 }}
+                className="display text-white text-[15vw] sm:text-[11vw] md:text-[8.5rem] lg:text-[12rem] leading-[0.85] tracking-tighter mb-10"
+              >
+                L'Élégance
                 <br />
-                <span className="italic font-light">sur-mesure.</span>
-              </h1>
-              <p className="font-light text-white/85 text-base sm:text-lg max-w-md leading-relaxed mb-8 fade-up" style={{ animationDelay: "150ms" }}>
+                <span className="italic font-light opacity-80">sur-mesure.</span>
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.6 }}
+                className="font-light text-white/80 text-base sm:text-lg max-w-md leading-relaxed mb-10"
+              >
                 La précision du tailleur élève chaque présence.
-                Composé par la maison, façonné à la main à Biella et Foshan.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 fade-up" style={{ animationDelay: "300ms" }}>
+                Composé par la maison, façonné à la main dans nos ateliers d'excellence.
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.8 }}
+                className="flex flex-col sm:flex-row gap-4"
+              >
                 <Link
                   to="/collection"
-                  className="inline-flex items-center justify-center px-9 py-4 bg-white text-black text-[11px] tracking-[0.32em] uppercase font-light hover:bg-white/90 transition-colors"
+                  className="luxury-btn luxury-btn-solid !bg-white !text-black !px-12 !py-5"
                 >
                   Acheter maintenant
                 </Link>
                 <Link
                   to="/size-finder"
-                  className="inline-flex items-center justify-center px-9 py-4 border border-white/80 text-white text-[11px] tracking-[0.32em] uppercase font-light hover:bg-white hover:text-black transition-colors"
+                  className="luxury-btn !border-white/40 !text-white !px-12 !py-5 hover:!bg-white hover:!text-black"
                 >
                   Trouver ma taille
                 </Link>
-              </div>
+              </motion.div>
             </div>
           </div>
+
+          {/* Scroll indicator */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.5, duration: 1 }}
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4"
+          >
+            <div className="w-[1px] h-12 bg-gradient-to-b from-white/60 to-transparent" />
+            <span className="eyebrow text-[9px] text-white/40 tracking-[0.3em] uppercase">Découvrir</span>
+          </motion.div>
         </div>
       </section>
 
@@ -106,45 +150,58 @@ function Index() {
         <div className="max-w-[1600px] mx-auto px-6 md:px-12 flex flex-wrap items-center justify-between gap-x-10 gap-y-3 text-[10px] sm:text-xs uppercase tracking-[0.32em] sm:tracking-[0.4em] font-light">
           <span>Abidjan · Cocody</span>
           <span>Paris · 8ᵉ</span>
-          <span>Lagos · Ikoyi</span>
+          <span>Cotonou · Parakou</span>
           <span>Dubaï · DIFC</span>
         </div>
       </section>
 
-      {/* PIÈCES PHARES — remontées (façon Mrbuerly Weekly Trends) */}
+      {/* PIÈCES PHARES */}
       {featured.length > 0 && (
-        <section className="px-5 md:px-10 lg:px-12 pt-20 sm:pt-28 pb-20">
+        <section className="px-5 md:px-10 lg:px-12 pt-24 sm:pt-32 pb-24">
           <div className="max-w-[1600px] mx-auto">
-            <div className="flex items-end justify-between mb-10 sm:mb-14 flex-wrap gap-4">
-              <div>
-                <div className="eyebrow text-foreground/60 mb-3">— Tendances de la semaine —</div>
-                <h2 className="display text-3xl sm:text-4xl md:text-5xl">Pièces phares</h2>
-              </div>
-              <Link to="/collection" className="eyebrow hover:opacity-60 border-b border-foreground/30 pb-1">
-                Voir la collection →
+            <div className="flex items-end justify-between mb-12 sm:mb-16 flex-wrap gap-4">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <div className="eyebrow text-foreground/50 mb-3 tracking-[0.3em] uppercase">— Tendances —</div>
+                <h2 className="display text-4xl sm:text-5xl md:text-6xl">Pièces phares</h2>
+              </motion.div>
+              <Link to="/collection" className="eyebrow hover:text-foreground/60 transition-colors border-b border-foreground/20 pb-1 tracking-[0.2em] text-[10px]">
+                TOUTE LA COLLECTION →
               </Link>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
-              {featured.map((p) => (
-                <Link
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 md:gap-10">
+              {featured.map((p, idx) => (
+                <motion.div
                   key={p.id}
-                  to="/collection/$productId"
-                  params={{ productId: p.slug }}
-                  className="group block w-full"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: idx * 0.1 }}
                 >
-                  <div className="img-zoom aspect-[4/5] bg-secondary mb-4 overflow-hidden">
-                    <img
-                      src={p.primaryImage}
-                      alt={p.name}
-                      loading="lazy"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <div className="eyebrow text-foreground/55 mb-1.5 text-[10px]">{CATEGORY_LABELS[p.category]}</div>
-                  <div className="font-serif text-lg sm:text-xl mb-1.5 leading-tight">{p.name}</div>
-                  <div className="text-foreground/75 text-sm font-light">{formatPrice(p)}</div>
-                </Link>
+                  <Link
+                    to="/collection/$productId"
+                    params={{ productId: p.slug }}
+                    className="group block w-full"
+                  >
+                    <div className="aspect-[3/4] bg-secondary mb-6 overflow-hidden relative">
+                      <img
+                        src={p.primaryImage}
+                        alt={p.name}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
+                    </div>
+                    <div className="eyebrow text-foreground/40 mb-2 text-[9px] tracking-[0.2em] uppercase">{CATEGORY_LABELS[p.category]}</div>
+                    <div className="font-serif text-xl sm:text-2xl mb-2 leading-tight group-hover:text-foreground/70 transition-colors">{p.name}</div>
+                    <div className="text-foreground/60 text-sm font-light tracking-wide">{formatPrice(p)}</div>
+                  </Link>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -152,14 +209,20 @@ function Index() {
       )}
 
       {/* TROIS PILIERS */}
-      <section className="px-5 md:px-10 lg:px-12 pb-20 sm:pb-28">
+      <section className="px-5 md:px-10 lg:px-12 pb-24 sm:pb-32 overflow-hidden">
         <div className="max-w-[1600px] mx-auto">
-          <div className="text-center mb-10 sm:mb-14">
-            <div className="eyebrow text-foreground/60 mb-3">— Le Triptyque —</div>
-            <h2 className="display text-3xl sm:text-4xl md:text-5xl">Trois maisons, une signature</h2>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16 sm:mb-20"
+          >
+            <div className="eyebrow text-foreground/40 mb-3 tracking-[0.4em] uppercase">— Le Triptyque —</div>
+            <h2 className="display text-4xl sm:text-5xl md:text-6xl">Trois maisons, une signature</h2>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             <PillarCard
               eyebrow="I · Executive"
               title="Executive Sartoria"
@@ -167,6 +230,7 @@ function Index() {
               image={executiveImg}
               cta="Découvrir"
               href="/collection"
+              delay={0.1}
             />
             <PillarCard
               eyebrow="II · Sur-mesure"
@@ -176,6 +240,7 @@ function Index() {
               cta="Prendre rendez-vous"
               href="/size-finder"
               elevated
+              delay={0.2}
             />
             <PillarCard
               eyebrow="III · Mariage"
@@ -184,23 +249,47 @@ function Index() {
               image={weddingImg}
               cta="Composer mon habit"
               href="/collection"
+              delay={0.3}
             />
           </div>
         </div>
       </section>
 
       {/* MANIFESTO */}
-      <section className="py-24 sm:py-32 px-6 md:px-12 border-y border-hairline">
-        <div className="max-w-5xl mx-auto text-center">
-          <div className="eyebrow text-foreground/60 mb-8">— Manifeste —</div>
-          <h2 className="display text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-[1.1]">
-            Pour les hommes qui imposent leur présence
-            <br />
-            <span className="italic text-foreground/70">sans dire un mot.</span>
-          </h2>
+      <section className="py-32 sm:py-48 px-6 md:px-12 bg-foreground text-background relative overflow-hidden">
+        {/* Abstract background element */}
+        <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
+          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M0,0 L100,100 M100,0 L0,100" stroke="white" strokeWidth="0.1" fill="none" />
+          </svg>
+        </div>
+
+        <div className="max-w-6xl mx-auto text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+          >
+            <div className="eyebrow text-background/40 mb-12 tracking-[0.5em] uppercase">— Manifeste —</div>
+            <h2 className="display text-4xl sm:text-6xl md:text-7xl lg:text-8xl leading-[1] mb-8">
+              Pour les hommes qui
+              <br />
+              imposent leur présence
+              <br />
+              <span className="italic font-light text-background/60">sans dire un mot.</span>
+            </h2>
+          </motion.div>
+
+          <motion.div
+            initial={{ width: 0 }}
+            whileInView={{ width: 120 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.5, delay: 0.5 }}
+            className="h-[1px] bg-background/20 mx-auto mt-16"
+          />
         </div>
       </section>
-
       {/* GARANTIES */}
       <section className="py-20 sm:py-24 px-6 md:px-12">
         <div className="max-w-[1400px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 md:gap-14 text-center">
@@ -269,6 +358,7 @@ function PillarCard({
   cta,
   href,
   elevated = false,
+  delay = 0,
 }: {
   eyebrow: string;
   title: string;
@@ -277,29 +367,41 @@ function PillarCard({
   cta: string;
   href: "/collection" | "/size-finder";
   elevated?: boolean;
+  delay?: number;
 }) {
   return (
-    <Link
-      to={href}
-      className={`group relative aspect-[4/5] overflow-hidden bg-secondary block ${elevated ? "md:-mt-12 md:mb-12" : ""}`}
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8, delay }}
+      className={elevated ? "md:-mt-12" : ""}
     >
-      <img
-        src={image}
-        alt={title}
-        loading="lazy"
-        className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent group-hover:from-black/90 transition-all duration-700" />
-      <div className="absolute bottom-0 left-0 right-0 p-7 sm:p-9 lg:p-11 text-white">
-        <div className="text-[10px] tracking-[0.32em] uppercase text-white/70 mb-3">{eyebrow}</div>
-        <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl mb-3">{title}</h3>
-        <p className="text-white/80 text-sm font-light leading-relaxed mb-5 max-w-xs">
-          {body}
-        </p>
-        <span className="text-[10px] tracking-[0.32em] uppercase text-white border-b border-white/40 pb-1 inline-block group-hover:border-white transition-colors">
-          {cta} →
-        </span>
-      </div>
-    </Link>
+      <Link
+        to={href}
+        className="group relative aspect-[3/4] overflow-hidden bg-secondary block shadow-2xl"
+      >
+        <img
+          src={image}
+          alt={title}
+          loading="lazy"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent transition-all duration-700" />
+        <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-10 lg:p-12 text-white">
+          <div className="text-[10px] tracking-[0.4em] uppercase text-white/50 mb-4">{eyebrow}</div>
+          <h3 className="font-serif text-3xl sm:text-4xl mb-4 leading-tight">{title}</h3>
+          <p className="text-white/60 text-sm font-light leading-relaxed mb-8 max-w-xs opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-700">
+            {body}
+          </p>
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] tracking-[0.3em] uppercase text-white border-b border-white/20 pb-1 inline-block group-hover:border-white transition-colors">
+              {cta}
+            </span>
+            <Icon name="chevron-right" className="text-[8px] group-hover:translate-x-1 transition-transform" />
+          </div>
+        </div>
+      </Link>
+    </motion.div>
   );
 }

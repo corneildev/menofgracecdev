@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as UpdatePasswordRouteImport } from './routes/update-password'
+import { Route as TrackOrderRouteImport } from './routes/track-order'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SizeFinderRouteImport } from './routes/size-finder'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -34,8 +35,9 @@ import { Route as AdminOrdersRouteImport } from './routes/admin_.orders'
 import { Route as OrderConfirmationOrderIdRouteImport } from './routes/order.confirmation.$orderId'
 import { Route as AdminProductsNewRouteImport } from './routes/admin_.products_.new'
 import { Route as AdminProductsIdRouteImport } from './routes/admin_.products_.$id'
-import { Route as AdminOrdersIdRouteImport } from './routes/admin_.orders.$id'
+import { Route as AdminOrdersIdRouteImport } from './routes/admin_.orders_.$id'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
+import { Route as LovableEmailOrderWebhookRouteImport } from './routes/lovable/email/order/webhook'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 
@@ -47,6 +49,11 @@ const WishlistRoute = WishlistRouteImport.update({
 const UpdatePasswordRoute = UpdatePasswordRouteImport.update({
   id: '/update-password',
   path: '/update-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackOrderRoute = TrackOrderRouteImport.update({
+  id: '/track-order',
+  path: '/track-order',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -166,14 +173,20 @@ const AdminProductsIdRoute = AdminProductsIdRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AdminOrdersRoute,
+  id: '/admin_/orders_/$id',
+  path: '/admin/orders/$id',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
     path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const LovableEmailOrderWebhookRoute =
+  LovableEmailOrderWebhookRouteImport.update({
+    id: '/lovable/email/order/webhook',
+    path: '/lovable/email/order/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
 const LovableEmailAuthWebhookRoute = LovableEmailAuthWebhookRouteImport.update({
@@ -203,9 +216,10 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/size-finder': typeof SizeFinderRoute
   '/terms': typeof TermsRoute
+  '/track-order': typeof TrackOrderRoute
   '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
-  '/admin/orders': typeof AdminOrdersRouteWithChildren
+  '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/promo-codes': typeof AdminPromoCodesRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
@@ -216,6 +230,7 @@ export interface FileRoutesByFullPath {
   '/order/confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
+  '/lovable/email/order/webhook': typeof LovableEmailOrderWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
@@ -234,9 +249,10 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/size-finder': typeof SizeFinderRoute
   '/terms': typeof TermsRoute
+  '/track-order': typeof TrackOrderRoute
   '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
-  '/admin/orders': typeof AdminOrdersRouteWithChildren
+  '/admin/orders': typeof AdminOrdersRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/promo-codes': typeof AdminPromoCodesRoute
   '/admin/restock-alerts': typeof AdminRestockAlertsRoute
@@ -247,6 +263,7 @@ export interface FileRoutesByTo {
   '/order/confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
+  '/lovable/email/order/webhook': typeof LovableEmailOrderWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -266,19 +283,21 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/size-finder': typeof SizeFinderRoute
   '/terms': typeof TermsRoute
+  '/track-order': typeof TrackOrderRoute
   '/update-password': typeof UpdatePasswordRoute
   '/wishlist': typeof WishlistRoute
-  '/admin_/orders': typeof AdminOrdersRouteWithChildren
+  '/admin_/orders': typeof AdminOrdersRoute
   '/admin_/products': typeof AdminProductsRoute
   '/admin_/promo-codes': typeof AdminPromoCodesRoute
   '/admin_/restock-alerts': typeof AdminRestockAlertsRoute
   '/collection_/$productId': typeof CollectionProductIdRoute
-  '/admin_/orders/$id': typeof AdminOrdersIdRoute
+  '/admin_/orders_/$id': typeof AdminOrdersIdRoute
   '/admin_/products_/$id': typeof AdminProductsIdRoute
   '/admin_/products_/new': typeof AdminProductsNewRoute
   '/order/confirmation/$orderId': typeof OrderConfirmationOrderIdRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
+  '/lovable/email/order/webhook': typeof LovableEmailOrderWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -299,6 +318,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/size-finder'
     | '/terms'
+    | '/track-order'
     | '/update-password'
     | '/wishlist'
     | '/admin/orders'
@@ -312,6 +332,7 @@ export interface FileRouteTypes {
     | '/order/confirmation/$orderId'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
+    | '/lovable/email/order/webhook'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -330,6 +351,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/size-finder'
     | '/terms'
+    | '/track-order'
     | '/update-password'
     | '/wishlist'
     | '/admin/orders'
@@ -343,6 +365,7 @@ export interface FileRouteTypes {
     | '/order/confirmation/$orderId'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
+    | '/lovable/email/order/webhook'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -361,6 +384,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/size-finder'
     | '/terms'
+    | '/track-order'
     | '/update-password'
     | '/wishlist'
     | '/admin_/orders'
@@ -368,12 +392,13 @@ export interface FileRouteTypes {
     | '/admin_/promo-codes'
     | '/admin_/restock-alerts'
     | '/collection_/$productId'
-    | '/admin_/orders/$id'
+    | '/admin_/orders_/$id'
     | '/admin_/products_/$id'
     | '/admin_/products_/new'
     | '/order/confirmation/$orderId'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
+    | '/lovable/email/order/webhook'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -393,18 +418,21 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   SizeFinderRoute: typeof SizeFinderRoute
   TermsRoute: typeof TermsRoute
+  TrackOrderRoute: typeof TrackOrderRoute
   UpdatePasswordRoute: typeof UpdatePasswordRoute
   WishlistRoute: typeof WishlistRoute
-  AdminOrdersRoute: typeof AdminOrdersRouteWithChildren
+  AdminOrdersRoute: typeof AdminOrdersRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminPromoCodesRoute: typeof AdminPromoCodesRoute
   AdminRestockAlertsRoute: typeof AdminRestockAlertsRoute
   CollectionProductIdRoute: typeof CollectionProductIdRoute
+  AdminOrdersIdRoute: typeof AdminOrdersIdRoute
   AdminProductsIdRoute: typeof AdminProductsIdRoute
   AdminProductsNewRoute: typeof AdminProductsNewRoute
   OrderConfirmationOrderIdRoute: typeof OrderConfirmationOrderIdRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
+  LovableEmailOrderWebhookRoute: typeof LovableEmailOrderWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
@@ -422,6 +450,13 @@ declare module '@tanstack/react-router' {
       path: '/update-password'
       fullPath: '/update-password'
       preLoaderRoute: typeof UpdatePasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/track-order': {
+      id: '/track-order'
+      path: '/track-order'
+      fullPath: '/track-order'
+      preLoaderRoute: typeof TrackOrderRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -585,18 +620,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProductsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin_/orders/$id': {
-      id: '/admin_/orders/$id'
-      path: '/$id'
+    '/admin_/orders_/$id': {
+      id: '/admin_/orders_/$id'
+      path: '/admin/orders/$id'
       fullPath: '/admin/orders/$id'
       preLoaderRoute: typeof AdminOrdersIdRouteImport
-      parentRoute: typeof AdminOrdersRoute
+      parentRoute: typeof rootRouteImport
     }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
       fullPath: '/lovable/email/queue/process'
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lovable/email/order/webhook': {
+      id: '/lovable/email/order/webhook'
+      path: '/lovable/email/order/webhook'
+      fullPath: '/lovable/email/order/webhook'
+      preLoaderRoute: typeof LovableEmailOrderWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lovable/email/auth/webhook': {
@@ -616,18 +658,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminOrdersRouteChildren {
-  AdminOrdersIdRoute: typeof AdminOrdersIdRoute
-}
-
-const AdminOrdersRouteChildren: AdminOrdersRouteChildren = {
-  AdminOrdersIdRoute: AdminOrdersIdRoute,
-}
-
-const AdminOrdersRouteWithChildren = AdminOrdersRoute._addFileChildren(
-  AdminOrdersRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
@@ -644,20 +674,32 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   SizeFinderRoute: SizeFinderRoute,
   TermsRoute: TermsRoute,
+  TrackOrderRoute: TrackOrderRoute,
   UpdatePasswordRoute: UpdatePasswordRoute,
   WishlistRoute: WishlistRoute,
-  AdminOrdersRoute: AdminOrdersRouteWithChildren,
+  AdminOrdersRoute: AdminOrdersRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminPromoCodesRoute: AdminPromoCodesRoute,
   AdminRestockAlertsRoute: AdminRestockAlertsRoute,
   CollectionProductIdRoute: CollectionProductIdRoute,
+  AdminOrdersIdRoute: AdminOrdersIdRoute,
   AdminProductsIdRoute: AdminProductsIdRoute,
   AdminProductsNewRoute: AdminProductsNewRoute,
   OrderConfirmationOrderIdRoute: OrderConfirmationOrderIdRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
+  LovableEmailOrderWebhookRoute: LovableEmailOrderWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
