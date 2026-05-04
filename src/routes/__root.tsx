@@ -11,7 +11,8 @@ import { AuthProvider } from "@/context/AuthContext";
 import { LangBootstrap } from "@/components/LangBootstrap";
 import "@/i18n";
 
-const themeBootScript = `(function(){try{var t=localStorage.getItem("mog:theme");if(t==="light"){document.documentElement.classList.add("light");}}catch(e){}})();`;
+// Light par défaut. Le mode sombre n'est appliqué que si l'utilisateur l'a explicitement choisi.
+const themeBootScript = `(function(){try{var t=localStorage.getItem("mog:theme");if(t!=="dark"){document.documentElement.classList.add("light");}}catch(e){document.documentElement.classList.add("light");}})();`;
 
 import appCss from "../styles.css?url";
 
