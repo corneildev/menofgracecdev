@@ -29,11 +29,15 @@ export const Route = createFileRoute("/collection")({
   validateSearch: zodValidator(searchSchema),
   head: () => ({
     meta: [
-      { title: "Collection — MEN OF GRACE" },
-      { name: "description", content: "Browse the collection of bespoke suits, tuxedos and executive tailoring." },
-      { property: "og:title", content: "Collection — MEN OF GRACE" },
-      { property: "og:description", content: "Bespoke suits and tuxedos." },
+      { title: "Collection — Men of Grace" },
+      { name: "description", content: "Découvrez la collection Men of Grace : costumes sur-mesure, tuxedos, executive et mariage. Façonnés à la main, livrés sous 5 jours." },
+      { name: "robots", content: "index, follow" },
+      { property: "og:title", content: "Collection — Men of Grace" },
+      { property: "og:description", content: "Costumes sur-mesure, tuxedos, executive et mariage." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://menofgrace.store/collection" },
     ],
+    links: [{ rel: "canonical", href: "https://menofgrace.store/collection" }],
   }),
   component: Collection,
   errorComponent: ({ error }) => {
