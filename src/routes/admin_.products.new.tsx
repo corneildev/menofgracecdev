@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { ProductEditor } from "@/components/admin/ProductEditor";
 
-export const Route = createFileRoute("/admin_/products/new")({
+export const Route = createFileRoute("/admin/products/new")({
   head: () => ({ meta: [{ title: "Nouveau produit — MEN OF GRACE" }, { name: "robots", content: "noindex" }] }),
   component: NewProduct,
 });

@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/admin_/restock-alerts")({
+export const Route = createFileRoute("/admin/restock-alerts")({
   head: () => ({
     meta: [
       { title: "Alertes de réassort — Admin" },
