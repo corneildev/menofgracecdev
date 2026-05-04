@@ -221,9 +221,53 @@ export function ProductEditor({ productId }: { productId?: string }) {
     setVideos((vs) => vs.map((v, i) => i === idx ? { ...v, ...patch } : v));
   const removeVideo = (idx: number) => setVideos((vs) => vs.filter((_, i) => i !== idx));
 
+  const validate = (): string | null => {
+    if (!form.name.trim()) return "Le nom est requis.";
+    if (form.price_fcfa <= 0 || form.price_usd <= 0 || form.price_eur <= 0) {
+      return "Les prix de base doivent être strictement supérieurs à 0.";
+    }
+    if (form.stock < 0) return "Le stock global ne peut pas être négatif.";
+
+    // Variant validation
+    const seen = new Map<string, number>();
+    for (let i = 0; i < variants.length; i++) {
+      const v = variants[i];
+      if (!v.size && !v.color) {
+        return `Variante #${i + 1} : renseignez au moins une taille ou une couleur.`;
+      }
+      const k = `${(v.size || "").trim().toLowerCase()}|${(v.color || "").trim().toLowerCase()}`;
+      if (seen.has(k)) {
+        return `Doublon de variante taille/couleur : "${v.size || "—"} / ${v.color || "—"}" (lignes ${seen.get(k)! + 1} et ${i + 1}).`;
+      }
+      seen.set(k, i);
+      if (v.stock < 0) return `Variante #${i + 1} : stock négatif interdit.`;
+      if (v.is_available && v.stock <= 0) {
+        return `Variante #${i + 1} (${v.size || "—"}/${v.color || "—"}) : marquée disponible mais stock à 0. Décochez "Dispo" ou ajustez le stock.`;
+      }
+      if (v.price_fcfa !== null) {
+        if (v.price_fcfa <= 0) return `Variante #${i + 1} : prix override invalide.`;
+        if (v.price_fcfa < Math.floor(form.price_fcfa * 0.3) || v.price_fcfa > Math.ceil(form.price_fcfa * 3)) {
+          return `Variante #${i + 1} : prix override (${v.price_fcfa}) trop éloigné du prix de base (${form.price_fcfa}). Vérifiez.`;
+        }
+      }
+    }
+
+    // Images: variant_key must reference an existing variant
+    const variantKeys = new Set(variants.map((v) => v.key));
+    for (const img of images) {
+      if (img.variant_key && !variantKeys.has(img.variant_key)) {
+        return "Une image est rattachée à une variante supprimée. Réassignez-la avant d'enregistrer.";
+      }
+    }
+
+    return null;
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+    const validationError = validate();
+    if (validationError) { setError(validationError); return; }
     setSaving(true);
     try {
       const slug = form.slug || slugify(form.name);
@@ -240,9 +284,9 @@ export function ProductEditor({ productId }: { productId?: string }) {
       }
       if (!id) throw new Error("Produit non créé");
 
-      // Replace variants (delete + insert) so we get fresh IDs to map images
+      // Replace variants (delete + insert) and map local key → new DB id
       await supabase.from("product_variants").delete().eq("product_id", id);
-      const variantIdMap = new Map<number, string>();
+      const keyToDbId = new Map<string, string>();
       if (variants.length > 0) {
         const rows = variants.map((v, idx) => ({
           product_id: id!,
@@ -256,19 +300,18 @@ export function ProductEditor({ productId }: { productId?: string }) {
         }));
         const { data: inserted, error: vErr } = await supabase.from("product_variants").insert(rows).select("id");
         if (vErr) throw vErr;
-        (inserted ?? []).forEach((row, i) => variantIdMap.set(i, row.id));
+        (inserted ?? []).forEach((row, i) => keyToDbId.set(variants[i].key, row.id));
       }
 
-      // Replace images, mapping variant_id by position match (we kept original variant_id strings; but since we re-inserted variants we lose ID continuity — for safety, drop variant_id on image re-insert if it doesn't match a new variant)
+      // Replace images, resolving variant_id from the stable variant_key
       await supabase.from("product_images").delete().eq("product_id", id);
       if (images.length > 0) {
-        const newVariantIds = new Set(Array.from(variantIdMap.values()));
         const imgRows = images.map((img, idx) => ({
           product_id: id!,
           url: img.url,
           is_primary: img.is_primary,
           position: idx,
-          variant_id: img.variant_id && newVariantIds.has(img.variant_id) ? img.variant_id : null,
+          variant_id: img.variant_key ? (keyToDbId.get(img.variant_key) ?? null) : null,
         }));
         const { error: imgErr } = await supabase.from("product_images").insert(imgRows);
         if (imgErr) throw imgErr;
