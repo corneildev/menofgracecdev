@@ -36,12 +36,18 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "MEN OF GRACE — Maison de tailleur" },
+      { title: "Men of Grace — Maison de tailleur" },
       { name: "description", content: "Maison de tailleur d'exception : prêt-à-porter, sur-mesure, mariage et executive. Abidjan · Paris · Lagos · Dubaï." },
-      { property: "og:title", content: "MEN OF GRACE — Maison de tailleur" },
+      { name: "robots", content: "index, follow" },
+      { name: "theme-color", content: "#FAFAFA" },
+      { property: "og:title", content: "Men of Grace — Maison de tailleur" },
       { property: "og:description", content: "Costumes sur-mesure, mariage et executive sartoria pour les hommes qui imposent leur présence." },
       { property: "og:type", content: "website" },
+      { property: "og:locale", content: "fr_FR" },
+      { property: "og:site_name", content: "Men of Grace" },
+      { property: "og:url", content: "https://menofgrace.store" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: "@menofgrace" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -50,6 +56,36 @@ export const Route = createRootRoute({
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&family=Inter:wght@200;300;400;500&display=swap",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "Men of Grace",
+          url: "https://menofgrace.store",
+          logo: "https://menofgrace.store/og-image.jpg",
+          sameAs: [
+            "https://www.instagram.com/menofgrace",
+          ],
+          contactPoint: {
+            "@type": "ContactPoint",
+            contactType: "customer service",
+            availableLanguage: ["French", "English"],
+          },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "Men of Grace",
+          url: "https://menofgrace.store",
+          inLanguage: "fr-FR",
+        }),
       },
     ],
   }),
